@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 浮动窗口样式 */
+        .floating-window {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 135px;
+            height: 31px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 15.5px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            z-index: 1000;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .floating-window:hover {
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .floating-window {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 窗口头部 - 可拖动区域 */
+        .window-header {
+            padding: 0;
+            cursor: move;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15.5px;
+            height: 100%;
+        }
+        
+        .window-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 视图切换按钮 */
+        .view-toggle-compact {
+            display: flex;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            padding: 2px;
+            gap: 1px;
+            height: 27px;
+        }
+        
+        [data-theme="dark"] .view-toggle-compact {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .view-toggle-compact button {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 11px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 23px;
+            line-height: 1;
+        }
+        
+        .view-toggle-compact button:hover {
+            color: var(--text-primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .view-toggle-compact button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* 窗口内容 */
+        .window-content {
+            padding: 20px;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+        
+        /* 主内容样式修复 */
+        #content-container {
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        /* 确保查询表单正确显示 */
+        .query-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        [data-theme="dark"] .form-input,
+        [data-theme="dark"] .form-select {
+            background: #1e293b;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 16px;
+        }
+        
+        /* 页面头部样式 */
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        /* 内容包装器 */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 查询区域样式 */
+        .query-section {
+            padding: 20px;
+        }
+        
+        /* 查询头部样式 */
+        .query-header {
+            margin-bottom: 20px;
+        }
+        
+        /* 表格容器样式 */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        [data-theme="dark"] .data-table th,
+        [data-theme="dark"] .data-table td {
+            border-bottom-color: #334155;
+        }
+        
+        .data-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: #f9fafb;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        [data-theme="dark"] .data-table th {
+            background: #0f172a;
+        }
+        
+        /* 状态徽章 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-running {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-standby {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-fault {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        [data-theme="dark"] .status-running {
+            background: #064e3b;
+            color: #6ee7b7;
+        }
+        
+        [data-theme="dark"] .status-standby {
+            background: #78350f;
+            color: #fcd34d;
+        }
+        
+        [data-theme="dark"] .status-fault {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f3f4f6;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        [data-theme="dark"] .btn-icon {
+            background: #1e293b;
+        }
+        
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-icon.btn-danger:hover {
+            background: #ef4444;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        [data-theme="dark"] .pagination {
+            border-top-color: #334155;
+        }
+        
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        [data-theme="dark"] .pagination-btn {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        [data-theme="dark"] .btn-secondary {
+            background: #374151;
+            color: #9ca3af;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        [data-theme="dark"] .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        
+        /* 简单的表格样式 */
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .simple-table th,
+        .simple-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="dark"] .simple-table th,
+        [data-theme="dark"] .simple-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .simple-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .simple-table td {
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        /* 主内容背景 */
+        .background-content {
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        /* 窗口最小化/最大化按钮 */
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+        
+        .window-control {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        [data-theme="dark"] .window-control {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .window-control:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .window-control:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div class="notification-badge">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </div>
+            <div class="user-menu" onclick="logout()">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item" data-menu="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span id="menuDashboard">仪表盘</span>
+            </a>
+            <a href="devices.html" class="menu-item" data-menu="devices">
+                <i class="fas fa-database"></i>
+                <span id="menuDevices">设备管理</span>
+            </a>
+            <a href="device-control.html" class="menu-item" style="display: none;">
+                <i class="fas fa-cogs"></i>
+                <span id="menuControl">设备控制</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="menuAlarms">告警管理</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span id="menuReports">报告中心</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span id="menuSystem">系统管理</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content" id="mainContent">
+        <div id="content-container">
+            <!-- 动态加载内容区域 -->
+        </div>
+    </main>
+
+    <!-- 浮动窗口 -->
+    <div class="floating-window" id="floatingWindow">
+        <div class="window-header" id="windowHeader">
+            <div class="view-toggle-compact" style="margin: 0 auto;">
+                <button class="active" onclick="switchFloatingView('table')">
+                    <i class="fas fa-table"></i>
+                    表格
+                </button>
+                <button onclick="switchFloatingView('view')">
+                    <i class="fas fa-th-large"></i>
+                    视图
+                </button>
+            </div>
+        </div>
+        
+        <div class="window-content" id="windowContent" style="display: none;">
+            <!-- 内容区域隐藏 -->
+        </div>
+        
+    </div>
+
+    <!-- 移动端遮罩 -->
+    <div id="mobileOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;" onclick="closeMobileSidebar()"></div>
+
+    <script src="common.js"></script>
+    <script>
+        // 检查登录状态
+        checkAuth();
+        
+        // 设置当前页面菜单项
+        setActiveMenuItem('page1');
+        
+        // 拖动功能
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+        
+        const floatingWindow = document.getElementById('floatingWindow');
+        const windowHeader = document.getElementById('windowHeader');
+        
+        windowHeader.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            
+            if (e.target.closest('.window-header') && !e.target.closest('button')) {
+                isDragging = true;
+                floatingWindow.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+            }
+        }
+        
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                
+                xOffset = currentX;
+                yOffset = currentY;
+                
+                floatingWindow.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            }
+        }
+        
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+        
+        // 调整窗口大小功能
+        let isResizing = false;
+        const resizeHandle = document.getElementById('resizeHandle');
+        
+        resizeHandle.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+            
+            const newWidth = e.clientX - floatingWindow.offsetLeft;
+            const newHeight = e.clientY - floatingWindow.offsetTop;
+            
+            if (newWidth > 300) {
+                floatingWindow.style.width = newWidth + 'px';
+            }
+            if (newHeight > 200) {
+                floatingWindow.style.height = newHeight + 'px';
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isResizing = false;
+        });
+        
+        // 切换浮动窗口视图
+        function switchFloatingView(view) {
+            // 更新按钮状态
+            document.querySelectorAll('.view-toggle-compact button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('button').classList.add('active');
+            
+            const contentContainer = document.getElementById('content-container');
+            
+            if (view === 'table') {
+                // 显示设备管理内容
+                loadDeviceManagementContent();
+            } else {
+                // 清空内容
+                contentContainer.innerHTML = '';
+            }
+        }
+        
+        // 加载设备管理内容
+        function loadDeviceManagementContent() {
+            const contentContainer = document.getElementById('content-container');
+            contentContainer.innerHTML = `
+                <div class="page-header">
+                    <h1 class="page-title" id="pageTitle">设备管理</h1>
+                </div>
+                
+                <div class="content-wrapper">
+                    <!-- 查询区域 -->
+                    <div class="query-section card">
+                        <div class="query-header">
+                            <button class="btn btn-success" onclick="openAddDeviceDrawer()">
+                                <i class="fas fa-plus"></i> 添加设备
+                            </button>
+                        </div>
+                        <div class="query-form">
+                            <div class="form-group">
+                                <label for="deviceId">设备ID</label>
+                                <input type="text" id="deviceId" class="form-input" placeholder="请输入设备ID">
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceName">设备名称</label>
+                                <input type="text" id="deviceName" class="form-input" placeholder="请输入设备名称">
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceType">设备类型</label>
+                                <select id="deviceType" class="form-select">
+                                    <option value="">全部</option>
+                                    <option value="cabinet">储能柜</option>
+                                    <option value="pcs">PCS</option>
+                                    <option value="bms">BMS</option>
+                                    <option value="transformer">变压器</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceStatus">状态</label>
+                                <select id="deviceStatus" class="form-select">
+                                    <option value="">全部</option>
+                                    <option value="running">运行中</option>
+                                    <option value="standby">待机</option>
+                                    <option value="fault">故障</option>
+                                    <option value="maintenance">维护中</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" onclick="queryDevices()">
+                                    <i class="fas fa-search"></i> 查询
+                                </button>
+                                <button class="btn btn-secondary" onclick="resetQuery()">
+                                    <i class="fas fa-undo"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 表格区域 -->
+                    <div id="table-container">
+                        <div class="card">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort="id" onclick="sortTable('id')">
+                                                设备ID <i class="fas fa-sort sort-icon"></i>
+                                            </th>
+                                            <th data-sort="name" onclick="sortTable('name')">
+                                                设备名称 <i class="fas fa-sort sort-icon"></i>
+                                            </th>
+                                            <th data-sort="type" onclick="sortTable('type')">
+                                                设备类型 <i class="fas fa-sort sort-icon"></i>
+                                            </th>
+                                            <th>位置</th>
+                                            <th data-sort="status" onclick="sortTable('status')">
+                                                状态 <i class="fas fa-sort sort-icon"></i>
+                                            </th>
+                                            <th>功率(kW)</th>
+                                            <th>容量(kWh)</th>
+                                            <th data-sort="lastUpdate" onclick="sortTable('lastUpdate')">
+                                                最后更新 <i class="fas fa-sort sort-icon"></i>
+                                            </th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="deviceTableBody">
+                                        <!-- 动态生成的设备数据 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- 分页 -->
+                            <div class="pagination">
+                                <button class="pagination-btn" onclick="previousPage()">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span class="pagination-info">第 <span id="currentPage">1</span> 页，共 <span id="totalPages">1</span> 页</span>
+                                <button class="pagination-btn" onclick="nextPage()">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 初始化设备表格数据
+            initializeDeviceTable();
+        }
+        
+        // 加载3D视图内容
+        function load3DViewContent() {
+            const contentContainer = document.getElementById('content-container');
+            contentContainer.innerHTML = `
+                <div class="page-header">
+                    <h1 class="page-title">3D视图</h1>
+                </div>
+                
+                <div class="content-wrapper">
+                    <!-- 3D场景容器 -->
+                    <div id="scene-container">
+                        <!-- 3D信息面板 -->
+                        <div class="info-panel-3d">
+                            <h3 style="margin: 0 0 16px 0; color: var(--text-primary);">设备状态监控</h3>
+                            <div id="device-info">
+                                <div style="margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary);">总设备数量:</span>
+                                    <span style="color: var(--text-primary); font-weight: 600;">5台</span>
+                                </div>
+                                <div style="margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary);">运行状态:</span>
+                                    <span style="color: #10b981; font-weight: 600;">正常</span>
+                                </div>
+                                <div style="margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary);">总功率:</span>
+                                    <span style="color: var(--text-primary); font-weight: 600;">630kW</span>
+                                </div>
+                                <div style="margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary);">总容量:</span>
+                                    <span style="color: var(--text-primary); font-weight: 600;">4300kWh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 初始化3D场景
+            setTimeout(() => {
+                init3DScene();
+            }, 100);
+        }
+        
+        // 初始化设备表格
+        function initializeDeviceTable() {
+            const devices = [
+                { id: 'ESS001', name: '储能柜#1', type: '储能柜', location: 'A区-1楼', status: '运行中', power: 250, capacity: 1000, lastUpdate: '2024-01-20 10:30' },
+                { id: 'ESS002', name: '储能柜#2', type: '储能柜', location: 'A区-1楼', status: '运行中', power: 230, capacity: 1000, lastUpdate: '2024-01-20 10:28' },
+                { id: 'PCS001', name: 'PCS设备#1', type: 'PCS', location: 'A区-2楼', status: '待机', power: 0, capacity: 500, lastUpdate: '2024-01-20 10:25' },
+                { id: 'BMS001', name: 'BMS系统#1', type: 'BMS', location: 'B区-1楼', status: '运行中', power: 150, capacity: 800, lastUpdate: '2024-01-20 10:32' },
+                { id: 'TRF001', name: '变压器#1', type: '变压器', location: 'C区-配电房', status: '故障', power: 0, capacity: 2000, lastUpdate: '2024-01-20 09:15' }
+            ];
+            
+            const tbody = document.getElementById('deviceTableBody');
+            tbody.innerHTML = devices.map(device => `
+                <tr>
+                    <td>${device.id}</td>
+                    <td>${device.name}</td>
+                    <td>${device.type}</td>
+                    <td>${device.location}</td>
+                    <td>
+                        <span class="status-badge status-${device.status === '运行中' ? 'running' : device.status === '待机' ? 'standby' : 'fault'}">
+                            ${device.status}
+                        </span>
+                    </td>
+                    <td>${device.power}</td>
+                    <td>${device.capacity}</td>
+                    <td>${device.lastUpdate}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" title="查看详情" onclick="viewDeviceDetail('${device.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" title="编辑" onclick="editDevice('${device.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-danger" title="删除" onclick="deleteDevice('${device.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 最小化窗口
+        function minimizeWindow() {
+            floatingWindow.style.display = 'none';
+            
+            // 创建恢复按钮
+            const restoreBtn = document.createElement('button');
+            restoreBtn.className = 'restore-btn';
+            restoreBtn.innerHTML = '<i class="fas fa-window-restore"></i>';
+            restoreBtn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                z-index: 999;
+                transition: all 0.3s;
+            `;
+            restoreBtn.onclick = function() {
+                floatingWindow.style.display = 'block';
+                restoreBtn.remove();
+            };
+            document.body.appendChild(restoreBtn);
+        }
+        
+        // 关闭窗口
+        function closeWindow() {
+            floatingWindow.style.display = 'none';
+        }
+        
+        // 设备管理相关函数
+        function queryDevices() {
+            console.log('查询设备');
+        }
+        
+        function resetQuery() {
+            document.getElementById('deviceId').value = '';
+            document.getElementById('deviceName').value = '';
+            document.getElementById('deviceType').value = '';
+            document.getElementById('deviceStatus').value = '';
+        }
+        
+        function openAddDeviceDrawer() {
+            // 创建添加设备抽屉
+            const drawer = document.createElement('div');
+            drawer.id = 'addDeviceDrawer';
+            drawer.style.cssText = `
+                position: fixed;
+                top: 0;
+                right: -400px;
+                width: 400px;
+                height: 100%;
+                background: white;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+                transition: right 0.3s ease;
+                z-index: 1001;
+            `;
+            
+            drawer.innerHTML = `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="margin: 0; color: var(--text-primary);">添加设备</h2>
+                        <button onclick="closeAddDeviceDrawer()" style="width: 32px; height: 32px; border: none; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form onsubmit="handleAddDevice(event)">
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备ID</label>
+                            <input type="text" name="deviceId" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备名称</label>
+                            <input type="text" name="deviceName" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备类型</label>
+                            <select name="deviceType" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                                <option value="">请选择</option>
+                                <option value="储能柜">储能柜</option>
+                                <option value="PCS">PCS</option>
+                                <option value="BMS">BMS</option>
+                                <option value="变压器">变压器</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">位置</label>
+                            <input type="text" name="location" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">功率(kW)</label>
+                            <input type="number" name="power" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">容量(kWh)</label>
+                            <input type="number" name="capacity" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                                <i class="fas fa-save"></i> 保存
+                            </button>
+                            <button type="button" onclick="closeAddDeviceDrawer()" class="btn btn-secondary" style="flex: 1;">
+                                <i class="fas fa-times"></i> 取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(drawer);
+            
+            // 添加遮罩
+            const overlay = document.createElement('div');
+            overlay.id = 'drawerOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            overlay.onclick = closeAddDeviceDrawer;
+            document.body.appendChild(overlay);
+            
+            // 显示抽屉
+            setTimeout(() => {
+                drawer.style.right = '0';
+                overlay.style.opacity = '1';
+            }, 10);
+        }
+        
+        function closeAddDeviceDrawer() {
+            const drawer = document.getElementById('addDeviceDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            
+            if (drawer) {
+                drawer.style.right = '-400px';
+                overlay.style.opacity = '0';
+                
+                setTimeout(() => {
+                    drawer.remove();
+                    overlay.remove();
+                }, 300);
+            }
+        }
+        
+        function handleAddDevice(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const deviceData = Object.fromEntries(formData);
+            
+            // 模拟添加设备
+            alert('设备添加成功！');
+            closeAddDeviceDrawer();
+            
+            // 刷新表格
+            initializeDeviceTable();
+        }
+        
+        function viewDeviceDetail(deviceId) {
+            window.location.href = `cabinet-detail.html?id=${deviceId}`;
+        }
+        
+        function editDevice(deviceId) {
+            // 创建编辑设备抽屉
+            const drawer = document.createElement('div');
+            drawer.id = 'editDeviceDrawer';
+            drawer.style.cssText = `
+                position: fixed;
+                top: 0;
+                right: -400px;
+                width: 400px;
+                height: 100%;
+                background: white;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+                transition: right 0.3s ease;
+                z-index: 1001;
+            `;
+            
+            // 模拟获取设备数据
+            const deviceData = {
+                ESS001: { id: 'ESS001', name: '储能柜#1', type: '储能柜', location: 'A区-1楼', power: 250, capacity: 1000 },
+                ESS002: { id: 'ESS002', name: '储能柜#2', type: '储能柜', location: 'A区-1楼', power: 230, capacity: 1000 },
+                PCS001: { id: 'PCS001', name: 'PCS设备#1', type: 'PCS', location: 'A区-2楼', power: 0, capacity: 500 },
+                BMS001: { id: 'BMS001', name: 'BMS系统#1', type: 'BMS', location: 'B区-1楼', power: 150, capacity: 800 },
+                TRF001: { id: 'TRF001', name: '变压器#1', type: '变压器', location: 'C区-配电房', power: 0, capacity: 2000 }
+            };
+            
+            const device = deviceData[deviceId] || {};
+            
+            drawer.innerHTML = `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="margin: 0; color: var(--text-primary);">编辑设备</h2>
+                        <button onclick="closeEditDeviceDrawer()" style="width: 32px; height: 32px; border: none; background: #f3f4f6; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form onsubmit="handleEditDevice(event, '${deviceId}')">
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备ID</label>
+                            <input type="text" name="deviceId" value="${device.id}" readonly style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备名称</label>
+                            <input type="text" name="deviceName" value="${device.name}" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">设备类型</label>
+                            <select name="deviceType" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                                <option value="储能柜" ${device.type === '储能柜' ? 'selected' : ''}>储能柜</option>
+                                <option value="PCS" ${device.type === 'PCS' ? 'selected' : ''}>PCS</option>
+                                <option value="BMS" ${device.type === 'BMS' ? 'selected' : ''}>BMS</option>
+                                <option value="变压器" ${device.type === '变压器' ? 'selected' : ''}>变压器</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">位置</label>
+                            <input type="text" name="location" value="${device.location}" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">功率(kW)</label>
+                            <input type="number" name="power" value="${device.power}" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">容量(kWh)</label>
+                            <input type="number" name="capacity" value="${device.capacity}" required style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                                <i class="fas fa-save"></i> 保存
+                            </button>
+                            <button type="button" onclick="closeEditDeviceDrawer()" class="btn btn-secondary" style="flex: 1;">
+                                <i class="fas fa-times"></i> 取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(drawer);
+            
+            // 添加遮罩
+            const overlay = document.createElement('div');
+            overlay.id = 'editDrawerOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            overlay.onclick = closeEditDeviceDrawer;
+            document.body.appendChild(overlay);
+            
+            // 显示抽屉
+            setTimeout(() => {
+                drawer.style.right = '0';
+                overlay.style.opacity = '1';
+            }, 10);
+        }
+        
+        function closeEditDeviceDrawer() {
+            const drawer = document.getElementById('editDeviceDrawer');
+            const overlay = document.getElementById('editDrawerOverlay');
+            
+            if (drawer) {
+                drawer.style.right = '-400px';
+                overlay.style.opacity = '0';
+                
+                setTimeout(() => {
+                    drawer.remove();
+                    overlay.remove();
+                }, 300);
+            }
+        }
+        
+        function handleEditDevice(event, deviceId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const deviceData = Object.fromEntries(formData);
+            
+            // 模拟更新设备
+            alert('设备更新成功！');
+            closeEditDeviceDrawer();
+            
+            // 刷新表格
+            initializeDeviceTable();
+        }
+        
+        function deleteDevice(deviceId) {
+            // 创建自定义确认对话框
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1002;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 12px; padding: 24px; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                    <h3 style="margin: 0 0 16px 0; color: var(--text-primary);">确认删除</h3>
+                    <p style="margin: 0 0 24px 0; color: var(--text-secondary);">
+                        确定要删除设备 <strong>${deviceId}</strong> 吗？此操作不可恢复。
+                    </p>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="confirmDelete('${deviceId}')" class="btn btn-danger" style="flex: 1;">
+                            <i class="fas fa-trash"></i> 确认删除
+                        </button>
+                        <button onclick="this.closest('div[style*=fixed]').remove()" class="btn btn-secondary" style="flex: 1;">
+                            <i class="fas fa-times"></i> 取消
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function confirmDelete(deviceId) {
+            // 模拟删除设备
+            alert(`设备 ${deviceId} 已删除！`);
+            document.querySelector('div[style*="z-index: 1002"]').remove();
+            
+            // 刷新表格
+            initializeDeviceTable();
+        }
+        
+        function sortTable(column) {
+            console.log('排序列:', column);
+        }
+        
+        function previousPage() {
+            console.log('上一页');
+        }
+        
+        function nextPage() {
+            console.log('下一页');
+        }
+        
+        // 3D场景相关变量
+        let scene, camera, renderer, controls;
+        let animationId;
+        
+        // 初始化3D场景
+        function init3DScene() {
+            const container = document.getElementById('scene-container');
+            if (!container) return;
+            
+            // 显示容器
+            container.style.display = 'block';
+            
+            // 清理之前的场景
+            if (renderer) {
+                container.removeChild(renderer.domElement);
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+            
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 10, 10);
+            
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // 创建控制器
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // 添加灯光
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // 创建地面
+            const groundGeometry = new THREE.PlaneGeometry(20, 20);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // 创建储能柜
+            createEnergyStorageCabinets();
+            
+            // 添加网格
+            const gridHelper = new THREE.GridHelper(20, 20, 0x555555, 0x555555);
+            scene.add(gridHelper);
+            
+            // 开始动画循环
+            animate();
+            
+            // 处理窗口大小变化
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        // 创建储能柜
+        function createEnergyStorageCabinets() {
+            const cabinetPositions = [
+                { x: -6, z: -3, status: 'running' },
+                { x: -3, z: -3, status: 'running' },
+                { x: 0, z: -3, status: 'standby' },
+                { x: 3, z: -3, status: 'running' },
+                { x: 6, z: -3, status: 'fault' }
+            ];
+            
+            cabinetPositions.forEach((pos, index) => {
+                const cabinet = createCabinet(pos.status);
+                cabinet.position.set(pos.x, 1, pos.z);
+                cabinet.userData = { id: `ESS00${index + 1}`, status: pos.status };
+                scene.add(cabinet);
+            });
+        }
+        
+        // 创建单个储能柜
+        function createCabinet(status) {
+            const group = new THREE.Group();
+            
+            // 主体
+            const bodyGeometry = new THREE.BoxGeometry(2, 2, 1);
+            let bodyColor;
+            switch (status) {
+                case 'running': bodyColor = 0x10b981; break;
+                case 'standby': bodyColor = 0xf59e0b; break;
+                case 'fault': bodyColor = 0xef4444; break;
+                default: bodyColor = 0x6b7280;
+            }
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: bodyColor });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.castShadow = true;
+            group.add(body);
+            
+            // 顶部指示灯
+            const lightGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.05);
+            const lightMaterial = new THREE.MeshBasicMaterial({ 
+                color: status === 'running' ? 0x00ff00 : status === 'fault' ? 0xff0000 : 0xffff00,
+                emissive: status === 'running' ? 0x003300 : status === 'fault' ? 0x330000 : 0x333300
+            });
+            const light = new THREE.Mesh(lightGeometry, lightMaterial);
+            light.position.y = 1.05;
+            group.add(light);
+            
+            return group;
+        }
+        
+        // 动画循环
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // 处理窗口大小变化
+        function onWindowResize() {
+            const container = document.getElementById('scene-container');
+            if (!container || !camera || !renderer) return;
+            
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+    </script>
+</body>
+</html>
