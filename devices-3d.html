@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/renderers/CSS3DRenderer.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 视图切换按钮样式 */
+        .view-toggle {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 4px;
+            gap: 4px;
+        }
+        
+        .view-toggle button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .view-toggle button:hover {
+            color: var(--text-primary);
+        }
+        
+        .view-toggle button.active {
+            background: var(--bg-primary);
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* 3D场景容器 */
+        #scene-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 160px);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        /* 表格视图容器 */
+        #table-container {
+            display: block;
+        }
+        
+        /* 排序和抽屉样式 */
+        th[data-sort]:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+            color: var(--primary-color);
+        }
+        
+        .sort-icon {
+            transition: all 0.2s ease;
+        }
+        
+        /* 深色主题下的抽屉样式 */
+        [data-theme="dark"] #addDeviceDrawer > div:last-child {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] #addDeviceDrawer input {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+        
+        [data-theme="dark"] #addDeviceDrawer .btn {
+            background: #334155;
+            border-color: #475569;
+        }
+        
+        [data-theme="dark"] #addDeviceDrawer .btn:hover {
+            background: #475569;
+        }
+        
+        /* 深色主题下的删除确认弹窗 */
+        [data-theme="dark"] #deleteConfirmModal > div {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] #deleteConfirmModal h3,
+        [data-theme="dark"] #deleteConfirmModal p {
+            color: #e2e8f0;
+        }
+        
+        /* 3D视图中的信息面板 */
+        .info-panel-3d {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        [data-theme="dark"] .info-panel-3d {
+            background: rgba(30, 41, 59, 0.95);
+        }
+        
+        /* 3D场景中的储能柜标签 */
+        .cabinet-label {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cabinet-label:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: scale(1.1);
+        }
+        
+        /* 3D场景中的电池样式 */
+        .battery-icon-3d {
+            width: 60px;
+            height: 30px;
+            border: 2px solid #334155;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        .battery-icon-3d::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 12px;
+            background: #334155;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .battery-level-3d {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <!-- 视图切换按钮 -->
+            <div class="view-toggle">
+                <button class="active" onclick="switchView('table')">
+                    <i class="fas fa-table"></i>
+                    表格视图
+                </button>
+                <button onclick="switchView('3d')">
+                    <i class="fas fa-cube"></i>
+                    3D视图
+                </button>
+            </div>
+            
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div class="notification-badge">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </div>
+            <div class="user-menu" onclick="logout()">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item" data-menu="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span id="menuDashboard">仪表盘</span>
+            </a>
+            <a href="devices-3d.html" class="menu-item active" data-menu="devices">
+                <i class="fas fa-database"></i>
+                <span id="menuDevices">设备管理</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cogs"></i>
+                <span id="menuControl">设备控制</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="menuAlarms">告警管理</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span id="menuReports">报告中心</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span id="menuSystem">系统管理</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content" id="mainContent">
+        <!-- 表格视图 -->
+        <div id="table-container">
+            <!-- 查询区域 -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; flex: 1;">
+                        <div class="input-wrapper">
+                            <i class="fas fa-search input-icon"></i>
+                            <input type="text" id="searchInput" class="form-input" placeholder="搜索设备..." style="width: 250px; height: 40px; padding-left: 40px;">
+                        </div>
+                        <select id="statusFilter" class="form-input" style="width: 120px; height: 40px; padding-left: 12px;">
+                            <option value="">全部状态</option>
+                            <option value="online">在线</option>
+                            <option value="offline">离线</option>
+                            <option value="fault">故障</option>
+                        </select>
+                        <select id="modeFilter" class="form-input" style="width: 150px; height: 40px; padding-left: 12px;">
+                            <option value="">全部模式</option>
+                            <option value="manual-charge">手动充电</option>
+                            <option value="manual-discharge">手动放电</option>
+                            <option value="standby">待机中</option>
+                            <option value="auto-charge">自动充电</option>
+                            <option value="auto-discharge">自动放电</option>
+                            <option value="waiting">等待执行</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn" onclick="searchDevices()" style="height: 40px; padding: 0 16px;">
+                            <i class="fas fa-search"></i> 查询
+                        </button>
+                        <button class="btn" onclick="resetSearch()" style="height: 40px; padding: 0 16px;">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 设备表格 -->
+            <div class="card">
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="showAddDeviceModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
+                        <i class="fas fa-plus"></i>
+                        添加设备
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table id="deviceTable" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary);">设备编码</th>
+                                <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary);">名称</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary); cursor: pointer;" onclick="sortTable('soc')" data-sort="soc">
+                                    SOC <i class="fas fa-sort sort-icon" style="font-size: 12px; margin-left: 4px;"></i>
+                                </th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary); cursor: pointer;" onclick="sortTable('soh')" data-sort="soh">
+                                    SOH <i class="fas fa-sort sort-icon" style="font-size: 12px; margin-left: 4px;"></i>
+                                </th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary); cursor: pointer;" onclick="sortTable('power')" data-sort="power">
+                                    功率 <i class="fas fa-sort sort-icon" style="font-size: 12px; margin-left: 4px;"></i>
+                                </th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary);">状态</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary);">模式</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary);">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody">
+                            <!-- 设备数据将通过JavaScript动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 分页 -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 0 12px;">
+                    <div style="color: var(--text-secondary); font-size: 14px;">
+                        共 <span id="totalCount">0</span> 条记录
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" onclick="previousPage()" style="padding: 6px 12px;">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span style="padding: 6px 12px; color: var(--text-secondary);">
+                            第 <span id="currentPage">1</span> / <span id="totalPages">1</span> 页
+                        </span>
+                        <button class="btn" onclick="nextPage()" style="padding: 6px 12px;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D视图 -->
+        <div id="scene-container">
+            <div id="threejs-container" style="width: 100%; height: 100%;"></div>
+            
+            <!-- 右侧信息面板 -->
+            <div class="info-panel-3d">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color);">
+                    <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 3px; height: 16px; background: #3b82f6; border-radius: 2px;"></span>
+                        储能柜实时监控
+                    </h4>
+                    <button onclick="toggleInfoPanel()" style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary);">
+                        <i id="infoPanelToggleIcon" class="fas fa-chevron-up" style="font-size: 14px;"></i>
+                    </button>
+                </div>
+                
+                <div id="infoPanelContent" style="padding: 15px; max-height: calc(100vh - 200px); overflow-y: auto;">
+                    <!-- 状态概览 -->
+                    <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">总体状态</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                            <span style="font-size: 15px; font-weight: 600; color: var(--text-primary);">运行正常</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 设备统计 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 12px; color: var(--text-secondary);">在线设备</div>
+                            <div style="font-size: 20px; font-weight: 600; color: #10b981; margin-top: 4px;">6</div>
+                        </div>
+                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
+                            <div style="font-size: 12px; color: var(--text-secondary);">离线设备</div>
+                            <div style="font-size: 20px; font-weight: 600; color: #6b7280; margin-top: 4px;">1</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 选中设备信息 -->
+                    <div id="selectedDeviceInfo" style="display: none;">
+                        <h5 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">设备详情</h5>
+                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
+                            <div id="deviceDetails">
+                                <!-- 动态填充设备信息 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 移动端遮罩 -->
+    <div id="mobileOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;" onclick="closeMobileSidebar()"></div>
+
+    <!-- 添加/编辑设备抽屉 -->
+    <div id="addDeviceDrawer" style="display: none;">
+        <!-- 遮罩层 -->
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999;" onclick="closeAddDeviceDrawer()"></div>
+        <!-- 抽屉内容 -->
+        <div style="position: fixed; top: 0; right: -400px; bottom: 0; width: 400px; background: white; box-shadow: -2px 0 8px rgba(0,0,0,0.1); z-index: 1000; transition: right 0.3s ease;">
+            <div style="padding: 24px; height: 100%; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 id="drawerTitle" style="margin: 0; font-size: 18px;">添加设备</h3>
+                    <button onclick="closeAddDeviceDrawer()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+                </div>
+                <form id="addDeviceForm" style="flex: 1;">
+                    <input type="hidden" name="deviceId" id="deviceId">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">设备编码 <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="code" class="form-input" required style="width: 100%; height: 40px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">设备名称 <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="name" class="form-input" required style="width: 100%; height: 40px;">
+                    </div>
+                    <div style="position: absolute; bottom: 24px; left: 24px; right: 24px; display: flex; gap: 12px;">
+                        <button type="button" class="btn" onclick="closeAddDeviceDrawer()" style="flex: 1; height: 40px;">取消</button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1; height: 40px;">确定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div id="deleteConfirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: #ef4444;"></i>
+                </div>
+                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--text-primary);">确认删除</h3>
+                <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">您确定要删除设备 <span id="deleteDeviceName" style="font-weight: 600;"></span> 吗？此操作无法撤销。</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn" onclick="closeDeleteConfirm()" style="flex: 1; height: 40px;">取消</button>
+                <button class="btn" onclick="confirmDelete()" style="flex: 1; height: 40px; background: #ef4444; color: white;">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // 检查登录状态
+        checkAuth();
+        
+        // 设置当前页面菜单项
+        setActiveMenuItem('devices');
+
+        // 当前视图模式
+        let currentView = 'table';
+        
+        // 3D场景相关变量
+        let scene, camera, renderer, controls;
+        let cabinets = [];
+        let raycaster, mouse;
+        let selectedCabinet = null;
+
+        // 模拟设备数据
+        let devices = [
+            { id: 1, code: 'ESS001', name: '储能柜-A区-01', soc: 85, soh: 98, power: 125.5, status: 'online', mode: 'auto-charge' },
+            { id: 2, code: 'ESS002', name: '储能柜-A区-02', soc: 92, soh: 97, power: -89.3, status: 'online', mode: 'auto-discharge' },
+            { id: 3, code: 'ESS003', name: '储能柜-B区-01', soc: 45, soh: 95, power: 0, status: 'online', mode: 'standby' },
+            { id: 4, code: 'ESS004', name: '储能柜-B区-02', soc: 78, soh: 96, power: 156.8, status: 'offline', mode: 'standby' },
+            { id: 5, code: 'ESS005', name: '储能柜-C区-01', soc: 25, soh: 94, power: 0, status: 'fault', mode: 'standby' },
+            { id: 6, code: 'ESS006', name: '储能柜-C区-02', soc: 67, soh: 99, power: 98.7, status: 'online', mode: 'manual-charge' },
+            { id: 7, code: 'ESS007', name: '储能柜-D区-01', soc: 88, soh: 93, power: -112.4, status: 'online', mode: 'manual-discharge' },
+            { id: 8, code: 'ESS008', name: '储能柜-D区-02', soc: 55, soh: 92, power: 0, status: 'online', mode: 'waiting' }
+        ];
+
+        let currentPage = 1;
+        let pageSize = 10;
+        let sortField = '';
+        let sortOrder = 'asc';
+        let filteredDevices = [...devices];
+
+        // 切换视图
+        function switchView(view) {
+            currentView = view;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('button').classList.add('active');
+            
+            if (view === 'table') {
+                document.getElementById('table-container').style.display = 'block';
+                document.getElementById('scene-container').style.display = 'none';
+            } else {
+                document.getElementById('table-container').style.display = 'none';
+                document.getElementById('scene-container').style.display = 'block';
+                
+                // 初始化3D场景（如果还没有初始化）
+                if (!scene) {
+                    init3DScene();
+                }
+            }
+        }
+
+        // 初始化3D场景
+        function init3DScene() {
+            const container = document.getElementById('threejs-container');
+            
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            scene.fog = new THREE.Fog(0x0a0a0a, 10, 100);
+            
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(15, 10, 15);
+            
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // 创建控制器
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 5;
+            controls.maxDistance = 50;
+            
+            // 添加灯光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -20;
+            directionalLight.shadow.camera.right = 20;
+            directionalLight.shadow.camera.top = 20;
+            directionalLight.shadow.camera.bottom = -20;
+            scene.add(directionalLight);
+            
+            // 创建地面
+            const groundGeometry = new THREE.PlaneGeometry(40, 40);
+            const groundMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1a1a1a,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // 添加网格
+            const gridHelper = new THREE.GridHelper(40, 20, 0x333333, 0x222222);
+            scene.add(gridHelper);
+            
+            // 创建储能柜
+            createCabinets();
+            
+            // 初始化射线检测
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+            
+            // 添加鼠标事件
+            renderer.domElement.addEventListener('click', onMouseClick);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            
+            // 窗口调整
+            window.addEventListener('resize', onWindowResize);
+            
+            // 开始动画循环
+            animate();
+        }
+
+        // 创建储能柜
+        function createCabinets() {
+            const positions = [
+                { x: -9, z: -9 }, { x: -3, z: -9 }, { x: 3, z: -9 }, { x: 9, z: -9 },
+                { x: -9, z: -3 }, { x: -3, z: -3 }, { x: 3, z: -3 }, { x: 9, z: -3 }
+            ];
+            
+            devices.forEach((device, index) => {
+                if (index < positions.length) {
+                    const cabinet = createCabinet(device, positions[index]);
+                    cabinets.push(cabinet);
+                    scene.add(cabinet.group);
+                }
+            });
+        }
+
+        // 创建单个储能柜
+        function createCabinet(device, position) {
+            const group = new THREE.Group();
+            
+            // 储能柜主体
+            const geometry = new THREE.BoxGeometry(2, 3, 1.5);
+            const material = new THREE.MeshStandardMaterial({
+                color: device.status === 'online' ? 0x2563eb : 
+                       device.status === 'offline' ? 0x6b7280 : 0xef4444,
+                roughness: 0.5,
+                metalness: 0.8
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.position.y = 1.5;
+            group.add(mesh);
+            
+            // 状态指示灯
+            const lightGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+            const lightMaterial = new THREE.MeshBasicMaterial({
+                color: device.status === 'online' ? 0x10b981 : 
+                       device.status === 'offline' ? 0x6b7280 : 0xef4444,
+                emissive: device.status === 'online' ? 0x10b981 : 0x000000,
+                emissiveIntensity: 0.5
+            });
+            const light = new THREE.Mesh(lightGeometry, lightMaterial);
+            light.position.set(0, 2.8, 0.76);
+            group.add(light);
+            
+            // 设置位置
+            group.position.set(position.x, 0, position.z);
+            
+            return {
+                group: group,
+                mesh: mesh,
+                light: light,
+                device: device,
+                material: material
+            };
+        }
+
+        // 鼠标点击事件
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(scene.children, true);
+            
+            if (intersects.length > 0) {
+                const clickedObject = intersects[0].object;
+                
+                // 查找点击的储能柜
+                const cabinet = cabinets.find(c => c.mesh === clickedObject || c.group === clickedObject.parent);
+                
+                if (cabinet) {
+                    selectCabinet(cabinet);
+                }
+            }
+        }
+
+        // 鼠标移动事件
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        // 选择储能柜
+        function selectCabinet(cabinet) {
+            // 重置之前选中的储能柜
+            if (selectedCabinet) {
+                selectedCabinet.material.emissive = new THREE.Color(0x000000);
+            }
+            
+            selectedCabinet = cabinet;
+            cabinet.material.emissive = new THREE.Color(0x3b82f6);
+            cabinet.material.emissiveIntensity = 0.3;
+            
+            // 更新右侧信息面板
+            updateDeviceInfo(cabinet.device);
+        }
+
+        // 更新设备信息面板
+        function updateDeviceInfo(device) {
+            const infoDiv = document.getElementById('selectedDeviceInfo');
+            const detailsDiv = document.getElementById('deviceDetails');
+            
+            infoDiv.style.display = 'block';
+            
+            detailsDiv.innerHTML = `
+                <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">设备编码</span>
+                        <span style="font-size: 13px; font-weight: 600;">${device.code}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">设备名称</span>
+                        <span style="font-size: 13px; font-weight: 600;">${device.name}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">SOC</span>
+                        <span style="font-size: 13px; font-weight: 600;">${device.soc}%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">SOH</span>
+                        <span style="font-size: 13px; font-weight: 600;">${device.soh}%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">功率</span>
+                        <span style="font-size: 13px; font-weight: 600;">${device.power > 0 ? '+' : ''}${device.power} kW</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">状态</span>
+                        ${getStatusBadge(device.status)}
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">模式</span>
+                        <span style="font-size: 13px;">${getModeBadge(device.mode)}</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="viewDetails(${device.id})" style="width: 100%; margin-top: 12px; height: 36px; font-size: 13px;">
+                    <i class="fas fa-eye"></i> 查看详情
+                </button>
+            `;
+        }
+
+        // 窗口调整
+        function onWindowResize() {
+            if (camera && renderer) {
+                const container = document.getElementById('threejs-container');
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (controls) {
+                controls.update();
+            }
+            
+            // 旋转状态指示灯
+            cabinets.forEach(cabinet => {
+                if (cabinet.device.status === 'online') {
+                    cabinet.light.material.emissiveIntensity = 0.5 + Math.sin(Date.now() * 0.003) * 0.3;
+                }
+            });
+            
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // 切换信息面板
+        function toggleInfoPanel() {
+            const content = document.getElementById('infoPanelContent');
+            const icon = document.getElementById('infoPanelToggleIcon');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.className = 'fas fa-chevron-up';
+            } else {
+                content.style.display = 'none';
+                icon.className = 'fas fa-chevron-down';
+            }
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('deviceTableBody');
+            tbody.innerHTML = '';
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageDevices = filteredDevices.slice(start, end);
+
+            pageDevices.forEach(device => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-color)';
+                
+                tr.innerHTML = `
+                    <td style="padding: 12px;">${device.code}</td>
+                    <td style="padding: 12px;">${device.name}</td>
+                    <td style="padding: 12px; text-align: center;">${device.soc}%</td>
+                    <td style="padding: 12px; text-align: center;">${device.soh}%</td>
+                    <td style="padding: 12px; text-align: center;">${device.power > 0 ? '+' : ''}${device.power} kW</td>
+                    <td style="padding: 12px; text-align: center;">
+                        ${getStatusBadge(device.status)}
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        ${getModeBadge(device.mode)}
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        <button class="btn" onclick="viewDetails(${device.id})" style="padding: 4px 8px; font-size: 12px; margin-right: 4px;">
+                            <i class="fas fa-eye"></i> 查看详情
+                        </button>
+                        <button class="btn" onclick="editDevice(${device.id})" style="padding: 4px 8px; font-size: 12px; margin-right: 4px;">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn" onclick="deleteDevice(${device.id})" style="padding: 4px 8px; font-size: 12px; background: #ef4444; color: white;">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 更新分页信息
+            document.getElementById('totalCount').textContent = filteredDevices.length;
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = Math.ceil(filteredDevices.length / pageSize);
+        }
+
+        // 获取状态徽章
+        function getStatusBadge(status) {
+            const statusMap = {
+                'online': { text: '在线', color: '#10b981' },
+                'offline': { text: '离线', color: '#6b7280' },
+                'fault': { text: '故障', color: '#ef4444' }
+            };
+            const statusInfo = statusMap[status];
+            return `
+                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${statusInfo.color};"></span>
+                    <span style="color: var(--text-secondary);">${statusInfo.text}</span>
+                </span>
+            `;
+        }
+
+        // 获取模式徽章
+        function getModeBadge(mode) {
+            const modeMap = {
+                'manual-charge': { text: '手动充电', color: '#3b82f6' },
+                'manual-discharge': { text: '手动放电', color: '#f59e0b' },
+                'standby': { text: '待机中', color: '#6b7280' },
+                'auto-charge': { text: '自动充电', color: '#10b981' },
+                'auto-discharge': { text: '自动放电', color: '#8b5cf6' },
+                'waiting': { text: '等待执行', color: '#ec4899' }
+            };
+            const modeInfo = modeMap[mode];
+            return `<span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; background: ${modeInfo.color}20; color: ${modeInfo.color};">${modeInfo.text}</span>`;
+        }
+
+        // 排序表格
+        function sortTable(field) {
+            if (sortField === field) {
+                // 同一列点击，循环切换：升序 -> 降序 -> 无排序
+                if (sortOrder === 'asc') {
+                    sortOrder = 'desc';
+                } else if (sortOrder === 'desc') {
+                    sortOrder = '';
+                    sortField = '';
+                } else {
+                    sortOrder = 'asc';
+                }
+            } else {
+                // 不同列点击，重置为升序
+                sortField = field;
+                sortOrder = 'asc';
+            }
+
+            // 更新排序图标
+            updateSortIcons();
+
+            // 重新应用搜索条件
+            searchDevices();
+        }
+
+        // 更新排序图标
+        function updateSortIcons() {
+            // 重置所有排序图标
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.className = 'fas fa-sort sort-icon';
+                icon.style.color = '';
+            });
+
+            // 更新当前排序列的图标
+            if (sortField) {
+                const th = document.querySelector(`[data-sort="${sortField}"]`);
+                if (th) {
+                    const icon = th.querySelector('.sort-icon');
+                    if (icon) {
+                        if (sortOrder === 'asc') {
+                            icon.className = 'fas fa-sort-up sort-icon';
+                            icon.style.color = '#3b82f6';
+                        } else {
+                            icon.className = 'fas fa-sort-down sort-icon';
+                            icon.style.color = '#3b82f6';
+                        }
+                    }
+                }
+            }
+        }
+
+        // 搜索设备
+        function searchDevices() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const modeFilter = document.getElementById('modeFilter').value;
+
+            filteredDevices = devices.filter(device => {
+                const matchSearch = !searchText || 
+                    device.code.toLowerCase().includes(searchText) || 
+                    device.name.toLowerCase().includes(searchText);
+                const matchStatus = !statusFilter || device.status === statusFilter;
+                const matchMode = !modeFilter || device.mode === modeFilter;
+                
+                return matchSearch && matchStatus && matchMode;
+            });
+
+            // 应用排序
+            if (sortField && sortOrder) {
+                filteredDevices.sort((a, b) => {
+                    let aVal = a[sortField];
+                    let bVal = b[sortField];
+                    
+                    if (sortOrder === 'asc') {
+                        return aVal > bVal ? 1 : -1;
+                    } else {
+                        return aVal < bVal ? 1 : -1;
+                    }
+                });
+            }
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('modeFilter').value = '';
+            filteredDevices = [...devices];
+            currentPage = 1;
+            renderTable();
+        }
+
+        // 分页功能
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredDevices.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // 查看详情
+        function viewDetails(id) {
+            // 跳转到储能柜详情页面
+            window.location.href = `cabinet-detail.html?cabinetId=${id}`;
+        }
+
+        // 编辑设备
+        function editDevice(id) {
+            const device = devices.find(d => d.id === id);
+            if (device) {
+                // 设置为编辑模式
+                document.getElementById('drawerTitle').textContent = '编辑设备';
+                document.getElementById('deviceId').value = id;
+                document.querySelector('input[name="code"]').value = device.code;
+                document.querySelector('input[name="name"]').value = device.name;
+                
+                // 显示抽屉
+                const drawer = document.getElementById('addDeviceDrawer');
+                const drawerContent = drawer.querySelector('div:last-child');
+                drawer.style.display = 'block';
+                setTimeout(() => {
+                    drawerContent.style.right = '0';
+                }, 10);
+            }
+        }
+
+        // 删除设备
+        let deleteDeviceId = null;
+        function deleteDevice(id) {
+            const device = devices.find(d => d.id === id);
+            if (device) {
+                deleteDeviceId = id;
+                document.getElementById('deleteDeviceName').textContent = device.name;
+                document.getElementById('deleteConfirmModal').style.display = 'flex';
+            }
+        }
+
+        // 确认删除
+        function confirmDelete() {
+            if (deleteDeviceId) {
+                devices = devices.filter(d => d.id !== deleteDeviceId);
+                searchDevices();
+                closeDeleteConfirm();
+                
+                // 显示成功提示
+                showToast('设备删除成功！', '#ef4444');
+            }
+        }
+
+        // 关闭删除确认
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+            deleteDeviceId = null;
+        }
+
+        // 显示添加设备抽屉
+        function showAddDeviceModal() {
+            // 设置为添加模式
+            document.getElementById('drawerTitle').textContent = '添加设备';
+            document.getElementById('deviceId').value = '';
+            document.getElementById('addDeviceForm').reset();
+            
+            const drawer = document.getElementById('addDeviceDrawer');
+            const drawerContent = drawer.querySelector('div:last-child');
+            drawer.style.display = 'block';
+            // 触发重排以确保动画生效
+            setTimeout(() => {
+                drawerContent.style.right = '0';
+            }, 10);
+        }
+
+        // 关闭添加设备抽屉
+        function closeAddDeviceDrawer() {
+            const drawer = document.getElementById('addDeviceDrawer');
+            const drawerContent = drawer.querySelector('div:last-child');
+            drawerContent.style.right = '-400px';
+            setTimeout(() => {
+                drawer.style.display = 'none';
+                document.getElementById('addDeviceForm').reset();
+            }, 300);
+        }
+
+        // 处理添加/编辑设备表单提交
+        document.getElementById('addDeviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const deviceId = formData.get('deviceId');
+            const code = formData.get('code');
+            const name = formData.get('name');
+            
+            if (deviceId) {
+                // 编辑模式
+                const device = devices.find(d => d.id === parseInt(deviceId));
+                if (device) {
+                    device.code = code;
+                    device.name = name;
+                }
+                searchDevices();
+                closeAddDeviceDrawer();
+                
+                // 显示成功提示
+                showToast('设备编辑成功！', '#10b981');
+            } else {
+                // 添加模式
+                const newDevice = {
+                    id: devices.length + 1,
+                    code: code,
+                    name: name,
+                    soc: Math.floor(Math.random() * 50 + 50), // 随机生成50-100之间的值
+                    soh: Math.floor(Math.random() * 10 + 90), // 随机生成90-100之间的值
+                    power: 0, // 默认功率为0
+                    status: 'online',
+                    mode: 'standby'
+                };
+                
+                devices.push(newDevice);
+                searchDevices();
+                closeAddDeviceDrawer();
+                
+                // 显示成功提示
+                showToast('设备添加成功！', '#10b981');
+            }
+        });
+
+        // 显示提示消息
+        function showToast(message, color = '#10b981') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${color}; color: white; padding: 12px 24px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2000;`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 初始化
+        renderTable();
+    </script>
+</body>
+</html>
