@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 能量流图卡片样式 */
+        .energy-flow-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        #energy-settings-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #energy-settings-btn:hover {
+            background: #f5f5f5;
+        }
+
+        #energy-settings-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 16px;
+            min-width: 200px;
+            z-index: 1000;
+        }
+
+        /* 能量潮流图样式 */
+        .energy-metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+            align-items: stretch;
+            height: 600px;
+        }
+
+        .energy-flow-diagram-new {
+            position: relative;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* 右侧统计数据容器 */
+        .energy-stats-new {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        /* 能量统计区块样式 */
+        .energy-section-new {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        
+        .energy-section-new:first-child {
+            height: 389px;
+        }
+        
+        .energy-section-new:last-child {
+            height: 195px;
+        }
+
+        .energy-section-new h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .energy-metrics-new {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .energy-metric-row-new {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .energy-metric-label-new {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .energy-metric-value-new {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .energy-metric-value-new.revenue {
+            color: #10b981;
+        }
+
+
+        /* 组件样式 */
+        .flow-component {
+            position: absolute;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .flow-component img {
+            width: 96px;
+            height: 96px;
+            object-fit: contain;
+        }
+
+        .component-label {
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: #3562E3;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* 组件位置 */
+        .flow-component.pv {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .flow-component.pv img {
+            margin-right: -30px;
+            margin-left: -20px;
+        }
+
+        .flow-component.load {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .flow-component.load img {
+            margin-right: -30px;
+            margin-left: -20px;
+            margin-top: -10px;
+        }
+
+        .flow-component.storage {
+            bottom: -10px;
+            left: calc(15% - 80px);
+        }
+
+        .flow-component.grid {
+            bottom: 40px;
+            right: calc(15% - 90px);
+        }
+
+        /* 电池电量指示器 */
+        .battery-indicator {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .battery-icon {
+            width: 60px;
+            height: 30px;
+            border: 2px solid #334155;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 12px;
+            background: #334155;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .battery-level {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #10b981;
+            transition: width 0.5s ease, background 0.5s ease;
+        }
+
+        .battery-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* 能量流动线 */
+        .energy-flow-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* 深色主题样式 */
+        [data-theme="dark"] .energy-flow-card {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .energy-flow-diagram-new {
+            background: #0f172a;
+        }
+
+        [data-theme="dark"] .energy-section-new {
+            background: #0f172a;
+        }
+
+        [data-theme="dark"] #energy-settings-btn {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] #energy-settings-btn:hover {
+            background: #475569;
+        }
+
+        [data-theme="dark"] #energy-settings-panel {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .battery-icon {
+            border-color: #64748b;
+        }
+
+        [data-theme="dark"] .battery-icon::after {
+            background: #64748b;
+        }
+
+        [data-theme="dark"] .battery-text {
+            color: #e2e8f0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .energy-metrics-container {
+                grid-template-columns: 1fr;
+            }
+
+            .energy-flow-diagram-new {
+                height: 500px;
+            }
+
+            .energy-stats-new {
+                margin-top: 20px;
+            }
+
+        }
+
+        @media (max-width: 768px) {
+            .flow-component img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .energy-flow-diagram-new {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div class="notification-badge">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </div>
+            <div class="user-menu" onclick="logout()">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item active" data-menu="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span id="menuDashboard">仪表盘</span>
+            </a>
+            <a href="devices.html" class="menu-item" data-menu="devices">
+                <i class="fas fa-database"></i>
+                <span id="menuDevices">设备管理</span>
+            </a>
+            <a href="station1.html" class="menu-item" data-menu="station1">
+                <i class="fas fa-industry"></i>
+                <span id="menuStation1">3D视图</span>
+            </a>
+            <!-- 隐藏电站详情菜单
+            <a href="cabinet-detail.html" class="menu-item" data-menu="cabinet-detail">
+                <i class="fas fa-server"></i>
+                <span id="menuCabinetDetail">电站详情</span>
+            </a>
+            -->
+            <a href="device-control.html" class="menu-item" data-menu="device-control">
+                <i class="fas fa-cogs"></i>
+                <span id="menuControl">设备控制</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="menuAlarms">告警管理</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span id="menuReports">报告中心</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span id="menuSystem">系统管理</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content" id="mainContent">
+        <!-- 移除页面标题 -->
+
+        <!-- 能量潮流图 -->
+        <div class="energy-flow-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin: 0;">
+                    <span class="i18n" data-i18n="overview.energy_flow">能量图</span>
+                </h3>
+                <div style="position: relative;">
+                    <button id="energy-settings-btn" onclick="toggleEnergySettingsPanel()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                        </svg>
+                        <span style="margin-left: 4px;">设置</span>
+                    </button>
+                    <div id="energy-settings-panel">
+                        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #333;">显示指标选择</div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <!-- 光伏指标 -->
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">光伏</div>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="pv-daily" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">日发电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="pv-total" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">总发电量</span>
+                            </label>
+                            
+                            <!-- 储能指标 -->
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">储能</div>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="storage-daily-charge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">日充电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="storage-total-charge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">累计充电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="storage-daily-discharge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">日放电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="storage-total-discharge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">累计放电量</span>
+                            </label>
+                            
+                            <!-- 收益指标 -->
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">收益</div>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="revenue-yesterday" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">昨日收益</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="revenue-today" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">今日收益</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="revenue-month" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">当月收益</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="revenue-total" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">累计收益</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 能量图和数据指标容器 -->
+            <div class="energy-metrics-container">
+                    <!-- 能量流向图 - 占3/4宽度 -->
+                    <div class="energy-flow-diagram-new">
+                        <!-- SVG 能量流向连线 -->
+                        <svg class="energy-flow-svg" id="energy-flow-svg-new">
+                            <!-- 连线将通过JavaScript动态创建 -->
+                        </svg>
+
+                        <!-- 光伏 -->
+                        <div class="flow-component pv">
+                            <img src="光伏.png" alt="光伏面板">
+                        </div>
+
+                        <!-- 负载（居中） -->
+                        <div class="flow-component load">
+                            <img src="负载.png" alt="负载">
+                        </div>
+
+                        <!-- 储能柜（左下） -->
+                        <div class="flow-component storage" onclick="window.location.href='station1.html'" style="cursor: pointer;">
+                            <img src="储能柜.png" alt="储能系统">
+                            <div class="battery-indicator">
+                                <div class="battery-icon">
+                                    <div class="battery-level" id="battery-level-new" style="width: 82%"></div>
+                                </div>
+                                <span class="battery-text" id="soc-display-new">82%</span>
+                            </div>
+                        </div>
+
+                        <!-- 电网（右下） -->
+                        <div class="flow-component grid">
+                            <img src="电网.png" alt="电网">
+                        </div>
+
+                    </div>
+                    
+                    <!-- 右侧数据统计 -->
+                    <div class="energy-stats-new">
+                        <!-- 储能柜数据 -->
+                        <div class="energy-section-new">
+                            <h3>储能柜</h3>
+                            <div class="energy-metrics-new" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-total" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">总数</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">8</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-capacity" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">总容量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">2500 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-offline" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">离线</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600; color: #ef4444;">1</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-fault" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">故障</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600; color: #f59e0b;">0</div>
+                                </div>
+                                <div style="grid-column: 1 / -1; height: 1px; background: var(--border-color); margin: 10px 0;"></div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-daily-charge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">今日充电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">486.3 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-daily-discharge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">今日放电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">372.5 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-charge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计充电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">12847 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-discharge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计放电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">10236 kWh</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 收益数据 -->
+                        <div class="energy-section-new">
+                            <h3>收益</h3>
+                            <div class="energy-metrics-new" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
+                                <div class="energy-metric-item-new" data-metric-item="revenue-yesterday" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">昨日收益</div>
+                                    <div class="energy-metric-value-new revenue" style="font-size: 16px; font-weight: 600; color: #10b981;">¥141.72</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="revenue-today" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">今日收益</div>
+                                    <div class="energy-metric-value-new revenue" style="font-size: 16px; font-weight: 600; color: #10b981;">¥81.12</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="revenue-month" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">当月收益</div>
+                                    <div class="energy-metric-value-new revenue" style="font-size: 16px; font-weight: 600; color: #10b981;">¥2518.65</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="revenue-total" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计收益</div>
+                                    <div class="energy-metric-value-new revenue" style="font-size: 16px; font-weight: 600; color: #10b981;">¥40772.62</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 总储能状态 -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">总储能状态</h3>
+            </div>
+            <div style="padding: 24px;">
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">待机</div>
+                        <div style="font-size: 24px; font-weight: 600; color: #6b7280;">3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">充电中</div>
+                        <div style="font-size: 24px; font-weight: 600; color: #10b981;">2</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">放电中</div>
+                        <div style="font-size: 24px; font-weight: 600; color: #3b82f6;">3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">充电功率</div>
+                        <div style="font-size: 24px; font-weight: 600; color: var(--text-primary);">486.3 <span style="font-size: 14px; font-weight: 400;">kW</span></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">放电功率</div>
+                        <div style="font-size: 24px; font-weight: 600; color: var(--text-primary);">372.5 <span style="font-size: 14px; font-weight: 400;">kW</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功率趋势图 -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">功率趋势</h3>
+            </div>
+            <div style="padding: 24px;">
+                <canvas id="powerTrendChart" style="width: 100%; height: 300px;"></canvas>
+            </div>
+        </div>
+
+        <!-- 收益趋势图和电站排行 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+            <!-- 收益趋势图 -->
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">收益趋势</h3>
+                </div>
+                <div style="padding: 24px;">
+                    <canvas id="revenueTrendChart" style="width: 100%; height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- 电站排行榜 -->
+            <div class="card">
+                <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">电站排行榜</h3>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 24px; height: 24px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">1</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">电站A</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">容量: 2500kWh | 收益: ¥12,850</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 24px; height: 24px; background: #9ca3af; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">2</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">电站B</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">容量: 2000kWh | 收益: ¥10,230</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 24px; height: 24px; background: #a78bfa; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white;">3</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">电站C</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">容量: 1800kWh | 收益: ¥9,180</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 24px; height: 24px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280;">4</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">电站D</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">容量: 1500kWh | 收益: ¥7,560</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 24px; height: 24px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6b7280;">5</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">电站E</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">容量: 1200kWh | 收益: ¥6,120</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 移动端遮罩 -->
+    <div id="mobileOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;" onclick="closeMobileSidebar()"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="common.js"></script>
+    <script>
+        // 检查登录状态
+        checkAuth();
+        
+        // 设置当前页面菜单项
+        setActiveMenuItem('dashboard');
+        
+        // 每5秒更新一次数据
+        setInterval(() => {
+            updateRealTimeData();
+        }, 5000);
+
+        // 切换设置面板
+        function toggleEnergySettingsPanel() {
+            const panel = document.getElementById('energy-settings-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 点击外部关闭设置面板
+        document.addEventListener('click', function(event) {
+            const settingsBtn = document.getElementById('energy-settings-btn');
+            const settingsPanel = document.getElementById('energy-settings-panel');
+            
+            if (!settingsBtn.contains(event.target) && !settingsPanel.contains(event.target)) {
+                settingsPanel.style.display = 'none';
+            }
+        });
+
+        // 处理指标显示/隐藏
+        document.querySelectorAll('input[data-metric-item]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const metricId = this.getAttribute('data-metric-item');
+                const metricElement = document.querySelector(`[data-metric-item="${metricId}"]`);
+                
+                if (metricElement && metricElement !== this) {
+                    metricElement.style.display = this.checked ? 'flex' : 'none';
+                }
+            });
+        });
+
+        // 创建能量流向连线
+        function createEnergyFlowLines() {
+            const svg = document.getElementById('energy-flow-svg-new');
+            if (!svg) {
+                return;
+            }
+            
+            // 设置SVG内容
+            svg.setAttribute('viewBox', '0 0 1000 600');
+            svg.innerHTML = `
+                <!-- 光伏到负载 -->
+                <line x1="500" y1="60" x2="500" y2="210" stroke="#EDEDED" stroke-width="6" />
+                
+                <!-- 储能到光伏 -->
+                <path d="M 100 450 L 100 20 Q 100 0 120 0 L 440 0" 
+                      stroke="#EDEDED" stroke-width="6" fill="none" />
+                
+                <!-- 光伏到电网 -->
+                <path d="M 540 0 L 880 0 Q 900 0 900 20 L 900 450" 
+                      stroke="#EDEDED" stroke-width="6" fill="none" />
+                
+                <!-- 负载到储能 -->
+                <path d="M 480 340 L 480 550 Q 480 570 460 570 L 200 570" 
+                      stroke="#EDEDED" stroke-width="6" fill="none" />
+                
+                <!-- 负载到电网 -->
+                <path d="M 520 340 L 520 550 Q 520 570 540 570 L 800 570" 
+                      stroke="#EDEDED" stroke-width="6" fill="none" />
+                
+                <!-- 储能到电网 -->
+                <line x1="200" y1="590" x2="800" y2="590" stroke="#EDEDED" stroke-width="6" />
+                
+                <!-- 储能到电网动画 -->
+                <line x1="-10" y1="0" x2="10" y2="0" stroke="#5C85FF" stroke-width="4" stroke-linecap="round">
+                    <animateMotion dur="3s" repeatCount="indefinite">
+                        <mpath href="#storageToGridPath"/>
+                    </animateMotion>
+                </line>
+                <path id="storageToGridPath" d="M 200 590 L 800 590" style="display:none;" />
+                <text x="500" y="610" fill="#5C85FF" font-size="14" font-weight="600">4.2 kW</text>
+                
+            `;
+        }
+
+        // 更新能量流图数据
+        function updateEnergyFlowData() {
+            // 模拟动态数据
+            const pvTotal = (Math.random() * 2 + 2.5).toFixed(2); // 2.5-4.5 kW
+            const loadPower = (Math.random() * 1.5 + 2).toFixed(2); // 2-3.5 kW 负载功率
+            const gridPower = (Math.random() * 0.5 + 0.2).toFixed(2); // 0.2-0.7 kW
+            const storagePower = Math.random() > 0.5 ? 0 : (Math.random() * 0.5).toFixed(2); // 0 或 0-0.5 kW
+            const inverterPower = loadPower;
+            const soc = Math.floor(Math.random() * 20 + 75); // 75-95%
+            
+            // 更新储能SOC
+            const socDisplayEl = document.getElementById('soc-display-new');
+            if (socDisplayEl) {
+                socDisplayEl.textContent = soc + '%';
+            }
+            const batteryLevel = document.getElementById('battery-level-new');
+            if (batteryLevel) {
+                batteryLevel.style.width = soc + '%';
+            }
+            
+            // 根据电量设置颜色
+            if (batteryLevel) {
+                if (soc > 60) {
+                    batteryLevel.style.background = '#10b981'; // 绿色
+                } else if (soc > 30) {
+                    batteryLevel.style.background = '#f59e0b'; // 橙色
+                } else {
+                    batteryLevel.style.background = '#ef4444'; // 红色
+                }
+            }
+            
+            // 更新数据指标（模拟值）
+            const metrics = {
+                'pv-daily': (Math.random() * 10 + 40).toFixed(1) + ' kWh',
+                'pv-total': Math.floor(Math.random() * 1000 + 12000) + ' kWh',
+                'storage-daily-charge': (Math.random() * 10 + 35).toFixed(1) + ' kWh',
+                'storage-total-charge': Math.floor(Math.random() * 500 + 8500) + ' kWh',
+                'storage-daily-discharge': (Math.random() * 10 + 20).toFixed(1) + ' kWh',
+                'storage-total-discharge': Math.floor(Math.random() * 500 + 7000) + ' kWh',
+                'revenue-yesterday': '¥' + (Math.random() * 50 + 120).toFixed(2),
+                'revenue-today': '¥' + (Math.random() * 30 + 70).toFixed(2),
+                'revenue-month': '¥' + (Math.random() * 500 + 2000).toFixed(2),
+                'revenue-total': '¥' + (Math.random() * 5000 + 38000).toFixed(2)
+            };
+            
+            // 更新页面上的值
+            Object.keys(metrics).forEach(key => {
+                const element = document.querySelector(`[data-metric-item="${key}"] .energy-metric-value-new`);
+                if (element) {
+                    element.textContent = metrics[key];
+                }
+            });
+        }
+
+        // 初始化能量流图
+        window.addEventListener('DOMContentLoaded', function() {
+            // 创建能量流向连线
+            setTimeout(function() {
+                createEnergyFlowLines();
+            }, 100);
+            
+            // 启动能量流图数据更新
+            updateEnergyFlowData();
+            setInterval(updateEnergyFlowData, 5000); // 每5秒更新一次
+            
+            // 窗口大小改变时重新绘制连线
+            window.addEventListener('resize', createEnergyFlowLines);
+            
+            // 再次尝试创建连线（备用）
+            setTimeout(createEnergyFlowLines, 500);
+        });
+
+        // 初始化功率趋势图
+        function initPowerTrendChart() {
+            const ctx = document.getElementById('powerTrendChart').getContext('2d');
+            
+            // 生成24小时的时间标签
+            const labels = [];
+            for (let i = 0; i < 24; i++) {
+                labels.push(`${i.toString().padStart(2, '0')}:00`);
+            }
+            
+            // 生成功率数据（正值为充电，负值为放电）
+            const powerData = [];
+            const socData = [];
+            let currentSoc = 50; // 初始SOC
+            
+            for (let i = 0; i < 24; i++) {
+                let power;
+                // 模拟充放电策略：23:00-7:00充电（谷值），10:00-15:00放电（峰值）
+                if ((i >= 23 || i < 7)) {
+                    // 充电时段
+                    power = Math.random() * 300 + 200; // 200-500kW
+                    currentSoc = Math.min(95, currentSoc + (power * 1 / 2500) * 100); // 充电增加SOC
+                } else if (i >= 10 && i < 15) {
+                    // 放电时段
+                    power = -(Math.random() * 300 + 200); // -200到-500kW
+                    currentSoc = Math.max(10, currentSoc + (power * 1 / 2500) * 100); // 放电减少SOC
+                } else {
+                    // 待机时段
+                    power = 0;
+                }
+                powerData.push(power);
+                socData.push(currentSoc);
+            }
+            
+            const powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '功率 (kW)',
+                        data: powerData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)'); // 充电绿色
+                            gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0)');
+                            gradient.addColorStop(1, 'rgba(239, 68, 68, 0.3)'); // 放电红色
+                            return gradient;
+                        },
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'SOC (%)',
+                        data: socData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        if (context.dataset.label === '功率 (kW)') {
+                                            const value = context.parsed.y;
+                                            if (value > 0) {
+                                                label += `+${value.toFixed(1)} kW (充电)`;
+                                            } else if (value < 0) {
+                                                label += `${value.toFixed(1)} kW (放电)`;
+                                            } else {
+                                                label += '0 kW (待机)';
+                                            }
+                                        } else {
+                                            label += context.parsed.y.toFixed(1) + '%';
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '功率 (kW)'
+                            },
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' kW';
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'SOC (%)'
+                            },
+                            min: 0,
+                            max: 100,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化收益趋势图
+        function initRevenueTrendChart() {
+            const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+            const revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    datasets: [{
+                        label: '日收益',
+                        data: [420, 380, 450, 520, 480, 550, 510],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '收益 (¥)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 页面加载完成后初始化图表
+        window.addEventListener('load', function() {
+            initPowerTrendChart();
+            initRevenueTrendChart();
+        });
+    </script>
+</body>
+</html>

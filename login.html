@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="theme-toggle">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+        </div>
+        
+        <div class="login-card fade-in">
+            <div class="logo-section">
+                <div class="logo large">
+                    <img src="logo.png" alt="AlwaysControl Technology" />
+                </div>
+                <h1 class="login-title" id="loginTitle">欢迎回来</h1>
+                <p class="login-subtitle" id="loginSubtitle">登录您的储能管理账户</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" class="form-input" id="username" placeholder="请输入用户名" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" id="rememberLabel">记住我</label>
+                    </div>
+                    <a href="#" class="link" id="forgotLink">忘记密码？</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span id="loginBtnText">登录</span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span id="dividerText">或</span>
+            </div>
+
+            <div class="register-area">
+                <span id="noAccountText">还没有账户？</span>
+                <a href="#" class="link" id="registerLink">创建账户</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // 登录处理
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 简化验证逻辑 - 只要有输入就允许登录
+            if (username.trim() && password.trim()) {
+                // 模拟登录过程
+                const loginBtn = document.getElementById('loginBtn');
+                const originalText = loginBtn.innerHTML;
+                
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>登录中...</span>';
+                loginBtn.disabled = true;
+                
+                setTimeout(() => {
+                    // 保存登录状态
+                    localStorage.setItem('isLoggedIn', 'true');
+                    // 跳转到仪表盘页面
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                alert(currentLang === 'zh' ? '请输入用户名和密码' : 'Please enter username and password');
+            }
+        }
+    </script>
+</body>
+</html>

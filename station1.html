@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D视图 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/renderers/CSS3DRenderer.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 3D场景中的2D电池样式 */
+        .battery-icon-3d {
+            width: 60px;
+            height: 30px;
+            border: 2px solid #334155;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        .battery-icon-3d::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 12px;
+            background: #334155;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .battery-level-3d {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        /* 视图切换按钮 */
+        .view-switcher {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .view-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        .view-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 表格视图样式 */
+        .table-view {
+            display: block;
+        }
+
+        .station-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .station-table th {
+            background: var(--bg-secondary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .station-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .station-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.online {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.offline {
+            background: #ef4444;
+            color: white;
+        }
+
+        .status-badge.warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* 3D视图样式 */
+        .three-d-view {
+            display: none;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 储能柜信息面板 */
+        .cabinet-info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        [data-theme="dark"] .cabinet-info-panel {
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .cabinet-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cabinet-info-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* 零部件列表 */
+        .component-list {
+            margin-top: 20px;
+        }
+
+        .component-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .component-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .component-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .component-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 数据图表区域 */
+        .data-charts {
+            margin-top: 20px;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chart-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .chart-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .chart-content {
+            height: 300px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* 3D控制按钮 */
+        .three-d-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        [data-theme="dark"] .three-d-controls {
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .control-btn {
+            padding: 8px 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* 加载提示 */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .cabinet-info-panel {
+                width: 100%;
+                right: 0;
+                top: auto;
+                bottom: 0;
+                max-height: 50vh;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .three-d-controls {
+                bottom: auto;
+                top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div class="notification-badge">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </div>
+            <div class="user-menu" onclick="logout()">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item" data-menu="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span id="menuDashboard">仪表盘</span>
+            </a>
+            <a href="devices.html" class="menu-item" data-menu="devices">
+                <i class="fas fa-database"></i>
+                <span id="menuDevices">设备管理</span>
+            </a>
+            <a href="station1.html" class="menu-item active" data-menu="station1">
+                <i class="fas fa-industry"></i>
+                <span id="menuStation1">3D视图</span>
+            </a>
+            <!-- 隐藏电站详情菜单
+            <a href="cabinet-detail.html" class="menu-item" data-menu="cabinet-detail">
+                <i class="fas fa-server"></i>
+                <span id="menuCabinetDetail">电站详情</span>
+            </a>
+            -->
+            <a href="device-control.html" class="menu-item" data-menu="device-control">
+                <i class="fas fa-cogs"></i>
+                <span id="menuControl">设备控制</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="menuAlarms">告警管理</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span id="menuReports">报告中心</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span id="menuSystem">系统管理</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content" id="mainContent" style="padding: 0;">
+        <!-- 3D视图 -->
+        <div class="three-d-view" id="threeDView" style="display: block; height: calc(100vh - 60px);">
+            <div id="canvas-container" style="width: 100%; height: 100%;">
+                <div class="loading-indicator" id="loadingIndicator">
+                    <div class="loading-spinner"></div>
+                    <p>加载3D模型中...</p>
+                </div>
+            </div>
+
+            <!-- 3D控制按钮已移除 -->
+            
+            
+            <!-- 统计数据面板 -->
+            <div id="dataPanel" style="position: absolute; top: 20px; right: 20px; z-index: 100; transition: all 0.3s ease;">
+                <div style="background: rgba(255, 255, 255, 0.98); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 320px;">
+                    <!-- 标题栏 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e5e7eb;">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 3px; height: 16px; background: #3b82f6; border-radius: 2px;"></span>
+                            储能柜实时监控
+                        </h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="toggleDataPanel()" style="background: none; border: none; cursor: pointer; padding: 4px; color: #64748b; transition: transform 0.3s;">
+                                <i id="panelToggleIcon" class="fas fa-chevron-up" style="font-size: 14px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 内容区域 -->
+                    <div id="dataPanelContent" style="padding: 15px; max-height: calc(100vh - 120px); overflow-y: auto; transition: all 0.3s ease;">
+                    
+                    <!-- 状态概览 -->
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 6px;">
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #10b981;" id="online-count">5</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #f59e0b;" id="offline-count">2</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #ef4444;" id="fault-count">1</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">在线</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">离线</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">故障</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 充放电状态 -->
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                        <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 6px;">
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #10b981;" id="charging-count">3</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #3b82f6;" id="discharging-count">2</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 18px; font-weight: 600; color: #64748b;" id="standby-count">3</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">充电中</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">放电中</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: #666;">待机</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- 关键运行指标 -->
+                    <div class="expandable-section" data-section="key-metrics">
+                        <div class="section-header" onclick="toggleSection('key-metrics')" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer; padding: 8px; border-radius: 6px; background: #f8fafc;">
+                            <span style="font-size: 14px; font-weight: 600; color: #1f2937;">关键运行指标</span>
+                            <i class="fas fa-chevron-down" id="key-metrics-icon" style="color: #64748b; transition: transform 0.3s;"></i>
+                        </div>
+                        <div class="section-content" id="key-metrics-content" style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 12px; color: #666;">系统容量</span>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 16px; font-weight: 700; color: #333;"><span id="total-capacity">2.5</span> MWh</span>
+                                    <div style="font-size: 10px; color: #999;">总装机容量</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 12px; color: #666;">当前电量</span>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 16px; font-weight: 700; color: #10b981;"><span id="current-energy">1.96</span> MWh</span>
+                                    <div style="font-size: 10px; color: #999;">占比 <span id="energy-percent">78.4</span>%</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #666;">最高利用率</span>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 14px; font-weight: 600; color: #f59e0b;"><span id="max-utilization">92</span>%</span>
+                                    <div style="font-size: 10px; color: #999;">储能柜<span id="max-util-cabinet">003</span></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #666;">最低SOC</span>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 14px; font-weight: 600; color: #ef4444;"><span id="min-soc">15</span>%</span>
+                                    <div style="font-size: 10px; color: #999;">储能柜<span id="min-soc-cabinet">008</span></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #666;">最低SOH</span>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 14px; font-weight: 600; color: #ef4444;"><span id="min-soh">93.2</span>%</span>
+                                    <div style="font-size: 10px; color: #999;">储能柜<span id="min-soh-cabinet">006</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 收益统计 -->
+                    <div class="expandable-section" data-section="profit-stats">
+                        <div class="section-header" onclick="toggleSection('profit-stats')" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer; padding: 8px; border-radius: 6px; background: #f8fafc;">
+                            <span style="font-size: 14px; font-weight: 600; color: #1f2937;">收益统计</span>
+                            <i class="fas fa-chevron-down" id="profit-stats-icon" style="color: #64748b; transition: transform 0.3s;"></i>
+                        </div>
+                        <div class="section-content" id="profit-stats-content" style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                                <div style="background: #f0f9ff; border-radius: 6px; padding: 10px; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;">昨日收益</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: #3b82f6;">¥<span id="yesterday-profit">12,350</span></div>
+                                </div>
+                                <div style="background: #f0fdf4; border-radius: 6px; padding: 10px; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;">今日收益</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: #10b981;">¥<span id="today-profit">8,450</span></div>
+                                </div>
+                                <div style="background: #fef3c7; border-radius: 6px; padding: 10px; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;">本月收益</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: #f59e0b;">¥<span id="month-profit">326.5</span>K</div>
+                                </div>
+                                <div style="background: #ede9fe; border-radius: 6px; padding: 10px; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;">累计收益</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: #8b5cf6;">¥<span id="total-profit">1.85</span>M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+            </div>
+
+            <!-- 显示数据选择 - 移到顶部水平排列 -->
+            <div style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+                <div style="background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 12px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #333;">显示数据：</div>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="soc" onchange="changeDisplayMode('soc')">
+                            <span style="font-size: 14px; color: #666;">SOC</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="power" onchange="changeDisplayMode('power')">
+                            <span style="font-size: 14px; color: #666;">功率</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="temperature" onchange="changeDisplayMode('temperature')">
+                            <span style="font-size: 14px; color: #666;">温度</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="soh" onchange="changeDisplayMode('soh')">
+                            <span style="font-size: 14px; color: #666;">SOH</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="utilization" onchange="changeDisplayMode('utilization')">
+                            <span style="font-size: 14px; color: #666;">利用率</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="displayMode" value="status" onchange="changeDisplayMode('status')">
+                            <span style="font-size: 14px; color: #666;">状态</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 状态图例 - 移到底部水平排列 -->
+            <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100;">
+                <div style="background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 12px 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 30px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #333;">状态图例：</div>
+                        <div style="display: flex; gap: 25px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #9ca3af; border-radius: 3px;"></div>
+                                <span style="font-size: 14px; color: #666;">在线</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #f97316; border-radius: 3px;"></div>
+                                <span style="font-size: 14px; color: #666;">离线</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #ef4444; border-radius: 3px;"></div>
+                                <span style="font-size: 14px; color: #666;">故障</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 储能柜信息面板 -->
+            <div class="cabinet-info-panel" id="cabinetInfoPanel">
+                <div class="cabinet-info-header">
+                    <h3 class="cabinet-info-title" id="cabinetName">储能柜 001</h3>
+                    <button class="close-panel" onclick="closeCabinetPanel()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- 基本信息 -->
+                <div class="info-section">
+                    <h4>基本信息</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">型号</span>
+                            <span class="info-value" id="cabinetModel">ESS-2500</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">容量</span>
+                            <span class="info-value" id="cabinetCapacity">312.5 kWh</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">当前SOC</span>
+                            <span class="info-value" id="cabinetSOC">85%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">温度</span>
+                            <span class="info-value" id="cabinetTemp">26.5°C</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 零部件列表 -->
+                <div class="component-list">
+                    <h4>零部件</h4>
+                    <div class="component-item" onclick="selectComponent('battery')">
+                        <div class="component-name">电池模组</div>
+                        <div class="component-status">运行正常 • 温度: 25.8°C</div>
+                    </div>
+                    <div class="component-item" onclick="selectComponent('pcs')">
+                        <div class="component-name">PCS模块</div>
+                        <div class="component-status">运行正常 • 效率: 97.2%</div>
+                    </div>
+                    <div class="component-item" onclick="selectComponent('bms')">
+                        <div class="component-name">BMS系统</div>
+                        <div class="component-status">运行正常 • CPU: 15%</div>
+                    </div>
+                    <div class="component-item" onclick="selectComponent('cooling')">
+                        <div class="component-name">冷却系统</div>
+                        <div class="component-status">运行正常 • 功率: 2.5kW</div>
+                    </div>
+                    <div class="component-item" onclick="selectComponent('fire')">
+                        <div class="component-name">消防系统</div>
+                        <div class="component-status">待机中 • 压力: 正常</div>
+                    </div>
+                </div>
+
+                <!-- 数据图表 -->
+                <div class="data-charts">
+                    <div class="chart-tabs">
+                        <button class="chart-tab active" onclick="switchChartTab('realtime')">实时数据</button>
+                        <button class="chart-tab" onclick="switchChartTab('history')">历史数据</button>
+                    </div>
+                    <div class="chart-content" id="chartContent">
+                        <span>选择零部件查看数据</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 移动端遮罩 -->
+    <div id="mobileOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;" onclick="closeMobileSidebar()"></div>
+
+    <script src="common.js"></script>
+    <script>
+        // 检查登录状态
+        checkAuth();
+        
+        // 设置当前页面菜单项
+        setActiveMenuItem('station1');
+        
+        // 页面加载完成后自动初始化3D场景
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化3D场景');
+            try {
+                init3DScene();
+                setTimeout(() => {
+                    loadStation3D('station1');
+                    // 初始化图表
+                    initCharts();
+                }, 100);
+            } catch (error) {
+                console.error('3D场景初始化错误:', error);
+                alert('3D场景初始化失败: ' + error.message);
+            }
+        });
+
+        // Three.js 相关变量
+        let scene, camera, renderer, controls;
+        let cabinets = [];
+        let selectedCabinet = null;
+        let selectedComponent = null;
+        let isAnimating = false;
+        let showLabels = true;
+        let displayMode = ''; // 'soc', 'power', 'temperature', 'soh', 'utilization'
+
+        // 这个页面专门显示电站1，不需要视图切换功能
+
+        // 初始化3D场景
+        function init3DScene() {
+            console.log('开始初始化3D场景');
+            const container = document.getElementById('canvas-container');
+            if (!container) {
+                throw new Error('找不到canvas-container元素');
+            }
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            console.log('容器尺寸:', width, 'x', height);
+
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xe5e5e5);
+            scene.fog = new THREE.Fog(0xe5e5e5, 100, 1000);
+
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            camera.position.set(-400, 30, 80); // 正视角，对准左移后的模型中心
+
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            console.log('渲染器创建成功');
+
+            // 创建控制器
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.target.set(-400, 0, 0); // 控制器中心点对准左移后的模型中心
+            camera.lookAt(-400, 0, 0); // 相机朝向场景中心
+
+            // 添加灯光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 200;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            scene.add(directionalLight);
+
+
+            // 窗口大小调整
+            window.addEventListener('resize', onWindowResize);
+
+            // 鼠标交互
+            renderer.domElement.addEventListener('click', onMouseClick);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+
+            // 开始渲染
+            animate();
+
+            // 隐藏加载提示
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+
+        // 加载电站3D模型
+        function loadStation3D(stationId) {
+            // 清除现有储能柜
+            cabinets.forEach(cabinet => {
+                scene.remove(cabinet.group);
+            });
+            cabinets = [];
+
+            // 根据电站ID加载不同数量的储能柜
+            const cabinetCount = stationId === 'station1' ? 8 : 
+                               stationId === 'station2' ? 12 : 
+                               stationId === 'station3' ? 6 : 10;
+
+            // 创建储能柜
+            console.log(`创建 ${cabinetCount} 个储能柜 for ${stationId}`);
+            for (let i = 0; i < cabinetCount; i++) {
+                const cabinet = createCabinet(i);
+                const row = Math.floor(i / 4);
+                const col = i % 4;
+                cabinet.group.position.set(col * 25 - 450, 0, row * 35 - 35); // 左移450像素
+                scene.add(cabinet.group);
+                cabinets.push(cabinet);
+            }
+            console.log(`实际创建了 ${cabinets.length} 个储能柜`);
+            
+            // 更新统计面板
+            updateStatsPanel();
+        }
+
+        // 创建储能柜模型
+        function createCabinet(index) {
+            const group = new THREE.Group();
+            group.userData = { type: 'cabinet', index: index };
+
+            // 底座支撑平台
+            const platformGeometry = new THREE.BoxGeometry(17, 1.5, 11.5);
+            const platformMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x353535,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            platform.position.y = 0.75;
+            platform.castShadow = true;
+            platform.receiveShadow = true;
+            group.add(platform);
+
+            // 主体框架 - 浅灰白色
+            const bodyGeometry = new THREE.BoxGeometry(16, 24, 10);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xf0f0f0,
+                metalness: 0.3,
+                roughness: 0.5
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 13.5;
+            body.castShadow = true;
+            body.receiveShadow = true;
+            body.userData = { component: 'body' };
+            group.add(body);
+
+            // 侧面散热格栅 - 左右两侧
+            for (let side = 0; side < 2; side++) {
+                const sideX = side === 0 ? -8.1 : 8.1;
+                for (let i = 0; i < 10; i++) {
+                    const ventGeometry = new THREE.BoxGeometry(0.2, 1.8, 7);
+                    const ventMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x606060,
+                        metalness: 0.9,
+                        roughness: 0.1
+                    });
+                    const vent = new THREE.Mesh(ventGeometry, ventMaterial);
+                    vent.position.set(sideX, 4 + i * 2.2, 0);
+                    vent.castShadow = true;
+                    group.add(vent);
+                }
+            }
+
+            // 前门主框架 - 更细致的设计
+            const doorFrameGeometry = new THREE.BoxGeometry(15.6, 23.6, 0.4);
+            const doorFrameMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xd8d8d8,
+                metalness: 0.6,
+                roughness: 0.3
+            });
+            const doorFrame = new THREE.Mesh(doorFrameGeometry, doorFrameMaterial);
+            doorFrame.position.set(0, 13.5, 5.2);
+            doorFrame.castShadow = true;
+            group.add(doorFrame);
+
+            // 双开门设计
+            for (let door = 0; door < 2; door++) {
+                const doorX = door === 0 ? -3.9 : 3.9;
+                
+                // 门板 - 浅灰白色
+                const doorPanelGeometry = new THREE.BoxGeometry(7.5, 22.8, 0.3);
+                const doorPanelMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0xf0f0f0,
+                    metalness: 0.3,
+                    roughness: 0.5
+                });
+                const doorPanel = new THREE.Mesh(doorPanelGeometry, doorPanelMaterial);
+                doorPanel.position.set(doorX, 13.5, 5.35);
+                doorPanel.castShadow = true;
+                group.add(doorPanel);
+                
+                // 门把手
+                const handleGeometry = new THREE.BoxGeometry(0.4, 4, 0.6);
+                const handleMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x404040,
+                    metalness: 0.9,
+                    roughness: 0.1
+                });
+                const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+                handle.position.set(door === 0 ? -0.3 : 0.3, 13.5, 5.7);
+                handle.position.x += doorX;
+                group.add(handle);
+                
+                // 观察窗
+                const windowGeometry = new THREE.BoxGeometry(5.5, 8, 0.1);
+                const windowMaterial = new THREE.MeshStandardMaterial({
+                    color: 0x101010,
+                    metalness: 0.0,
+                    roughness: 0.0,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                const window = new THREE.Mesh(windowGeometry, windowMaterial);
+                window.position.set(doorX, 18, 5.4);
+                group.add(window);
+            }
+
+            // 内部电池模组（透过窗户可见）
+            const batteryArea = new THREE.Group();
+            batteryArea.position.set(0, 13.5, -1);
+            
+            // 电池模组 - 4层，每层4个模组
+            for (let layer = 0; layer < 4; layer++) {
+                for (let col = 0; col < 4; col++) {
+                    const moduleGroup = new THREE.Group();
+                    
+                    // 电池模组主体
+                    const moduleGeometry = new THREE.BoxGeometry(3.5, 4.5, 7);
+                    const moduleMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x10b981,
+                        metalness: 0.6,
+                        roughness: 0.4
+                    });
+                    const module = new THREE.Mesh(moduleGeometry, moduleMaterial);
+                    module.castShadow = true;
+                    moduleGroup.add(module);
+                    
+                    // 模组顶部端子
+                    const terminalGeometry = new THREE.BoxGeometry(2.5, 0.3, 1);
+                    const terminalMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0xff6600,
+                        metalness: 0.8,
+                        roughness: 0.2
+                    });
+                    const terminal = new THREE.Mesh(terminalGeometry, terminalMaterial);
+                    terminal.position.y = 2.4;
+                    moduleGroup.add(terminal);
+                    
+                    // 模组标签
+                    const labelGeometry = new THREE.BoxGeometry(3, 1, 0.1);
+                    const labelMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0xffffff,
+                        metalness: 0.1,
+                        roughness: 0.9
+                    });
+                    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+                    label.position.z = 3.55;
+                    moduleGroup.add(label);
+                    
+                    moduleGroup.position.set(-6 + col * 4, -8 + layer * 5.5, 0);
+                    batteryArea.add(moduleGroup);
+                }
+            }
+            group.add(batteryArea);
+            
+            // 电气控制柜
+            const controlBox = new THREE.Group();
+            controlBox.position.set(0, 13.5, -4);
+            
+            // 控制柜主体
+            const controlBoxGeometry = new THREE.BoxGeometry(12, 8, 2);
+            const controlBoxMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x808080,
+                metalness: 0.5,
+                roughness: 0.5
+            });
+            const controlBoxMesh = new THREE.Mesh(controlBoxGeometry, controlBoxMaterial);
+            controlBoxMesh.position.y = -10;
+            controlBox.add(controlBoxMesh);
+            
+            // 断路器面板
+            for (let row = 0; row < 2; row++) {
+                for (let col = 0; col < 6; col++) {
+                    const breakerGeometry = new THREE.BoxGeometry(1.5, 2, 0.5);
+                    const breakerMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x404040,
+                        metalness: 0.6,
+                        roughness: 0.3
+                    });
+                    const breaker = new THREE.Mesh(breakerGeometry, breakerMaterial);
+                    breaker.position.set(-5 + col * 2, -9 + row * 3, 1.3);
+                    controlBox.add(breaker);
+                }
+            }
+            group.add(controlBox);
+
+            // 控制面板区域
+            const panelGroup = new THREE.Group();
+            panelGroup.position.set(0, 13.5, 5.5);
+            
+            // 面板底座
+            const panelBaseGeometry = new THREE.BoxGeometry(8, 6, 0.3);
+            const panelBaseMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x303030,
+                metalness: 0.7,
+                roughness: 0.3
+            });
+            const panelBase = new THREE.Mesh(panelBaseGeometry, panelBaseMaterial);
+            panelBase.position.y = -4;
+            panelGroup.add(panelBase);
+            
+            // HMI触摸屏
+            const screenGeometry = new THREE.BoxGeometry(6, 4, 0.2);
+            let status;
+            if (index === 7) {
+                status = 'fault'; // 第8个设为故障
+            } else if (index === 5 || index === 6) {
+                status = 'offline'; // 第6、7个设为离线
+            } else {
+                status = 'online'; // 前5个设为在线
+            }
+            const statusColors = {
+                'online': 0x10b981,  // 绿色
+                'offline': 0xf97316, // 深橙黄色
+                'fault': 0xff0000    // 纯红色
+            };
+            const screenMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1a1a1a,
+                emissive: statusColors[status],
+                emissiveIntensity: 0.2
+            });
+            const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+            screen.position.set(0, -2, 0.2);
+            screen.userData = { component: 'screen', status: status };
+            panelGroup.add(screen);
+            
+            // 状态指示灯组
+            const indicatorGroup = new THREE.Group();
+            indicatorGroup.position.set(0, -5.5, 0.3);
+            
+            // LED指示灯
+            const ledNames = ['RUN', 'COM', 'ALM'];
+            const ledColors = [0x00ff00, 0x00aaff, 0xff0000];
+            for (let i = 0; i < 3; i++) {
+                const ledGeometry = new THREE.BoxGeometry(0.8, 0.3, 0.1);
+                const ledMaterial = new THREE.MeshStandardMaterial({ 
+                    color: ledColors[i],
+                    emissive: ledColors[i],
+                    emissiveIntensity: status === 'online' ? 0.8 : 0.2
+                });
+                const led = new THREE.Mesh(ledGeometry, ledMaterial);
+                led.position.x = (i - 1) * 2;
+                indicatorGroup.add(led);
+            }
+            panelGroup.add(indicatorGroup);
+            
+            // 紧急停止按钮
+            const emergencyGroup = new THREE.Group();
+            emergencyGroup.position.set(0, -8, 0.5);
+            
+            // 按钮底座
+            const emergencyBaseGeometry = new THREE.CylinderGeometry(1, 1.2, 0.5, 8);
+            const emergencyBaseMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffff00,
+                metalness: 0.6,
+                roughness: 0.4
+            });
+            const emergencyBase = new THREE.Mesh(emergencyBaseGeometry, emergencyBaseMaterial);
+            emergencyBase.rotation.x = Math.PI / 2;
+            emergencyGroup.add(emergencyBase);
+            
+            // 按钮本体
+            const emergencyBtnGeometry = new THREE.CylinderGeometry(0.8, 0.8, 0.3, 16);
+            const emergencyBtnMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xff0000,
+                metalness: 0.5,
+                roughness: 0.3
+            });
+            const emergencyBtn = new THREE.Mesh(emergencyBtnGeometry, emergencyBtnMaterial);
+            emergencyBtn.rotation.x = Math.PI / 2;
+            emergencyBtn.position.z = 0.3;
+            emergencyGroup.add(emergencyBtn);
+            
+            panelGroup.add(emergencyGroup);
+            group.add(panelGroup);
+
+
+            // 底部防滑支撑
+            for (let i = 0; i < 4; i++) {
+                const footGeometry = new THREE.CylinderGeometry(0.5, 0.7, 0.5, 8);
+                const footMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x202020,
+                    metalness: 0.3,
+                    roughness: 0.8
+                });
+                const foot = new THREE.Mesh(footGeometry, footMaterial);
+                foot.position.set(
+                    i < 2 ? -7 : 7,
+                    0.25,
+                    i % 2 === 0 ? -4 : 4
+                );
+                group.add(foot);
+            }
+
+            // 设置组件用户数据
+            batteryArea.userData = { component: 'battery' };
+            controlBox.userData = { component: 'control' };
+            panelGroup.userData = { component: 'panel' };
+
+            // 数据
+            const soc = Math.floor(Math.random() * 20 + 75); // 75-95%
+            const power = (Math.random() * 200 + 100).toFixed(1); // 100-300 kW
+            const temperature = (Math.random() * 15 + 25).toFixed(1); // 25-40°C
+            const soh = Math.floor(Math.random() * 5 + 93); // 93-98%
+            const utilization = Math.floor(Math.random() * 30 + 60); // 60-90%
+            
+            // 工作状态：充电中/放电中/待机
+            const workStates = ['充电中', '放电中', '待机'];
+            const workState = workStates[Math.floor(Math.random() * 3)];
+            
+            // 创建3D标签组
+            const labelGroup = new THREE.Group();
+            labelGroup.position.set(0, 28, 0);
+            
+            // 电池图标（SOC模式） - 使用2D Canvas绘制
+            const batteryGroup = new THREE.Group();
+            batteryGroup.visible = false; // 不显示图标，只显示数值
+            batteryGroup.position.x = -3; // 左移，为文字留出空间
+            batteryGroup.position.y = 0; // 垂直居中
+            
+            // 创建Canvas绘制2D电池
+            const batteryCanvas = document.createElement('canvas');
+            batteryCanvas.width = 256;
+            batteryCanvas.height = 128;
+            const batteryCtx = batteryCanvas.getContext('2d');
+            
+            // 绘制电池外框
+            batteryCtx.strokeStyle = '#334155';
+            batteryCtx.lineWidth = 8;
+            batteryCtx.fillStyle = '#0a0a0a';
+            
+            // 使用路径绘制圆角矩形（兼容性更好）
+            const x = 20, y = 30, w = 200, h = 68, r = 8;
+            batteryCtx.beginPath();
+            batteryCtx.moveTo(x + r, y);
+            batteryCtx.lineTo(x + w - r, y);
+            batteryCtx.quadraticCurveTo(x + w, y, x + w, y + r);
+            batteryCtx.lineTo(x + w, y + h - r);
+            batteryCtx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            batteryCtx.lineTo(x + r, y + h);
+            batteryCtx.quadraticCurveTo(x, y + h, x, y + h - r);
+            batteryCtx.lineTo(x, y + r);
+            batteryCtx.quadraticCurveTo(x, y, x + r, y);
+            batteryCtx.closePath();
+            
+            batteryCtx.fill();
+            batteryCtx.stroke();
+            
+            // 绘制电池正极
+            batteryCtx.fillStyle = '#334155';
+            batteryCtx.fillRect(220, 54, 16, 20);
+            
+            // 绘制电池电量
+            const levelWidth = 180 * (soc / 100);
+            if (levelWidth > 0) {
+                batteryCtx.fillStyle = soc > 50 ? '#10b981' : (soc > 20 ? '#f59e0b' : '#ef4444');
+                batteryCtx.fillRect(30, 40, levelWidth, 48);
+            }
+            
+            // 创建纹理和精灵
+            const batteryTexture = new THREE.CanvasTexture(batteryCanvas);
+            const batterySpriteMaterial = new THREE.SpriteMaterial({ 
+                map: batteryTexture,
+                sizeAttenuation: true
+            });
+            const batterySprite = new THREE.Sprite(batterySpriteMaterial);
+            batterySprite.scale.set(4, 2, 1);
+            batterySprite.userData.isBatteryIcon = true;
+            batteryGroup.add(batterySprite);
+            
+            labelGroup.add(batteryGroup);
+            
+            // 功率图标（功率模式）
+            const powerGroup = new THREE.Group();
+            powerGroup.visible = false;
+            powerGroup.position.x = -3; // 左移，为文字留出空间
+            powerGroup.position.y = 0; // 垂直居中
+            
+            // 闪电图标（简化的3D版本）
+            const lightningShape = new THREE.Shape();
+            lightningShape.moveTo(0, 2);
+            lightningShape.lineTo(-1, 0);
+            lightningShape.lineTo(0.5, 0);
+            lightningShape.lineTo(0, -2);
+            lightningShape.lineTo(1, 0);
+            lightningShape.lineTo(-0.5, 0);
+            lightningShape.closePath();
+            
+            const lightningGeometry = new THREE.ExtrudeGeometry(lightningShape, {
+                depth: 0.5,
+                bevelEnabled: true,
+                bevelThickness: 0.1,
+                bevelSize: 0.1,
+                bevelSegments: 2
+            });
+            const lightningMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffff00,
+                emissive: 0xffff00,
+                emissiveIntensity: 0.3,
+                metalness: 0.5,
+                roughness: 0.3
+            });
+            const lightning = new THREE.Mesh(lightningGeometry, lightningMaterial);
+            powerGroup.add(lightning);
+            
+            labelGroup.add(powerGroup);
+            
+            // 利用率图标（环形图）
+            const utilizationGroup = new THREE.Group();
+            utilizationGroup.visible = false;
+            utilizationGroup.position.x = -3; // 左移，为文字留出空间
+            utilizationGroup.position.y = 0; // 垂直岅中
+            
+            // 外环
+            const ringGeometry = new THREE.TorusGeometry(1.5, 0.3, 8, 32);
+            const ringMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xe0e0e0,
+                metalness: 0.2,
+                roughness: 0.8
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            utilizationGroup.add(ring);
+            
+            // 填充环（表示利用率）
+            const angle = (utilization / 100) * Math.PI * 2;
+            const filledRingGeometry = new THREE.TorusGeometry(1.5, 0.3, 8, 32, angle);
+            const filledRingMaterial = new THREE.MeshStandardMaterial({ 
+                color: utilization > 80 ? 0x00ff00 : (utilization > 50 ? 0xffa500 : 0xff0000),
+                emissive: utilization > 80 ? 0x00ff00 : (utilization > 50 ? 0xffa500 : 0xff0000),
+                emissiveIntensity: 0.3,
+                metalness: 0.3,
+                roughness: 0.5
+            });
+            const filledRing = new THREE.Mesh(filledRingGeometry, filledRingMaterial);
+            utilizationGroup.add(filledRing);
+            
+            labelGroup.add(utilizationGroup);
+            
+            // 创建3D文字（居中显示）
+            const textGroup = new THREE.Group();
+            textGroup.position.x = 0; // 居中
+            textGroup.position.y = 0; // 垂直居中
+            
+            // 使用TextGeometry需要加载字体，这里用简化的方式创建数字
+            const createDigit = (digit, position) => {
+                const digitGeometry = new THREE.BoxGeometry(0.8, 1.2, 0.2);
+                const digitMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x333333,
+                    metalness: 0.1,
+                    roughness: 0.9
+                });
+                const digitMesh = new THREE.Mesh(digitGeometry, digitMaterial);
+                digitMesh.position.x = position;
+                return digitMesh;
+            };
+            
+            // SOC文字
+            const socText = new THREE.Group();
+            socText.visible = false; // 默认不显示SOC数值
+            socText.userData = { value: soc + '%' };
+            
+            // 创建初始SOC文字精灵
+            const socCanvas = document.createElement('canvas');
+            const socContext = socCanvas.getContext('2d');
+            socCanvas.width = 512;
+            socCanvas.height = 128;
+            
+            socContext.font = 'bold 48px Arial'; // 减小字体大小
+            socContext.textAlign = 'center';
+            socContext.textBaseline = 'middle';
+            
+            // 白色背景
+            socContext.fillStyle = 'white';
+            socContext.fillRect(0, 0, 512, 128);
+            
+            // 彩色文字
+            socContext.fillStyle = status === 'online' ? '#10b981' : 
+                                   status === 'offline' ? '#f59e0b' : '#ef4444';
+            socContext.fillText(soc + '%', 256, 64);
+            
+            const socTexture = new THREE.CanvasTexture(socCanvas);
+            const socSpriteMaterial = new THREE.SpriteMaterial({ 
+                map: socTexture,
+                sizeAttenuation: false
+            });
+            const socSprite = new THREE.Sprite(socSpriteMaterial);
+            socSprite.scale.set(4, 1, 1); // 减小精灵尺寸
+            socSprite.position.set(0, 0, 0);
+            socText.add(socSprite);
+            
+            textGroup.add(socText);
+            
+            // 功率文字
+            const powerText = new THREE.Group();
+            powerText.visible = false;
+            powerText.userData = { value: power + ' kW' };
+            textGroup.add(powerText);
+            
+            // 温度文字
+            const temperatureText = new THREE.Group();
+            temperatureText.visible = false;
+            temperatureText.userData = { value: temperature + '°C' };
+            textGroup.add(temperatureText);
+            
+            // SOH文字
+            const sohText = new THREE.Group();
+            sohText.visible = false;
+            sohText.userData = { value: soh + '%' };
+            textGroup.add(sohText);
+            
+            // 利用率文字
+            const utilizationText = new THREE.Group();
+            utilizationText.visible = false;
+            utilizationText.userData = { value: utilization + '%' };
+            textGroup.add(utilizationText);
+            
+            // 状态文字
+            const statusText = new THREE.Group();
+            statusText.visible = false;
+            statusText.userData = { value: workState };
+            textGroup.add(statusText);
+            
+            labelGroup.add(textGroup);
+            labelGroup.userData = { 
+                type: '3dlabel',
+                batteryGroup,
+                powerGroup,
+                utilizationGroup,
+                socText,
+                powerText,
+                temperatureText,
+                sohText,
+                utilizationText,
+                statusText
+            };
+            
+            group.add(labelGroup);
+            
+            // 根据状态设置整体效果
+            if (status === 'offline') {
+                // 离线状态，整体变为深橙黄色
+                group.traverse(child => {
+                    if (child.isMesh && child.material && !child.userData.isHighlight) {
+                        const originalColor = child.material.color.clone();
+                        // 添加深橙黄色发光效果
+                        if (child.material.emissive) {
+                            child.material.emissive = new THREE.Color(0xf97316);  // 深橙黄色
+                            child.material.emissiveIntensity = 0.25;  // 增强发光强度
+                        }
+                        child.material.userData = { originalColor };
+                    }
+                });
+            } else if (status === 'fault') {
+                // 故障状态，门框添加深红色发光
+                if (doorFrame && doorFrame.material) {
+                    doorFrame.material.emissive = new THREE.Color(0xff0000);  // 纯红色
+                    doorFrame.material.emissiveIntensity = 0.3;  // 增强发光强度
+                }
+                // 主体边缘也添加深红色发光
+                if (body && body.material) {
+                    body.material.emissive = new THREE.Color(0xcc0000);  // 深红色
+                    body.material.emissiveIntensity = 0.2;  // 增强发光强度
+                }
+                // 整体遍历增强红色效果
+                group.traverse(child => {
+                    if (child.isMesh && child.material && !child.userData.isHighlight) {
+                        if (child.material.emissive) {
+                            child.material.emissive = new THREE.Color(0xff0000);
+                            child.material.emissiveIntensity = 0.15;
+                        }
+                    }
+                });
+            }
+
+            // 添加交互提示
+            const highlightGeometry = new THREE.BoxGeometry(16, 26, 11);
+            const highlightMaterial = new THREE.MeshBasicMaterial({
+                color: 0x3562E3,
+                transparent: true,
+                opacity: 0,
+                side: THREE.BackSide
+            });
+            const highlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+            highlight.position.y = 13;
+            highlight.userData = { isHighlight: true };
+            group.add(highlight);
+
+            return {
+                group: group,
+                index: index,
+                highlight: highlight,
+                status: status,
+                soc: soc,
+                power: power,
+                temperature: temperature,
+                soh: soh,
+                utilization: utilization,
+                workState: workState,
+                labelGroup: labelGroup,
+                data: {
+                    name: `储能柜 ${String(index + 1).padStart(3, '0')}`,
+                    model: 'ESS-2500',
+                    capacity: '312.5 kWh',
+                    soc: soc + '%',
+                    temperature: (Math.random() * 5 + 24).toFixed(1) + '°C',
+                    power: power + ' kW',
+                    voltage: (Math.random() * 50 + 700).toFixed(1) + ' V',
+                    current: (Math.random() * 100 + 150).toFixed(1) + ' A',
+                    status: status
+                },
+                components: {
+                    battery: {
+                        name: '电池模组',
+                        status: '运行正常',
+                        temperature: (Math.random() * 5 + 35).toFixed(1) + '°C',
+                        soc: soc + '%',
+                        voltage: (Math.random() * 50 + 700).toFixed(1) + ' V',
+                        current: (Math.random() * 100 + 150).toFixed(1) + ' A',
+                        modules: '16个模组',
+                        health: '良好'
+                    },
+                    control: {
+                        name: '电气控制柜',
+                        status: '运行正常',
+                        breakers: '12个断路器',
+                        position: '全部合闸',
+                        current: (Math.random() * 100 + 200).toFixed(1) + ' A',
+                        protection: '正常'
+                    },
+                    panel: {
+                        name: '控制面板',
+                        status: '运行正常',
+                        screen: 'HMI触摸屏',
+                        cpu: Math.floor(Math.random() * 30 + 10) + '%',
+                        memory: Math.floor(Math.random() * 40 + 30) + '%',
+                        uptime: Math.floor(Math.random() * 100 + 200) + ' 小时'
+                    },
+                    cooling: {
+                        name: '散热系统',
+                        status: '运行正常',
+                        fans: '3个风扇',
+                        speed: (Math.random() * 1000 + 2000).toFixed(0) + ' RPM',
+                        airflow: (Math.random() * 200 + 800).toFixed(0) + ' m³/h',
+                        temperature: (Math.random() * 5 + 20).toFixed(1) + '°C'
+                    },
+                    screen: {
+                        name: 'HMI监控系统',
+                        status: status === 'online' ? '在线' : status === 'offline' ? '离线' : '故障',
+                        connection: status === 'online' ? '正常' : '断开',
+                        dataRate: status === 'online' ? (Math.random() * 50 + 50).toFixed(1) + ' Mbps' : '0 Mbps'
+                    }
+                }
+            };
+        }
+
+        // 窗口大小调整
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        // 鼠标移动事件
+        function onMouseMove(event) {
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
+            const mouse = new THREE.Vector2();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // 高亮悬停的储能柜
+            cabinets.forEach(cabinet => {
+                const intersects = raycaster.intersectObjects(cabinet.group.children.filter(child => !child.userData.isHighlight), true);
+                if (intersects.length > 0) {
+                    cabinet.highlight.material.opacity = 0.1;
+                    container.style.cursor = 'pointer';
+                } else {
+                    cabinet.highlight.material.opacity = 0;
+                }
+            });
+
+            // 如果没有悬停在任何储能柜上
+            const anyHovered = cabinets.some(cabinet => cabinet.highlight.material.opacity > 0);
+            if (!anyHovered) {
+                container.style.cursor = 'default';
+            }
+        }
+
+        // 鼠标点击事件
+        function onMouseClick(event) {
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
+            const mouse = new THREE.Vector2();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // 检测储能柜点击
+            cabinets.forEach(cabinet => {
+                const intersects = raycaster.intersectObjects(cabinet.group.children.filter(child => !child.userData.isHighlight), true);
+                if (intersects.length > 0) {
+                    // 点击储能柜后跳转到电站详情页面
+                    window.location.href = `cabinet-detail.html?cabinetId=${cabinet.index}`;
+                }
+            });
+        }
+
+        // 选择储能柜
+        function selectCabinet(cabinet) {
+            // 重置之前选中的储能柜
+            if (selectedCabinet) {
+                selectedCabinet.group.children.forEach(child => {
+                    if (child.material && !child.userData.isHighlight) {
+                        child.material.emissive = new THREE.Color(0x000000);
+                        child.material.emissiveIntensity = 0;
+                    }
+                });
+            }
+
+            selectedCabinet = cabinet;
+
+            // 高亮选中的储能柜
+            cabinet.group.children.forEach(child => {
+                if (child.material && child.material.color && !child.userData.isHighlight) {
+                    child.material.emissive = child.material.color;
+                    child.material.emissiveIntensity = 0.3;
+                }
+            });
+
+            // 动画相机聚焦到选中的储能柜
+            const targetPosition = new THREE.Vector3(
+                cabinet.group.position.x + 30,
+                cabinet.group.position.y + 20,
+                cabinet.group.position.z + 30
+            );
+            
+            const startPosition = camera.position.clone();
+            const startTime = Date.now();
+            const duration = 1000;
+
+            function animateCamera() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+
+                camera.position.lerpVectors(startPosition, targetPosition, easeProgress);
+                camera.lookAt(cabinet.group.position);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+
+            animateCamera();
+
+            // 显示信息面板
+            showCabinetInfo(cabinet);
+        }
+
+        // 显示储能柜信息
+        function showCabinetInfo(cabinet) {
+            const panel = document.getElementById('cabinetInfoPanel');
+            document.getElementById('cabinetName').textContent = cabinet.data.name;
+            document.getElementById('cabinetModel').textContent = cabinet.data.model;
+            document.getElementById('cabinetCapacity').textContent = cabinet.data.capacity;
+            document.getElementById('cabinetSOC').textContent = cabinet.data.soc;
+            document.getElementById('cabinetTemp').textContent = cabinet.data.temperature;
+            
+            // 更新组件列表，添加查看详情按钮
+            const componentList = document.querySelector('.component-list');
+            const componentHTML = `
+                <h4>零部件</h4>
+                ${Object.entries(cabinet.components).map(([key, component]) => `
+                    <div class="component-item" onclick="selectComponent('${key}')">
+                        <div class="component-name">${component.name}</div>
+                        <div class="component-status">${component.status} • ${getComponentMainMetric(key, component)}</div>
+                    </div>
+                `).join('')}
+                <button class="btn btn-primary" style="width: 100%; margin-top: 16px;" onclick="viewCabinetDetail(${cabinet.index})">
+                    <i class="fas fa-external-link-alt"></i> 查看详情
+                </button>
+            `;
+            componentList.innerHTML = componentHTML;
+            
+            panel.style.display = 'block';
+        }
+        
+        // 查看储能柜详情
+        function viewCabinetDetail(index) {
+            const cabinetId = String(index + 1).padStart(3, '0');
+            const cabinet = cabinets[index];
+            window.location.href = `cabinet-detail.html?id=${cabinetId}&status=${cabinet.status}`;
+        }
+
+        // 获取组件主要指标
+        function getComponentMainMetric(type, component) {
+            switch(type) {
+                case 'transformer': return `温度: ${component.temperature}`;
+                case 'breaker': return `位置: ${component.position}`;
+                case 'control': return `CPU: ${component.cpu}`;
+                case 'cooling': return `风量: ${component.airflow}`;
+                case 'screen': return `连接: ${component.connection}`;
+                default: return '';
+            }
+        }
+
+        // 关闭信息面板
+        function closeCabinetPanel() {
+            document.getElementById('cabinetInfoPanel').style.display = 'none';
+            if (selectedCabinet) {
+                selectedCabinet.group.children.forEach(child => {
+                    if (child.material) {
+                        child.material.emissive = new THREE.Color(0x000000);
+                    }
+                });
+                selectedCabinet = null;
+            }
+        }
+
+        // 选择零部件
+        function selectComponent(componentType) {
+            selectedComponent = componentType;
+            
+            // 更新UI样式
+            document.querySelectorAll('.component-item').forEach((item, index) => {
+                const componentKeys = Object.keys(selectedCabinet.components);
+                if (componentKeys[index] === componentType) {
+                    item.style.background = 'var(--primary-color)';
+                    item.style.color = 'white';
+                } else {
+                    item.style.background = 'var(--bg-secondary)';
+                    item.style.color = 'var(--text-primary)';
+                }
+            });
+
+            // 高亮3D模型中的对应组件
+            if (selectedCabinet) {
+                selectedCabinet.group.children.forEach(child => {
+                    if (child.userData.component === componentType) {
+                        if (child.material) {
+                            child.material.emissive = new THREE.Color(0xffff00);
+                            child.material.emissiveIntensity = 0.5;
+                        }
+                    } else if (!child.userData.isHighlight && child.material) {
+                        child.material.emissive = child.material.color;
+                        child.material.emissiveIntensity = 0.3;
+                    }
+                });
+            }
+
+            // 更新图表内容
+            updateChartContent(componentType);
+        }
+
+        // 更新图表内容
+        function updateChartContent(componentType) {
+            const chartContent = document.getElementById('chartContent');
+            const activeTab = document.querySelector('.chart-tab.active').textContent;
+            const component = selectedCabinet ? selectedCabinet.components[componentType] : null;
+
+            if (!component) return;
+
+            if (activeTab === '实时数据') {
+                let metricsHTML = `<div style="padding: 20px;">
+                    <h4 style="text-align: center; margin-bottom: 20px;">${component.name} - 实时数据</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">`;
+                
+                switch(componentType) {
+                    case 'transformer':
+                        metricsHTML += `
+                            <div class="metric-box">
+                                <div class="metric-label">温度</div>
+                                <div class="metric-value">${component.temperature}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">变比</div>
+                                <div class="metric-value">${component.voltage}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">电流</div>
+                                <div class="metric-value">${component.current}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">功率</div>
+                                <div class="metric-value">${component.power}</div>
+                            </div>`;
+                        break;
+                    case 'breaker':
+                        metricsHTML += `
+                            <div class="metric-box">
+                                <div class="metric-label">状态</div>
+                                <div class="metric-value">${component.position}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">电流</div>
+                                <div class="metric-value">${component.current}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">跳闸次数</div>
+                                <div class="metric-value">${component.trips} 次</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">保护状态</div>
+                                <div class="metric-value">正常</div>
+                            </div>`;
+                        break;
+                    case 'control':
+                        metricsHTML += `
+                            <div class="metric-box">
+                                <div class="metric-label">CPU使用率</div>
+                                <div class="metric-value">${component.cpu}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">内存使用率</div>
+                                <div class="metric-value">${component.memory}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">运行时间</div>
+                                <div class="metric-value">${component.uptime}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">告警数量</div>
+                                <div class="metric-value">0</div>
+                            </div>`;
+                        break;
+                    case 'cooling':
+                        metricsHTML += `
+                            <div class="metric-box">
+                                <div class="metric-label">风量</div>
+                                <div class="metric-value">${component.airflow}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">环境温度</div>
+                                <div class="metric-value">${component.temperature}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">湿度</div>
+                                <div class="metric-value">${(Math.random() * 20 + 40).toFixed(1)}%</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">过滤器状态</div>
+                                <div class="metric-value">清洁</div>
+                            </div>`;
+                        break;
+                    case 'screen':
+                        metricsHTML += `
+                            <div class="metric-box">
+                                <div class="metric-label">系统状态</div>
+                                <div class="metric-value">${component.status}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">网络连接</div>
+                                <div class="metric-value">${component.connection}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">数据速率</div>
+                                <div class="metric-value">${component.dataRate}</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">响应时间</div>
+                                <div class="metric-value">${Math.floor(Math.random() * 50 + 10)} ms</div>
+                            </div>`;
+                        break;
+                }
+                
+                metricsHTML += `</div></div>`;
+                chartContent.innerHTML = metricsHTML;
+            } else {
+                // 历史数据视图
+                chartContent.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4>${component.name} - 历史趋势</h4>
+                        <div style="margin-top: 20px; height: 200px; display: flex; align-items: center; justify-content: center; background: var(--bg-primary); border-radius: 8px;">
+                            <div style="color: var(--text-secondary);">
+                                <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                                <div>24小时历史数据图表</div>
+                                <div style="font-size: 12px; margin-top: 8px;">选择时间范围查看详细趋势</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        // 添加样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .metric-box {
+                background: var(--bg-primary);
+                padding: 12px;
+                border-radius: 8px;
+                text-align: center;
+            }
+            .metric-label {
+                font-size: 12px;
+                color: var(--text-secondary);
+                margin-bottom: 4px;
+            }
+            .metric-value {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+            [data-theme="dark"] .metric-box {
+                background: #0f172a;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 获取零部件名称
+        function getComponentName(type) {
+            const names = {
+                'battery': '电池模组',
+                'pcs': 'PCS模块',
+                'bms': 'BMS系统',
+                'cooling': '冷却系统',
+                'fire': '消防系统'
+            };
+            return names[type] || type;
+        }
+
+        // 切换图表标签
+        function switchChartTab(tab) {
+            document.querySelectorAll('.chart-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (selectedComponent) {
+                updateChartContent(selectedComponent);
+            }
+        }
+
+        // 重置相机
+        function resetCamera() {
+            camera.position.set(-25, 80, 5); // 正俯视视角，场景中心左移
+            controls.target.set(-25, 0, 0); // 控制器中心点左移
+            camera.lookAt(-25, 0, 0); // 相机朝向场景中心
+            controls.update();
+        }
+
+
+        // 切换标签显示（功能已移除）
+        function toggleLabels() {
+            // 标签功能已移除
+        }
+
+        // 切换显示模式
+        function changeDisplayMode(mode) {
+            displayMode = mode;
+            
+            // 更新所有储能柜的标签
+            cabinets.forEach(cabinet => {
+                if (cabinet.labelGroup) {
+                    const labelData = cabinet.labelGroup.userData;
+                    
+                    // 隐藏所有图标
+                    labelData.batteryGroup.visible = false;
+                    labelData.powerGroup.visible = false;
+                    labelData.utilizationGroup.visible = false;
+                    labelData.socText.visible = false;
+                    labelData.powerText.visible = false;
+                    labelData.temperatureText.visible = false;
+                    labelData.sohText.visible = false;
+                    labelData.utilizationText.visible = false;
+                    labelData.statusText.visible = false;
+                    
+                    // 根据状态获取颜色
+                    const statusColor = cabinet.status === 'online' ? '#10b981' : 
+                                      cabinet.status === 'offline' ? '#f59e0b' : '#ef4444';
+                    
+                    // 只显示数值，不显示状态文字
+                    switch(mode) {
+                        case 'soc':
+                            labelData.socText.visible = true;
+                            updateTextSprite(labelData.socText, cabinet.soc + '%', statusColor);
+                            break;
+                        case 'power':
+                            labelData.powerText.visible = true;
+                            updateTextSprite(labelData.powerText, cabinet.power + 'kW', statusColor);
+                            break;
+                        case 'temperature':
+                            labelData.temperatureText.visible = true;
+                            updateTextSprite(labelData.temperatureText, cabinet.temperature + '°C', statusColor);
+                            break;
+                        case 'soh':
+                            labelData.sohText.visible = true;
+                            updateTextSprite(labelData.sohText, cabinet.soh + '%', statusColor);
+                            break;
+                        case 'utilization':
+                            labelData.utilizationText.visible = true;
+                            updateTextSprite(labelData.utilizationText, cabinet.utilization + '%', statusColor);
+                            break;
+                        case 'status':
+                            labelData.statusText.visible = true;
+                            // 根据工作状态使用不同颜色
+                            const workStateColor = cabinet.workState === '充电中' ? '#10b981' : 
+                                                  cabinet.workState === '放电中' ? '#3b82f6' : '#64748b';
+                            updateTextSprite(labelData.statusText, cabinet.workState, workStateColor);
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // 更新电池电量显示
+        function updateBatteryLevel(cabinet) {
+            if (!cabinet.labelGroup) return;
+            
+            const batteryGroup = cabinet.labelGroup.userData.batteryGroup;
+            if (!batteryGroup) return;
+            
+            // 查找电池精灵
+            const batterySprite = batteryGroup.children.find(child => 
+                child.userData && child.userData.isBatteryIcon
+            );
+            
+            if (!batterySprite) return;
+            
+            // 重新绘制电池
+            const soc = cabinet.soc;
+            const batteryCanvas = document.createElement('canvas');
+            batteryCanvas.width = 256;
+            batteryCanvas.height = 128;
+            const batteryCtx = batteryCanvas.getContext('2d');
+            
+            // 绘制电池外框
+            batteryCtx.strokeStyle = '#334155';
+            batteryCtx.lineWidth = 8;
+            batteryCtx.fillStyle = '#0a0a0a';
+            
+            // 使用路径绘制圆角矩形（兼容性更好）
+            const x = 20, y = 30, w = 200, h = 68, r = 8;
+            batteryCtx.beginPath();
+            batteryCtx.moveTo(x + r, y);
+            batteryCtx.lineTo(x + w - r, y);
+            batteryCtx.quadraticCurveTo(x + w, y, x + w, y + r);
+            batteryCtx.lineTo(x + w, y + h - r);
+            batteryCtx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            batteryCtx.lineTo(x + r, y + h);
+            batteryCtx.quadraticCurveTo(x, y + h, x, y + h - r);
+            batteryCtx.lineTo(x, y + r);
+            batteryCtx.quadraticCurveTo(x, y, x + r, y);
+            batteryCtx.closePath();
+            
+            batteryCtx.fill();
+            batteryCtx.stroke();
+            
+            // 绘制电池正极
+            batteryCtx.fillStyle = '#334155';
+            batteryCtx.fillRect(220, 54, 16, 20);
+            
+            // 绘制电池电量
+            const levelWidth = 180 * (soc / 100);
+            if (levelWidth > 0) {
+                batteryCtx.fillStyle = soc > 50 ? '#10b981' : (soc > 20 ? '#f59e0b' : '#ef4444');
+                batteryCtx.fillRect(30, 40, levelWidth, 48);
+            }
+            
+            // 更新纹理
+            const batteryTexture = new THREE.CanvasTexture(batteryCanvas);
+            batterySprite.material.map = batteryTexture;
+            batterySprite.material.needsUpdate = true;
+        }
+        
+        // 更新3D文字精灵
+        function updateTextSprite(textGroup, text, color) {
+            // 清除旧的文字
+            while(textGroup.children.length > 0) {
+                textGroup.remove(textGroup.children[0]);
+            }
+            
+            // 创建画布绘制文字
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+            
+            context.font = 'bold 48px Arial'; // 适中的字体大小
+            context.fillStyle = color || '#000000'; // 确保有颜色，默认黑色
+            context.textAlign = 'center'; // 居中对齐文字
+            context.textBaseline = 'middle';
+            
+            // 根据状态颜色设置背景
+            const bgColor = color || '#000000';
+            
+            // 绘制彩色背景
+            context.fillStyle = bgColor;
+            context.fillRect(0, 0, 512, 128);
+            
+            // 绘制白色文字
+            context.fillStyle = '#ffffff';
+            context.strokeStyle = '#000000';
+            context.lineWidth = 4;
+            context.strokeText(text, 256, 64); // 添加黑色描边
+            context.fillText(text, 256, 64); // 绘制白色文字
+            
+            // 创建纹理和精灵
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture,
+                sizeAttenuation: true, // 支持近大远小
+                transparent: true,
+                alphaTest: 0.1
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(20, 5, 1); // 进一步增大精灵尺寸
+            sprite.position.set(0, 0, 0); // 文字居中
+            textGroup.add(sprite);
+        }
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+
+            if (isAnimating && cabinets.length > 0) {
+                cabinets.forEach((cabinet, index) => {
+                    cabinet.group.rotation.y += 0.001 * (index % 2 === 0 ? 1 : -1);
+                });
+            }
+
+            // 更新组件动画
+            if (selectedCabinet) {
+                selectedCabinet.group.children.forEach(child => {
+                    // 冷却风扇旋转
+                    if (child.userData.component === 'cooling') {
+                        child.rotation.x += 0.05;
+                    }
+                    // 屏幕闪烁效果
+                    if (child.userData.component === 'screen') {
+                        const intensity = 0.5 + Math.sin(Date.now() * 0.002) * 0.3;
+                        child.material.emissiveIntensity = intensity;
+                    }
+                });
+            }
+            
+
+            renderer.render(scene, camera);
+        }
+
+        
+        // 更新统计面板数据
+        function updateStatsPanel() {
+            if (cabinets.length === 0) return;
+            
+            // 统计状态
+            let onlineCount = 0;
+            let offlineCount = 0;
+            let faultCount = 0;
+            let totalSOC = 0;
+            let totalPower = 0;
+            let chargePower = 0;
+            let dischargePower = 0;
+            let socValues = [];
+            let temperatures = [];
+            let efficiencies = [];
+            
+            cabinets.forEach(cabinet => {
+                // 状态统计
+                if (cabinet.status === 'online') onlineCount++;
+                else if (cabinet.status === 'offline') offlineCount++;
+                else if (cabinet.status === 'fault') faultCount++;
+                
+                // 收集SOC值
+                if (cabinet.status === 'online') {
+                    totalSOC += cabinet.soc;
+                    socValues.push(cabinet.soc);
+                }
+                
+                // 温度数据（模拟）
+                const temp = Math.random() * 15 + 25; // 25-40°C
+                temperatures.push(temp);
+                
+                // 效率数据（模拟）
+                if (cabinet.status === 'online') {
+                    const efficiency = Math.random() * 5 + 92; // 92-97%
+                    efficiencies.push(efficiency);
+                }
+                
+                // 功率统计
+                const power = parseFloat(cabinet.power);
+                if (cabinet.status === 'online') {
+                    totalPower += power;
+                    // 随机分配充放电
+                    if (Math.random() > 0.5) {
+                        chargePower += power * 0.4;
+                    } else {
+                        dischargePower += power * 0.6;
+                    }
+                }
+            });
+            
+            // 计算关键指标
+            const avgSOC = onlineCount > 0 ? Math.round(totalSOC / onlineCount) : 0;
+            const socRange = socValues.length > 0 ? Math.max(...socValues) - Math.min(...socValues) : 0;
+            const maxTemp = temperatures.length > 0 ? Math.max(...temperatures).toFixed(1) : 0;
+            const tempRange = temperatures.length > 0 ? (Math.max(...temperatures) - Math.min(...temperatures)).toFixed(1) : 0;
+            
+            // 运行指标
+            const totalCapacity = cabinets.length * 0.3125; // MWh
+            const dispatchableCapacity = onlineCount * 0.3125 * 0.9; // 90%可调度
+            const avgEfficiency = efficiencies.length > 0 ? (efficiencies.reduce((a, b) => a + b) / efficiencies.length).toFixed(1) : 0;
+            const throughput = (Math.random() * 2 + 2).toFixed(1); // 模拟吞吐量
+            
+            // 更新HTML元素
+            document.getElementById('online-count').textContent = onlineCount;
+            document.getElementById('offline-count').textContent = offlineCount;
+            document.getElementById('fault-count').textContent = faultCount;
+            
+            // 更新存在的元素
+            if (document.getElementById('avg-soc')) {
+                document.getElementById('avg-soc').textContent = avgSOC;
+            }
+            if (document.getElementById('max-temp')) {
+                document.getElementById('max-temp').textContent = maxTemp;
+            }
+            if (document.getElementById('total-power')) {
+                document.getElementById('total-power').textContent = (totalPower > 0 ? '+' : '') + totalPower.toFixed(0);
+            }
+            if (document.getElementById('efficiency')) {
+                document.getElementById('efficiency').textContent = avgEfficiency;
+            }
+        }
+        
+        
+        // 初始化图表
+        function initCharts() {
+            // 检查元素是否存在
+            const socCanvas = document.getElementById('socGaugeChart');
+            if (!socCanvas) {
+                console.log('SOC仪表盘元素不存在，跳过图表初始化');
+                return;
+            }
+            const socCtx = socCanvas.getContext('2d');
+            const centerX = 50;
+            const centerY = 50;
+            const radius = 40;
+            
+            function drawSocGauge(value) {
+                socCtx.clearRect(0, 0, 100, 100);
+                
+                // 背景圆弧
+                socCtx.beginPath();
+                socCtx.arc(centerX, centerY, radius, Math.PI * 0.75, Math.PI * 2.25, false);
+                socCtx.strokeStyle = '#e5e7eb';
+                socCtx.lineWidth = 10;
+                socCtx.stroke();
+                
+                // 值圆弧
+                const endAngle = Math.PI * 0.75 + (Math.PI * 1.5 * value / 100);
+                socCtx.beginPath();
+                socCtx.arc(centerX, centerY, radius, Math.PI * 0.75, endAngle, false);
+                const gradient = socCtx.createLinearGradient(0, 0, 100, 100);
+                if (value > 70) {
+                    gradient.addColorStop(0, '#10b981');
+                    gradient.addColorStop(1, '#059669');
+                } else if (value > 30) {
+                    gradient.addColorStop(0, '#f59e0b');
+                    gradient.addColorStop(1, '#f59e0b');
+                } else {
+                    gradient.addColorStop(0, '#ef4444');
+                    gradient.addColorStop(1, '#dc2626');
+                }
+                socCtx.strokeStyle = gradient;
+                socCtx.lineWidth = 8;
+                socCtx.stroke();
+            }
+            
+            // 功率趋势图
+            const powerCtx = document.getElementById('powerTrendChart').getContext('2d');
+            const powerChart = new Chart(powerCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: '充电',
+                        data: Array.from({length: 24}, () => Math.random() * 500 + 200),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: '放电',
+                        data: Array.from({length: 24}, () => Math.random() * 600 + 300),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 8,
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: { size: 9 },
+                                maxTicksLimit: 5,
+                                callback: function(value) {
+                                    return value + 'kW';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 充放电循环图
+            const cycleCtx = document.getElementById('cycleChart').getContext('2d');
+            const cycleChart = new Chart(cycleCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['00:00', '06:00', '12:00', '18:00', '24:00'],
+                    datasets: [{
+                        label: '充电次数',
+                        data: [2, 4, 3, 5, 2],
+                        backgroundColor: '#10b981'
+                    }, {
+                        label: '放电次数',
+                        data: [3, 2, 5, 4, 3],
+                        backgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 8,
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { size: 9 }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: { size: 9 },
+                                stepSize: 1,
+                                maxTicksLimit: 4
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 保存图表实例
+            window.charts = {
+                soc: { draw: drawSocGauge },
+                power: powerChart,
+                cycle: cycleChart
+            };
+            
+            // 初始绘制
+            drawSocGauge(82);
+        }
+        
+        // 定期更新数据
+        setInterval(() => {
+            if (selectedCabinet && selectedComponent) {
+                // 更新实时数据
+                updateChartContent(selectedComponent);
+            }
+            
+            // 更新统计面板
+            updateStatsPanel();
+            
+            // 更新充放电状态
+            updateChargingStatus();
+            
+            // 更新图表数据
+            if (window.charts) {
+                // 更新SOC仪表盘
+                const avgSOC = parseInt(document.getElementById('avg-soc').textContent);
+                window.charts.soc.draw(avgSOC);
+                // document.getElementById('socGaugeValue').textContent = avgSOC + '%';
+                
+                // 更新容量利用率
+                const capacityUsage = (Math.random() * 30 + 50).toFixed(1);
+                document.getElementById('capacity-usage').textContent = capacityUsage;
+                document.getElementById('capacity-progress').style.width = capacityUsage + '%';
+                
+                // 随机更新功率趋势数据
+                if (Math.random() > 0.7 && window.charts.power) {
+                    window.charts.power.data.datasets[0].data = Array.from({length: 24}, () => Math.random() * 500 + 200);
+                    window.charts.power.data.datasets[1].data = Array.from({length: 24}, () => Math.random() * 600 + 300);
+                    window.charts.power.update('none');
+                }
+                
+                // 更新右侧面板数据
+                // 关键运行指标
+                const totalCapacity = 2.5; // MWh
+                const currentEnergy = (1.5 + Math.random() * 0.8);
+                const energyPercent = (currentEnergy / totalCapacity * 100).toFixed(1);
+                
+                document.getElementById('total-capacity').textContent = totalCapacity.toFixed(1);
+                document.getElementById('current-energy').textContent = currentEnergy.toFixed(2);
+                document.getElementById('energy-percent').textContent = energyPercent;
+                
+                // 最高/最低指标
+                document.getElementById('max-utilization').textContent = Math.floor(85 + Math.random() * 10);
+                document.getElementById('max-util-cabinet').textContent = String(Math.floor(Math.random() * 8 + 1)).padStart(3, '0');
+                
+                document.getElementById('min-soc').textContent = Math.floor(10 + Math.random() * 20);
+                document.getElementById('min-soc-cabinet').textContent = String(Math.floor(Math.random() * 8 + 1)).padStart(3, '0');
+                
+                document.getElementById('min-soh').textContent = (92 + Math.random() * 3).toFixed(1);
+                document.getElementById('min-soh-cabinet').textContent = String(Math.floor(Math.random() * 8 + 1)).padStart(3, '0');
+                
+                // 收益统计
+                const todayProfit = Math.floor(6000 + Math.random() * 6000);
+                const yesterdayProfit = Math.floor(10000 + Math.random() * 5000);
+                const monthProfit = (300 + Math.random() * 100).toFixed(1);
+                const totalProfit = (1.5 + Math.random() * 0.8).toFixed(2);
+                
+                document.getElementById('yesterday-profit').textContent = yesterdayProfit.toLocaleString();
+                document.getElementById('today-profit').textContent = todayProfit.toLocaleString();
+                document.getElementById('month-profit').textContent = monthProfit;
+                document.getElementById('total-profit').textContent = totalProfit;
+                
+            }
+        }, 3000);
+
+        // 展开/收起功能
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = document.getElementById(sectionId + '-icon');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-right');
+            }
+        }
+
+        // 切换数据面板展开/收起
+        function toggleDataPanel() {
+            const panel = document.getElementById('dataPanel');
+            const content = document.getElementById('dataPanelContent');
+            const icon = document.getElementById('panelToggleIcon');
+            
+            if (content.style.display === 'none') {
+                // 展开
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+                panel.style.right = '20px';
+            } else {
+                // 收起
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+                // 保持面板在右侧，只隐藏内容
+            }
+        }
+
+        // 编辑模式状态
+        let isEditMode = false;
+
+        // 切换编辑模式
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const editButton = document.getElementById('editButton');
+            const editButtonText = document.getElementById('editButtonText');
+            
+            if (isEditMode) {
+                // 进入编辑模式
+                editButton.style.background = '#3b82f6';
+                editButton.style.color = 'white';
+                editButton.style.borderColor = '#3b82f6';
+                editButtonText.textContent = '保存';
+                
+                // 使所有可编辑元素变为输入框
+                makeEditable('total-capacity', 'MWh', 0.1);
+                makeEditable('max-utilization', '%', 1);
+                makeEditable('min-soc', '%', 1);
+                makeEditable('min-soh', '%', 0.1);
+                makeEditable('yesterday-profit', '', 1);
+                makeEditable('today-profit', '', 1);
+                makeEditable('month-profit', 'K', 0.1);
+                makeEditable('total-profit', 'M', 0.01);
+            } else {
+                // 退出编辑模式
+                editButton.style.background = 'none';
+                editButton.style.color = '#64748b';
+                editButton.style.borderColor = '#e5e7eb';
+                editButtonText.textContent = '编辑';
+                
+                // 保存所有编辑的值
+                saveEditableValues();
+            }
+        }
+
+        // 使元素可编辑
+        function makeEditable(elementId, unit, step) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const currentValue = element.textContent;
+            const parent = element.parentNode;
+            
+            // 创建输入框
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.value = currentValue.replace(/,/g, '');
+            input.step = step;
+            input.style.cssText = 'width: 80px; padding: 2px 4px; border: 1px solid #3b82f6; border-radius: 4px; font-size: inherit; font-weight: inherit; text-align: center;';
+            input.dataset.elementId = elementId;
+            input.dataset.unit = unit;
+            
+            // 替换元素
+            element.style.display = 'none';
+            parent.insertBefore(input, element);
+            
+            // 自动聚焦第一个输入框
+            if (elementId === 'total-capacity') {
+                input.focus();
+            }
+        }
+
+        // 保存可编辑的值
+        function saveEditableValues() {
+            const inputs = document.querySelectorAll('input[data-element-id]');
+            inputs.forEach(input => {
+                const elementId = input.dataset.elementId;
+                const element = document.getElementById(elementId);
+                
+                if (element) {
+                    // 格式化数值
+                    let value = parseFloat(input.value);
+                    if (elementId === 'yesterday-profit' || elementId === 'today-profit') {
+                        value = Math.floor(value).toLocaleString();
+                    } else if (elementId === 'month-profit' || elementId === 'total-profit') {
+                        value = value.toFixed(elementId === 'total-profit' ? 2 : 1);
+                    } else {
+                        value = value.toFixed(elementId === 'min-soh' ? 1 : 0);
+                    }
+                    
+                    element.textContent = value;
+                    element.style.display = '';
+                    input.remove();
+                }
+            });
+            
+            // 显示保存成功提示
+            showToast('数据已保存');
+        }
+
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position: fixed; top: 80px; right: 20px; background: #10b981; color: white; padding: 12px 24px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2000;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 更新充放电状态统计
+        function updateChargingStatus() {
+            let chargingCount = 0;
+            let dischargingCount = 0;
+            let standbyCount = 0;
+            
+            cabinets.forEach(cabinet => {
+                const rand = Math.random();
+                if (rand < 0.4) chargingCount++;
+                else if (rand < 0.7) dischargingCount++;
+                else standbyCount++;
+            });
+            
+            document.getElementById('charging-count').textContent = chargingCount;
+            document.getElementById('discharging-count').textContent = dischargingCount;
+            document.getElementById('standby-count').textContent = standbyCount;
+        }
+
+        // 初始化时调用一次
+        setTimeout(() => {
+            updateChargingStatus();
+        }, 1000);
+
+
+    </script>
+</body>
+</html>

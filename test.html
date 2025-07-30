@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <script>
+        console.log("Test page loaded successfully");
+        
+        // 测试 cabinet-detail.html 的基本功能
+        fetch('cabinet-detail.html')
+            .then(response => response.text())
+            .then(html => {
+                console.log("Cabinet detail HTML loaded, length:", html.length);
+                
+                // 检查是否包含关键函数
+                if (html.includes('createCabinetModel')) {
+                    console.log("✓ createCabinetModel function found");
+                } else {
+                    console.log("✗ createCabinetModel function missing");
+                }
+                
+                if (html.includes('switchComponent')) {
+                    console.log("✓ switchComponent function found");
+                } else {
+                    console.log("✗ switchComponent function missing");
+                }
+                
+                if (html.includes('THREE.Scene')) {
+                    console.log("✓ THREE.Scene found");
+                } else {
+                    console.log("✗ THREE.Scene missing");
+                }
+                
+                // 检查语法错误
+                const scriptMatches = html.match(/<script>([\s\S]*?)<\/script>/g);
+                if (scriptMatches) {
+                    console.log("Found", scriptMatches.length, "script tags");
+                    
+                    // 简单的括号匹配检查
+                    scriptMatches.forEach((script, index) => {
+                        const content = script.replace(/<\/?script[^>]*>/g, '');
+                        const openBraces = (content.match(/\{/g) || []).length;
+                        const closeBraces = (content.match(/\}/g) || []).length;
+                        const openParens = (content.match(/\(/g) || []).length;
+                        const closeParens = (content.match(/\)/g) || []).length;
+                        
+                        console.log(`Script ${index + 1}: Braces ${openBraces}/${closeBraces}, Parens ${openParens}/${closeParens}`);
+                        
+                        if (openBraces !== closeBraces) {
+                            console.log(`⚠️ Script ${index + 1} has unmatched braces`);
+                        }
+                        if (openParens !== closeParens) {
+                            console.log(`⚠️ Script ${index + 1} has unmatched parentheses`);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error loading cabinet-detail.html:", error);
+            });
+    </script>
+</body>
+</html>
