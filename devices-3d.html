@@ -6,59 +6,50 @@
     <title>设备管理 - 储能柜管理系统</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/renderers/CSS3DRenderer.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 视图切换按钮样式 */
+        /* 视图切换按钮样式 - 浮动层 */
         .view-toggle {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 100;
             display: flex;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 6px;
             gap: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .view-toggle {
+            background: rgba(30, 41, 59, 0.95);
         }
         
         .view-toggle button {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         
         .view-toggle button:hover {
             color: var(--text-primary);
+            background: rgba(59, 130, 246, 0.1);
         }
         
         .view-toggle button.active {
-            background: var(--bg-primary);
-            color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        /* 3D场景容器 */
-        #scene-container {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 160px);
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            border-radius: 12px;
-            overflow: hidden;
-            display: none;
-        }
-        
-        /* 表格视图容器 */
-        #table-container {
-            display: block;
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
         
         /* 排序和抽屉样式 */
@@ -100,71 +91,6 @@
         [data-theme="dark"] #deleteConfirmModal p {
             color: #e2e8f0;
         }
-        
-        /* 3D视图中的信息面板 */
-        .info-panel-3d {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 320px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease;
-        }
-        
-        [data-theme="dark"] .info-panel-3d {
-            background: rgba(30, 41, 59, 0.95);
-        }
-        
-        /* 3D场景中的储能柜标签 */
-        .cabinet-label {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .cabinet-label:hover {
-            background: rgba(59, 130, 246, 1);
-            transform: scale(1.1);
-        }
-        
-        /* 3D场景中的电池样式 */
-        .battery-icon-3d {
-            width: 60px;
-            height: 30px;
-            border: 2px solid #334155;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-            background: #0a0a0a;
-        }
-        
-        .battery-icon-3d::after {
-            content: '';
-            position: absolute;
-            right: -4px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 12px;
-            background: #334155;
-            border-radius: 0 2px 2px 0;
-        }
-        
-        .battery-level-3d {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            transition: width 0.3s ease;
-        }
     </style>
 </head>
 <body>
@@ -180,18 +106,6 @@
         </div>
         
         <div class="header-right">
-            <!-- 视图切换按钮 -->
-            <div class="view-toggle">
-                <button class="active" onclick="switchView('table')">
-                    <i class="fas fa-table"></i>
-                    表格视图
-                </button>
-                <button onclick="switchView('3d')">
-                    <i class="fas fa-cube"></i>
-                    3D视图
-                </button>
-            </div>
-            
             <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
                 <i class="fas fa-moon" id="headerThemeIcon"></i>
             </button>
@@ -219,6 +133,10 @@
                 <i class="fas fa-database"></i>
                 <span id="menuDevices">设备管理</span>
             </a>
+            <a href="station1.html" class="menu-item" data-menu="3d-view">
+                <i class="fas fa-cube"></i>
+                <span id="menu3DView">3D视图</span>
+            </a>
             <a href="#" class="menu-item">
                 <i class="fas fa-cogs"></i>
                 <span id="menuControl">设备控制</span>
@@ -240,6 +158,18 @@
 
     <!-- 主内容区域 -->
     <main class="main-content" id="mainContent">
+        <!-- 视图切换按钮 -->
+        <div class="view-toggle">
+            <button class="active">
+                <i class="fas fa-table"></i>
+                表格视图
+            </button>
+            <button onclick="window.location.href='station1.html'">
+                <i class="fas fa-cube"></i>
+                3D视图
+            </button>
+        </div>
+        
         <!-- 表格视图 -->
         <div id="table-container">
             <!-- 查询区域 -->
@@ -330,57 +260,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 3D视图 -->
-        <div id="scene-container">
-            <div id="threejs-container" style="width: 100%; height: 100%;"></div>
-            
-            <!-- 右侧信息面板 -->
-            <div class="info-panel-3d">
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color);">
-                    <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 3px; height: 16px; background: #3b82f6; border-radius: 2px;"></span>
-                        储能柜实时监控
-                    </h4>
-                    <button onclick="toggleInfoPanel()" style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary);">
-                        <i id="infoPanelToggleIcon" class="fas fa-chevron-up" style="font-size: 14px;"></i>
-                    </button>
-                </div>
-                
-                <div id="infoPanelContent" style="padding: 15px; max-height: calc(100vh - 200px); overflow-y: auto;">
-                    <!-- 状态概览 -->
-                    <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">总体状态</div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-                            <span style="font-size: 15px; font-weight: 600; color: var(--text-primary);">运行正常</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 设备统计 -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
-                            <div style="font-size: 12px; color: var(--text-secondary);">在线设备</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #10b981; margin-top: 4px;">6</div>
-                        </div>
-                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
-                            <div style="font-size: 12px; color: var(--text-secondary);">离线设备</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #6b7280; margin-top: 4px;">1</div>
-                        </div>
-                    </div>
-                    
-                    <!-- 选中设备信息 -->
-                    <div id="selectedDeviceInfo" style="display: none;">
-                        <h5 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">设备详情</h5>
-                        <div style="background: var(--bg-secondary); border-radius: 8px; padding: 12px;">
-                            <div id="deviceDetails">
-                                <!-- 动态填充设备信息 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- 移动端遮罩 -->
@@ -441,15 +320,6 @@
         // 设置当前页面菜单项
         setActiveMenuItem('devices');
 
-        // 当前视图模式
-        let currentView = 'table';
-        
-        // 3D场景相关变量
-        let scene, camera, renderer, controls;
-        let cabinets = [];
-        let raycaster, mouse;
-        let selectedCabinet = null;
-
         // 模拟设备数据
         let devices = [
             { id: 1, code: 'ESS001', name: '储能柜-A区-01', soc: 85, soh: 98, power: 125.5, status: 'online', mode: 'auto-charge' },
@@ -467,294 +337,6 @@
         let sortField = '';
         let sortOrder = 'asc';
         let filteredDevices = [...devices];
-
-        // 切换视图
-        function switchView(view) {
-            currentView = view;
-            
-            // 更新按钮状态
-            document.querySelectorAll('.view-toggle button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.closest('button').classList.add('active');
-            
-            if (view === 'table') {
-                document.getElementById('table-container').style.display = 'block';
-                document.getElementById('scene-container').style.display = 'none';
-            } else {
-                document.getElementById('table-container').style.display = 'none';
-                document.getElementById('scene-container').style.display = 'block';
-                
-                // 初始化3D场景（如果还没有初始化）
-                if (!scene) {
-                    init3DScene();
-                }
-            }
-        }
-
-        // 初始化3D场景
-        function init3DScene() {
-            const container = document.getElementById('threejs-container');
-            
-            // 创建场景
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a0a);
-            scene.fog = new THREE.Fog(0x0a0a0a, 10, 100);
-            
-            // 创建相机
-            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(15, 10, 15);
-            
-            // 创建渲染器
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            container.appendChild(renderer.domElement);
-            
-            // 创建控制器
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.minDistance = 5;
-            controls.maxDistance = 50;
-            
-            // 添加灯光
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 20, 10);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.camera.near = 0.1;
-            directionalLight.shadow.camera.far = 50;
-            directionalLight.shadow.camera.left = -20;
-            directionalLight.shadow.camera.right = 20;
-            directionalLight.shadow.camera.top = 20;
-            directionalLight.shadow.camera.bottom = -20;
-            scene.add(directionalLight);
-            
-            // 创建地面
-            const groundGeometry = new THREE.PlaneGeometry(40, 40);
-            const groundMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x1a1a1a,
-                roughness: 0.8,
-                metalness: 0.2
-            });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.receiveShadow = true;
-            scene.add(ground);
-            
-            // 添加网格
-            const gridHelper = new THREE.GridHelper(40, 20, 0x333333, 0x222222);
-            scene.add(gridHelper);
-            
-            // 创建储能柜
-            createCabinets();
-            
-            // 初始化射线检测
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
-            
-            // 添加鼠标事件
-            renderer.domElement.addEventListener('click', onMouseClick);
-            renderer.domElement.addEventListener('mousemove', onMouseMove);
-            
-            // 窗口调整
-            window.addEventListener('resize', onWindowResize);
-            
-            // 开始动画循环
-            animate();
-        }
-
-        // 创建储能柜
-        function createCabinets() {
-            const positions = [
-                { x: -9, z: -9 }, { x: -3, z: -9 }, { x: 3, z: -9 }, { x: 9, z: -9 },
-                { x: -9, z: -3 }, { x: -3, z: -3 }, { x: 3, z: -3 }, { x: 9, z: -3 }
-            ];
-            
-            devices.forEach((device, index) => {
-                if (index < positions.length) {
-                    const cabinet = createCabinet(device, positions[index]);
-                    cabinets.push(cabinet);
-                    scene.add(cabinet.group);
-                }
-            });
-        }
-
-        // 创建单个储能柜
-        function createCabinet(device, position) {
-            const group = new THREE.Group();
-            
-            // 储能柜主体
-            const geometry = new THREE.BoxGeometry(2, 3, 1.5);
-            const material = new THREE.MeshStandardMaterial({
-                color: device.status === 'online' ? 0x2563eb : 
-                       device.status === 'offline' ? 0x6b7280 : 0xef4444,
-                roughness: 0.5,
-                metalness: 0.8
-            });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.position.y = 1.5;
-            group.add(mesh);
-            
-            // 状态指示灯
-            const lightGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-            const lightMaterial = new THREE.MeshBasicMaterial({
-                color: device.status === 'online' ? 0x10b981 : 
-                       device.status === 'offline' ? 0x6b7280 : 0xef4444,
-                emissive: device.status === 'online' ? 0x10b981 : 0x000000,
-                emissiveIntensity: 0.5
-            });
-            const light = new THREE.Mesh(lightGeometry, lightMaterial);
-            light.position.set(0, 2.8, 0.76);
-            group.add(light);
-            
-            // 设置位置
-            group.position.set(position.x, 0, position.z);
-            
-            return {
-                group: group,
-                mesh: mesh,
-                light: light,
-                device: device,
-                material: material
-            };
-        }
-
-        // 鼠标点击事件
-        function onMouseClick(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            
-            raycaster.setFromCamera(mouse, camera);
-            
-            const intersects = raycaster.intersectObjects(scene.children, true);
-            
-            if (intersects.length > 0) {
-                const clickedObject = intersects[0].object;
-                
-                // 查找点击的储能柜
-                const cabinet = cabinets.find(c => c.mesh === clickedObject || c.group === clickedObject.parent);
-                
-                if (cabinet) {
-                    selectCabinet(cabinet);
-                }
-            }
-        }
-
-        // 鼠标移动事件
-        function onMouseMove(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
-
-        // 选择储能柜
-        function selectCabinet(cabinet) {
-            // 重置之前选中的储能柜
-            if (selectedCabinet) {
-                selectedCabinet.material.emissive = new THREE.Color(0x000000);
-            }
-            
-            selectedCabinet = cabinet;
-            cabinet.material.emissive = new THREE.Color(0x3b82f6);
-            cabinet.material.emissiveIntensity = 0.3;
-            
-            // 更新右侧信息面板
-            updateDeviceInfo(cabinet.device);
-        }
-
-        // 更新设备信息面板
-        function updateDeviceInfo(device) {
-            const infoDiv = document.getElementById('selectedDeviceInfo');
-            const detailsDiv = document.getElementById('deviceDetails');
-            
-            infoDiv.style.display = 'block';
-            
-            detailsDiv.innerHTML = `
-                <div style="display: grid; gap: 8px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">设备编码</span>
-                        <span style="font-size: 13px; font-weight: 600;">${device.code}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">设备名称</span>
-                        <span style="font-size: 13px; font-weight: 600;">${device.name}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">SOC</span>
-                        <span style="font-size: 13px; font-weight: 600;">${device.soc}%</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">SOH</span>
-                        <span style="font-size: 13px; font-weight: 600;">${device.soh}%</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">功率</span>
-                        <span style="font-size: 13px; font-weight: 600;">${device.power > 0 ? '+' : ''}${device.power} kW</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">状态</span>
-                        ${getStatusBadge(device.status)}
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-size: 13px; color: var(--text-secondary);">模式</span>
-                        <span style="font-size: 13px;">${getModeBadge(device.mode)}</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="viewDetails(${device.id})" style="width: 100%; margin-top: 12px; height: 36px; font-size: 13px;">
-                    <i class="fas fa-eye"></i> 查看详情
-                </button>
-            `;
-        }
-
-        // 窗口调整
-        function onWindowResize() {
-            if (camera && renderer) {
-                const container = document.getElementById('threejs-container');
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            }
-        }
-
-        // 动画循环
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (controls) {
-                controls.update();
-            }
-            
-            // 旋转状态指示灯
-            cabinets.forEach(cabinet => {
-                if (cabinet.device.status === 'online') {
-                    cabinet.light.material.emissiveIntensity = 0.5 + Math.sin(Date.now() * 0.003) * 0.3;
-                }
-            });
-            
-            if (renderer && scene && camera) {
-                renderer.render(scene, camera);
-            }
-        }
-
-        // 切换信息面板
-        function toggleInfoPanel() {
-            const content = document.getElementById('infoPanelContent');
-            const icon = document.getElementById('infoPanelToggleIcon');
-            
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                icon.className = 'fas fa-chevron-up';
-            } else {
-                content.style.display = 'none';
-                icon.className = 'fas fa-chevron-down';
-            }
-        }
 
         // 渲染表格
         function renderTable() {
