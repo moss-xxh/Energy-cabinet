@@ -448,29 +448,50 @@
     <nav class="sidebar" id="sidebar">
         <div class="menu">
             <a href="dashboard.html" class="menu-item" data-menu="dashboard">
-                <i class="fas fa-tachometer-alt"></i>
+                <span style="font-size: 18px; margin-right: 12px;">📊</span>
                 <span id="menuDashboard">仪表盘</span>
             </a>
+            <a href="site1.html" class="menu-item" data-menu="site1">
+                <span style="font-size: 18px; margin-right: 12px;">🏢</span>
+                <span>站点管理</span>
+            </a>
             <a href="devices.html" class="menu-item active" data-menu="devices">
-                <i class="fas fa-database"></i>
+                <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
                 <span id="menuDevices">设备管理</span>
             </a>
-            <a href="device-control.html" class="menu-item" data-menu="device-control" style="display: none;">
-                <i class="fas fa-cogs"></i>
-                <span id="menuControl">设备控制</span>
-            </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-exclamation-triangle"></i>
+            <a href="alarm-management.html" class="menu-item" data-menu="alarm-management">
+                <span style="font-size: 18px; margin-right: 12px;">🔔</span>
                 <span id="menuAlarms">告警管理</span>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-chart-bar"></i>
-                <span id="menuReports">报告中心</span>
+            <a href="rule-engine.html" class="menu-item" data-menu="rule-engine" style="display: none;">
+                <i class="fas fa-code-branch"></i>
+                <span>规则引擎</span>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-users"></i>
-                <span id="menuSystem">系统管理</span>
-            </a>
+            <div class="menu-item-group">
+                <a href="javascript:void(0)" class="menu-item" data-menu="system-management" onclick="toggleSubmenu(this)">
+                    <span style="font-size: 18px; margin-right: 12px;">🔧</span>
+                    <span id="menuSystem">系统管理</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
+                </a>
+                <div class="submenu" style="display: none;">
+                    <a href="system-management.html?module=menus" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
+                        <span>菜单管理</span>
+                    </a>
+                    <a href="system-management.html?module=roles" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👥</span>
+                        <span>角色管理</span>
+                    </a>
+                    <a href="system-management.html?module=personnel" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👤</span>
+                        <span>人员管理</span>
+                    </a>
+                    <a href="system-management.html?module=logs" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📄</span>
+                        <span>日志管理</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -780,6 +801,13 @@
                     <!-- 控制面板 -->
                     <div id="controlPanel" style="display: none;">
                         <div style="padding: 20px;">
+                            <!-- 顶部编辑按钮 -->
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                                <button id="editControlBtn" onclick="toggleControlEdit()" style="padding: 8px 20px; font-size: 14px; background: #3562E3; color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-edit" style="font-size: 14px;"></i>编辑
+                                </button>
+                            </div>
+                            
                             <!-- 控制要求 -->
                             <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                                 <!-- 运行模式选择 -->
@@ -838,9 +866,6 @@
                             <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                     <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">峰谷套利</h3>
-                                    <button id="editControlBtn" onclick="toggleControlEdit()" style="padding: 4px 12px; font-size: 11px; background: #3562E3; color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
-                                        <i class="fas fa-edit" style="font-size: 10px; margin-right: 4px;"></i>编辑
-                                    </button>
                                 </div>
                                 
                                 <!-- 时间轴 -->
@@ -970,12 +995,12 @@
                             </div>
                             
                             <!-- 底部按钮 -->
-                            <div id="controlButtons" style="display: none; margin-top: 24px; text-align: center;">
-                                <button onclick="cancelControlEdit()" style="padding: 8px 24px; margin-right: 12px; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                                    取消
+                            <div id="controlButtons" style="display: none; position: sticky; bottom: 0; background: white; padding: 16px 0; margin-top: 24px; border-top: 1px solid var(--border-color); text-align: center;">
+                                <button onclick="cancelControlEdit()" style="padding: 10px 32px; margin-right: 16px; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fas fa-times" style="margin-right: 6px;"></i>取消
                                 </button>
-                                <button onclick="saveControlSettings()" style="padding: 8px 24px; background: #3562E3; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                                    保存
+                                <button onclick="saveControlSettings()" style="padding: 10px 32px; background: #3562E3; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fas fa-check" style="margin-right: 6px;"></i>保存
                                 </button>
                             </div>
 
@@ -1021,6 +1046,15 @@
 
     <script src="common.js"></script>
     <script>
+        // Toggle submenu
+        function toggleSubmenu(element) {
+            element.classList.toggle('expanded');
+            const submenu = element.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
         // 检查登录状态
         checkAuth();
         
@@ -5721,11 +5755,9 @@
                 
                 // 启用所有控件
                 controlPanel.querySelectorAll('input, select, button').forEach(element => {
-                    // 排除编辑按钮本身、标签页切换按钮、运行模式单选按钮、手动模式按钮和底部按钮
+                    // 排除编辑按钮本身、标签页切换按钮和底部按钮
                     if (element.id !== 'editControlBtn' && 
                         !element.classList.contains('data-tab') && 
-                        element.name !== 'mode' &&
-                        !element.classList.contains('manual-mode-btn') &&
                         element.parentElement?.id !== 'controlButtons') {
                         element.disabled = false;
                         element.style.opacity = '1';
@@ -5739,18 +5771,18 @@
                 }
             } else {
                 // 显示编辑按钮
-                editBtn.style.display = 'inline-block';
+                editBtn.style.display = 'flex';
+                editBtn.style.background = '#3562E3';
+                editBtn.innerHTML = '<i class="fas fa-edit" style="font-size: 14px;"></i>编辑';
                 
                 // 隐藏底部按钮
                 controlButtons.style.display = 'none';
                 
                 // 禁用所有控件
                 controlPanel.querySelectorAll('input, select, button').forEach(element => {
-                    // 排除编辑按钮本身、标签页切换按钮、运行模式单选按钮、手动模式按钮和底部按钮
+                    // 排除编辑按钮本身、标签页切换按钮和底部按钮
                     if (element.id !== 'editControlBtn' && 
                         !element.classList.contains('data-tab') && 
-                        element.name !== 'mode' &&
-                        !element.classList.contains('manual-mode-btn') &&
                         element.parentElement?.id !== 'controlButtons') {
                         element.disabled = true;
                         element.style.opacity = '0.6';
@@ -5775,8 +5807,16 @@
         // 保存控制设置
         function saveControlSettings() {
             if (isControlEditMode) {
-                toggleControlEdit(); // 这会自动切换isControlEditMode的状态
-                showToast('设置保存成功！');
+                // 收集所有设置数据（这里可以添加实际的保存逻辑）
+                const settings = {
+                    mode: document.querySelector('input[name="mode"]:checked').value,
+                    // 可以继续添加其他设置项的收集
+                };
+                
+                console.log('保存的设置:', settings);
+                
+                toggleControlEdit(); // 退出编辑模式
+                showToast('控制设置已成功保存！');
             }
         }
         

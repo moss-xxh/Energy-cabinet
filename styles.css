@@ -140,7 +140,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    background: #3562E3;
     color: white;
     height: 48px;
     width: 100%;
@@ -148,7 +148,8 @@ body {
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 10px 25px -5px rgba(53, 98, 227, 0.4);
+    background: #2952d3;
 }
 
 /* 主题切换按钮 */

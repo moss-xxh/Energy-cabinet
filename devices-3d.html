@@ -156,29 +156,50 @@
     <nav class="sidebar" id="sidebar">
         <div class="menu">
             <a href="dashboard.html" class="menu-item" data-menu="dashboard">
-                <i class="fas fa-tachometer-alt"></i>
+                <span style="font-size: 18px; margin-right: 12px;">📊</span>
                 <span id="menuDashboard">仪表盘</span>
             </a>
+            <a href="site1.html" class="menu-item" data-menu="site1">
+                <span style="font-size: 18px; margin-right: 12px;">🏢</span>
+                <span>站点管理</span>
+            </a>
             <a href="devices.html" class="menu-item active" data-menu="devices">
-                <i class="fas fa-database"></i>
+                <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
                 <span id="menuDevices">设备管理</span>
             </a>
-            <a href="#" class="menu-item" style="display: none;">
-                <i class="fas fa-cogs"></i>
-                <span id="menuControl">设备控制</span>
-            </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-exclamation-triangle"></i>
+            <a href="alarm-management.html" class="menu-item" data-menu="alarm-management">
+                <span style="font-size: 18px; margin-right: 12px;">🔔</span>
                 <span id="menuAlarms">告警管理</span>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-chart-bar"></i>
-                <span id="menuReports">报告中心</span>
+            <a href="rule-engine.html" class="menu-item" data-menu="rule-engine" style="display: none;">
+                <i class="fas fa-code-branch"></i>
+                <span>规则引擎</span>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-users"></i>
-                <span id="menuSystem">系统管理</span>
-            </a>
+            <div class="menu-item-group">
+                <a href="javascript:void(0)" class="menu-item" data-menu="system-management" onclick="toggleSubmenu(this)">
+                    <span style="font-size: 18px; margin-right: 12px;">🔧</span>
+                    <span id="menuSystem">系统管理</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
+                </a>
+                <div class="submenu" style="display: none;">
+                    <a href="system-management.html?module=menus" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
+                        <span>菜单管理</span>
+                    </a>
+                    <a href="system-management.html?module=roles" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👥</span>
+                        <span>角色管理</span>
+                    </a>
+                    <a href="system-management.html?module=personnel" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👤</span>
+                        <span>人员管理</span>
+                    </a>
+                    <a href="system-management.html?module=logs" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📄</span>
+                        <span>日志管理</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -391,6 +412,15 @@
 
     <script src="common.js"></script>
     <script>
+        // Toggle submenu
+        function toggleSubmenu(element) {
+            element.classList.toggle('expanded');
+            const submenu = element.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
         // 检查登录状态
         checkAuth();
         
