@@ -3789,70 +3789,125 @@
         
         // 初始化BMS历史数据图表
         function initBMSHistoryCharts() {
-            const statusCtx = document.getElementById('bmsStatusChart');
-            if (statusCtx) {
-                new Chart(statusCtx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                        datasets: [{
-                            label: '总电压',
-                            data: Array.from({length: 24}, () => Math.random() * 20 + 750),
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            yAxisID: 'y'
-                        }, {
-                            label: '总电流',
-                            data: Array.from({length: 24}, () => Math.random() * 50 + 150),
-                            borderColor: '#dc2626',
-                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            yAxisID: 'y1'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'top' } },
-                        scales: {
-                            y: { position: 'left', title: { display: true, text: '电压 (V)' } },
-                            y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '电流 (A)' }, grid: { drawOnChartArea: false } }
+            // 电池电压历史
+            if (shouldShowField('bms', 'history', 'voltageHistory')) {
+                const voltageCtx = document.getElementById('bmsVoltageChart');
+                if (voltageCtx) {
+                    new Chart(voltageCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                            datasets: [{
+                                label: '总电压',
+                                data: Array.from({length: 24}, () => Math.random() * 20 + 750),
+                                borderColor: '#2563eb',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                yAxisID: 'y'
+                            }, {
+                                label: '总电流',
+                                data: Array.from({length: 24}, () => Math.random() * 50 + 150),
+                                borderColor: '#dc2626',
+                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                yAxisID: 'y1'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'top' } },
+                            scales: {
+                                y: { position: 'left', title: { display: true, text: '电压 (V)' } },
+                                y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '电流 (A)' }, grid: { drawOnChartArea: false } }
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
             
-            const balanceCtx = document.getElementById('bmsBalanceChart');
-            if (balanceCtx) {
-                new Chart(balanceCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['模组1', '模组2', '模组3', '模组4', '模组5', '模组6'],
-                        datasets: [{
-                            label: 'SOC分布',
-                            data: [85, 83, 87, 84, 86, 85],
-                            backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                            borderColor: '#10b981',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { min: 80, max: 90, title: { display: true, text: 'SOC (%)' } } }
-                    }
-                });
+            // SOC均衡管理
+            if (shouldShowField('bms', 'history', 'socBalance')) {
+                const balanceCtx = document.getElementById('bmsBalanceChart');
+                if (balanceCtx) {
+                    new Chart(balanceCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['模组1', '模组2', '模组3', '模组4', '模组5', '模组6'],
+                            datasets: [{
+                                label: 'SOC分布',
+                                data: [85, 83, 87, 84, 86, 85],
+                                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                                borderColor: '#10b981',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { min: 80, max: 90, title: { display: true, text: 'SOC (%)' } } }
+                        }
+                    });
+                }
+            }
+            
+            // 温度分布分析
+            if (shouldShowField('bms', 'history', 'tempDistribution')) {
+                const tempCtx = document.getElementById('bmsTempChart');
+                if (tempCtx) {
+                    new Chart(tempCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                            datasets: [{
+                                label: '最高温度',
+                                data: Array.from({length: 24}, () => Math.random() * 5 + 35),
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }, {
+                                label: '平均温度',
+                                data: Array.from({length: 24}, () => Math.random() * 3 + 30),
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }, {
+                                label: '最低温度',
+                                data: Array.from({length: 24}, () => Math.random() * 3 + 25),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'top' } },
+                            scales: {
+                                y: { 
+                                    title: { display: true, text: '温度 (°C)' },
+                                    min: 20,
+                                    max: 45
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
         
         // 初始化电池历史数据图表
         function initBatteryHistoryCharts() {
-            const performanceCtx = document.getElementById('batteryPerformanceChart');
-            if (performanceCtx) {
+            // 电池性能趋势
+            if (shouldShowField('battery', 'history', 'performance')) {
+                const performanceCtx = document.getElementById('batteryPerformanceChart');
+                if (performanceCtx) {
                 new Chart(performanceCtx.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -3885,10 +3940,13 @@
                         }
                     }
                 });
+                }
             }
             
-            const cycleCtx = document.getElementById('batteryCycleChart');
-            if (cycleCtx) {
+            // 循环寿命统计
+            if (shouldShowField('battery', 'history', 'cycles')) {
+                const cycleCtx = document.getElementById('batteryCycleChart');
+                if (cycleCtx) {
                 new Chart(cycleCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -3908,6 +3966,80 @@
                         scales: { y: { beginAtZero: true, title: { display: true, text: '循环次数' } } }
                     }
                 });
+                }
+            }
+            
+            // 容量衰减分析
+            if (shouldShowField('battery', 'history', 'capacity')) {
+                const capacityCtx = document.getElementById('batteryCapacityChart');
+                if (capacityCtx) {
+                new Chart(capacityCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        datasets: [{
+                            label: '实际容量',
+                            data: [500, 498, 496, 494, 492, 490, 488, 486, 484, 482, 480, 478],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        }, {
+                            label: '容量保持率',
+                            data: [100, 99.6, 99.2, 98.8, 98.4, 98.0, 97.6, 97.2, 96.8, 96.4, 96.0, 95.6],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if (context.datasetIndex === 0) {
+                                                label += context.parsed.y + ' Ah';
+                                            } else {
+                                                label += context.parsed.y + ' %';
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { 
+                                position: 'left', 
+                                title: { display: true, text: '容量 (Ah)' },
+                                min: 450,
+                                max: 510
+                            },
+                            y1: { 
+                                type: 'linear', 
+                                display: true, 
+                                position: 'right', 
+                                title: { display: true, text: '容量保持率 (%)' }, 
+                                grid: { drawOnChartArea: false },
+                                min: 94,
+                                max: 101
+                            }
+                        }
+                    }
+                });
+                }
             }
         }
         
@@ -4153,55 +4285,124 @@
         
         // 初始化消防历史数据图表
         function initFireHistoryCharts() {
-            const systemCtx = document.getElementById('fireSystemChart');
-            if (systemCtx) {
-                new Chart(systemCtx.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['正常', '预警', '告警'],
-                        datasets: [{
-                            data: [95, 4, 1],
-                            backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
+            // 系统状态历史
+            if (shouldShowField('fire', 'history', 'systemStatus')) {
+                const systemCtx = document.getElementById('fireSystemChart');
+                if (systemCtx) {
+                    new Chart(systemCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['正常', '预警', '告警'],
+                            datasets: [{
+                                data: [95, 4, 1],
+                                backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
             }
             
-            const gasCtx = document.getElementById('gasDetectionChart');
-            if (gasCtx) {
-                new Chart(gasCtx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                        datasets: [{
-                            label: 'CO浓度',
-                            data: Array.from({length: 24}, () => Math.random() * 10 + 5),
-                            borderColor: '#dc2626',
-                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4
-                        }, {
-                            label: '烟雾浓度',
-                            data: Array.from({length: 24}, () => Math.random() * 8 + 3),
-                            borderColor: '#6b7280',
-                            backgroundColor: 'rgba(107, 114, 128, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'top' } },
-                        scales: { y: { beginAtZero: true, title: { display: true, text: '浓度 (ppm)' } } }
-                    }
-                });
+            // 气体浓度监测
+            if (shouldShowField('fire', 'history', 'gasConcentration')) {
+                const gasCtx = document.getElementById('fireGasChart');
+                if (gasCtx) {
+                    new Chart(gasCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                            datasets: [{
+                                label: 'CO浓度',
+                                data: Array.from({length: 24}, () => Math.random() * 10 + 5),
+                                borderColor: '#dc2626',
+                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }, {
+                                label: '烟雾浓度',
+                                data: Array.from({length: 24}, () => Math.random() * 8 + 3),
+                                borderColor: '#6b7280',
+                                backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'top' } },
+                            scales: { y: { beginAtZero: true, title: { display: true, text: '浓度 (ppm)' } } }
+                        }
+                    });
+                }
+            }
+            
+            // 告警记录分析
+            if (shouldShowField('fire', 'history', 'alarmHistory')) {
+                const alarmCtx = document.getElementById('fireAlarmChart');
+                if (alarmCtx) {
+                    new Chart(alarmCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                            datasets: [{
+                                label: '烟雾告警',
+                                data: [2, 1, 0, 1, 0, 1],
+                                backgroundColor: 'rgba(107, 114, 128, 0.8)',
+                                borderColor: '#6b7280',
+                                borderWidth: 1
+                            }, {
+                                label: '温度告警',
+                                data: [1, 0, 2, 0, 1, 0],
+                                backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                                borderColor: '#f59e0b',
+                                borderWidth: 1
+                            }, {
+                                label: '气体告警',
+                                data: [0, 1, 1, 0, 0, 1],
+                                backgroundColor: 'rgba(220, 38, 38, 0.8)',
+                                borderColor: '#dc2626',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            label += context.parsed.y + ' 次';
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: { 
+                                y: { 
+                                    beginAtZero: true, 
+                                    title: { display: true, text: '告警次数' },
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                },
+                                x: {
+                                    stacked: true
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
         
@@ -4790,8 +4991,7 @@
                         category: '图表',
                         fields: [
                             { id: 'strategyHistory', name: 'EMS策略执行历史', checked: true },
-                            { id: 'responseTime', name: '调度响应时间分析', checked: true },
-                            { id: 'efficiency', name: '策略效率分析', checked: true }
+                            { id: 'responseTime', name: '调度响应时间分析', checked: true }
                         ]
                     }
                 ]
@@ -5454,8 +5654,7 @@
             const historyFieldDataMap = {
                 'ems': {
                     'strategyHistory': { title: 'EMS策略执行历史', canvasId: 'emsStrategyChart' },
-                    'responseTime': { title: '调度响应时间分析', canvasId: 'emsResponseChart' },
-                    'efficiency': { title: '策略效率分析', canvasId: 'emsEfficiencyChart' }
+                    'responseTime': { title: '调度响应时间分析', canvasId: 'emsResponseChart' }
                 },
                 'pcs': {
                     'powerConversion': { title: 'PCS功率转换历史', canvasId: 'pcsPowerChart' },
@@ -5510,22 +5709,38 @@
                     'reactivePower': { label: '无功功率', value: `<span id="pcs-reactive-power">${(Math.random() * 20 - 10).toFixed(1)}</span>`, unit: 'kVar', status: '无功补偿', statusColor: '#10b981' },
                     'powerFactor': { label: '功率因数', value: `<span id="pcs-pf">${(0.95 + Math.random() * 0.04).toFixed(3)}</span>`, unit: '', status: '高功率因数', statusColor: '#10b981' },
                     'frequency': { label: '频率', value: `<span id="pcs-frequency">${(49.95 + Math.random() * 0.1).toFixed(2)}</span>`, unit: 'Hz', status: '频率稳定', statusColor: '#10b981' },
-                    'conversionEfficiency': { label: '转换效率', value: `<span id="pcs-efficiency">${(96.2 + Math.random() * 2.5).toFixed(1)}</span>`, unit: '%', status: '高效转换', statusColor: '#10b981' },
-                    'switchingFrequency': { label: '开关频率', value: `<span id="pcs-switch-freq">${(8 + Math.random() * 4).toFixed(1)}</span>`, unit: 'kHz', status: 'PWM调制', statusColor: '#666' },
-                    'igbtTemperature': { label: 'IGBT温度', value: `<span id="pcs-igbt-temp">${(55 + Math.random() * 15).toFixed(1)}</span>`, unit: '°C', status: '温度正常', statusColor: '#10b981' },
-                    'reactorTemperature': { label: '电抗器温度', value: `<span id="pcs-reactor-temp">${(42 + Math.random() * 8).toFixed(1)}</span>`, unit: '°C', status: '运行正常', statusColor: '#10b981' },
-                    'transformerTemperature': { label: '变压器温度', value: `<span id="pcs-transformer-temp">${(48 + Math.random() * 12).toFixed(1)}</span>`, unit: '°C', status: '散热良好', statusColor: '#10b981' },
-                    'totalHarmonicDistortion': { label: '总谐波失真', value: `<span id="pcs-thd">${(2.5 + Math.random() * 1.5).toFixed(2)}</span>`, unit: '%', status: 'THD优秀', statusColor: '#10b981' },
-                    'insulationResistance': { label: '绝缘阻抗', value: `<span id="pcs-insulation">${(15 + Math.random() * 10).toFixed(1)}</span>`, unit: 'MΩ', status: '绝缘良好', statusColor: '#10b981' },
+                    'efficiency': { label: '转换效率', value: `<span id="pcs-efficiency">${(96.2 + Math.random() * 2.5).toFixed(1)}</span>`, unit: '%', status: '高效转换', statusColor: '#10b981' },
+                    'switchFreq': { label: '开关频率', value: `<span id="pcs-switch-freq">${(8 + Math.random() * 4).toFixed(1)}</span>`, unit: 'kHz', status: 'PWM调制', statusColor: '#666' },
+                    'igbtTemp': { label: 'IGBT温度', value: `<span id="pcs-igbt-temp">${(55 + Math.random() * 15).toFixed(1)}</span>`, unit: '°C', status: '温度正常', statusColor: '#10b981' },
+                    'reactorTemp': { label: '电抗器温度', value: `<span id="pcs-reactor-temp">${(42 + Math.random() * 8).toFixed(1)}</span>`, unit: '°C', status: '运行正常', statusColor: '#10b981' },
+                    'transformerTemp': { label: '变压器温度', value: `<span id="pcs-transformer-temp">${(48 + Math.random() * 12).toFixed(1)}</span>`, unit: '°C', status: '散热良好', statusColor: '#10b981' },
+                    'thd': { label: '总谐波失真', value: `<span id="pcs-thd">${(2.5 + Math.random() * 1.5).toFixed(2)}</span>`, unit: '%', status: 'THD优秀', statusColor: '#10b981' },
+                    'insulation': { label: '绝缘阻抗', value: `<span id="pcs-insulation">${(15 + Math.random() * 10).toFixed(1)}</span>`, unit: 'MΩ', status: '绝缘良好', statusColor: '#10b981' },
                     'controlStatus': { label: '控制状态', value: '<span style="font-size: 16px; color: #10b981;">运行</span>', status: '正常工作模式', statusColor: '#10b981' }
                 },
                 'bms': {
                     'totalVoltage': { label: '总电压', value: `<span id="bms-total-voltage">${(720 + Math.random() * 60).toFixed(1)}</span>`, unit: 'V', status: '电压正常', statusColor: '#10b981' },
                     'totalCurrent': { label: '总电流', value: `<span id="bms-total-current">${(Math.random() > 0.5 ? '+' : '-')}${(120 + Math.random() * 80).toFixed(1)}</span>`, unit: 'A', status: '充电电流', statusColor: '#10b981' },
                     'remainingCapacity': { label: '剩余容量', value: `<span id="bms-remaining-capacity">${(450 + Math.random() * 100).toFixed(1)}</span>`, unit: 'Ah', status: '可用容量' },
-                    'chargeDischargeCycles': { label: '充放电循环', value: `<span id="bms-cycles">${Math.floor(2800 + Math.random() * 500)}</span>`, unit: '次', status: '循环寿命良好' },
+                    'cycles': { label: '充放电循环', value: `<span id="bms-cycles">${Math.floor(2800 + Math.random() * 500)}</span>`, unit: '次', status: '循环寿命良好' },
                     'internalResistance': { label: '内阻', value: `<span id="bms-internal-resistance">${(45 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mΩ', status: '阻抗正常', statusColor: '#10b981' },
-                    'insulationResistance': { label: '绝缘阻抗', value: `<span id="bms-insulation">${(850 + Math.random() * 300).toFixed(0)}</span>`, unit: 'kΩ', status: '绝缘良好', statusColor: '#10b981' }
+                    'insulation': { label: '绝缘阻抗', value: `<span id="bms-insulation">${(850 + Math.random() * 300).toFixed(0)}</span>`, unit: 'kΩ', status: '绝缘良好', statusColor: '#10b981' },
+                    'maxCellVoltage': { label: '最高单体电压', value: `<span id="bms-max-cell-voltage">${(3.35 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: `电芯编号: ${Math.floor(Math.random() * 280 + 1)}` },
+                    'minCellVoltage': { label: '最低单体电压', value: `<span id="bms-min-cell-voltage">${(3.32 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: `电芯编号: ${Math.floor(Math.random() * 280 + 1)}` },
+                    'voltageDiff': { label: '单体压差', value: `<span id="bms-voltage-diff">${(5 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mV', status: '压差良好', statusColor: '#10b981' },
+                    'consistency': { label: '电芯一致性', value: `<span id="bms-consistency">${(96.5 + Math.random() * 2.5).toFixed(1)}</span>`, unit: '%', status: '一致性优秀', statusColor: '#10b981' },
+                    'abnormalCells': { label: '异常电芯数', value: '<span id="bms-abnormal-cells">0</span>', unit: '个', status: '全部正常', statusColor: '#10b981' },
+                    'balanceStatus': { label: '均衡状态', value: `<span style="font-size: 16px; color: #10b981;">${Math.random() > 0.7 ? '均衡中' : '未均衡'}</span>`, status: '主动均衡策略' },
+                    'totalCells': { label: '电芯总数', value: '<span>280</span>', unit: '个', status: '14串20并组合' },
+                    'samplingAccuracy': { label: '采样精度', value: `<span id="bms-sampling-accuracy">${(99.5 + Math.random() * 0.4).toFixed(2)}</span>`, unit: '%', status: '高精度采样', statusColor: '#10b981' },
+                    'overvoltageProtection': { label: '过压保护', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '阈值: 3.65V' },
+                    'undervoltageProtection': { label: '欠压保护', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '阈值: 2.8V' },
+                    'overcurrentProtection': { label: '过流保护', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '阈值: 300A' },
+                    'overtemperatureProtection': { label: '过温保护', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '阈值: 60°C' },
+                    'shortcircuitProtection': { label: '短路保护', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '未触发', statusColor: '#10b981' },
+                    'communicationStatus': { label: '通信状态', value: '<span style="font-size: 16px; color: #10b981;">在线</span>', status: 'CAN通信正常', statusColor: '#10b981' },
+                    'faultCode': { label: '故障代码', value: '<span id="bms-fault-code">0x0000</span>', unit: '', status: '无故障', statusColor: '#10b981' },
+                    'hardwareVersion': { label: '硬件版本', value: '<span>V2.1.3</span>', unit: '', status: '软件版本V1.8.5' }
                 },
                 'battery': {
                     'nominalCapacity': { label: '标称容量', value: '<span>500</span>', unit: 'Ah', status: '额定容量' },
@@ -5545,7 +5760,23 @@
                     'inletTemp': { label: '进风温度', value: `<span id="inletTemp">${(20 + Math.random() * 5).toFixed(1)}</span>`, unit: '°C', status: '环境正常', statusColor: '#10b981' },
                     'outletTemp': { label: '出风温度', value: `<span id="outletTemp">${(28 + Math.random() * 6).toFixed(1)}</span>`, unit: '°C', status: '散热正常', statusColor: '#10b981' },
                     'humidity': { label: '相对湿度', value: `<span id="humidity">${(40 + Math.random() * 20).toFixed(1)}</span>`, unit: '%RH', status: '湿度适宜', statusColor: '#10b981' },
-                    'coolantTemp': { label: '冷却液温度', value: `<span id="coolantTemp">${(18 + Math.random() * 8).toFixed(1)}</span>`, unit: '°C', status: '冷却正常', statusColor: '#10b981' }
+                    'coolantTemp': { label: '冷却液温度', value: `<span id="coolantTemp">${(18 + Math.random() * 8).toFixed(1)}</span>`, unit: '°C', status: '冷却正常', statusColor: '#10b981' },
+                    'mainFanSpeed': { label: '主风机转速', value: `<span id="mainFanSpeed">${(1200 + Math.random() * 300).toFixed(0)}</span>`, unit: 'rpm', status: '运行正常', statusColor: '#10b981' },
+                    'auxFanSpeed': { label: '辅助风机转速', value: `<span id="auxFanSpeed">${(1000 + Math.random() * 200).toFixed(0)}</span>`, unit: 'rpm', status: '运行正常', statusColor: '#10b981' },
+                    'coolantFlow': { label: '冷却液流速', value: `<span id="coolantFlow">${(12 + Math.random() * 3).toFixed(1)}</span>`, unit: 'L/min', status: '流速正常', statusColor: '#10b981' },
+                    'compressorPower': { label: '压缩机功率', value: `<span id="compressorPower">${(3.5 + Math.random() * 0.5).toFixed(1)}</span>`, unit: 'kW', status: '功率正常', statusColor: '#10b981' },
+                    'thermalPower': { label: '热管理功耗', value: `<span id="thermalPower">${(5.8 + Math.random() * 1).toFixed(1)}</span>`, unit: 'kW', status: '功耗正常', statusColor: '#10b981' },
+                    'tempRiseRate': { label: '温升速率', value: `<span id="tempRiseRate">${(0.5 + Math.random() * 0.3).toFixed(2)}</span>`, unit: '°C/min', status: '温升稳定', statusColor: '#10b981' },
+                    'coolingEff': { label: '制冷效率', value: `<span id="coolingEff">${(85 + Math.random() * 10).toFixed(1)}</span>`, unit: '%', status: '效率良好', statusColor: '#10b981' },
+                    'copValue': { label: 'COP系数', value: `<span id="copValue">${(3.2 + Math.random() * 0.5).toFixed(1)}</span>`, unit: '', status: '性能良好', statusColor: '#10b981' },
+                    'thermalManagementStatus': { label: '热管理状态', value: '<span style="font-size: 16px; color: #10b981;">制冷模式</span>', status: '运行正常', statusColor: '#10b981' },
+                    'coolingMode': { label: '冷却模式', value: '<span style="font-size: 16px; color: #2563eb;">强制冷却</span>', status: '主动冷却' },
+                    'thermalRuntime': { label: '今日运行时间', value: `<span id="thermalRuntime">${(6.5 + Math.random() * 2).toFixed(1)}</span>`, unit: '小时', status: '运行时间正常' },
+                    'maintenanceStatus': { label: '维护状态', value: '<span style="font-size: 16px; color: #10b981;">正常</span>', status: '无需维护', statusColor: '#10b981' },
+                    'thermalCycles': { label: '启停次数', value: `<span id="thermalCycles">${Math.floor(12 + Math.random() * 5)}</span>`, unit: '次', status: '今日启停' },
+                    'filterStatus': { label: '过滤器状态', value: '<span style="font-size: 16px; color: #10b981;">良好</span>', status: '无需更换', statusColor: '#10b981' },
+                    'alarmStatus': { label: '报警状态', value: '<span style="font-size: 16px; color: #10b981;">无报警</span>', status: '系统正常', statusColor: '#10b981' },
+                    'energyEfficiency': { label: '能效等级', value: '<span style="font-size: 16px; color: #10b981;">A级</span>', status: '能效优秀', statusColor: '#10b981' }
                 },
                 'fire': {
                     'systemStatus': { label: '系统状态', value: '<span style="font-size: 16px; color: #10b981;">待命</span>', status: '系统就绪', statusColor: '#10b981' },

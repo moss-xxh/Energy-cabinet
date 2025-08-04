@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>储能柜管理系统 - 告警管理</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="tech-ui-enhancement.css">
+    <link rel="stylesheet" href="common-header-styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 头部导航 */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0a1628 100%);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .cabinet-info {
+            margin-left: 40px;
+            color: white;
+        }
+
+        .cabinet-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .cabinet-status {
+            font-size: 14px;
+            color: #4ade80;
+            margin-top: 5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-time {
+            color: white;
+            font-size: 16px;
+            font-family: 'Helvetica Neue', monospace;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* 侧边导航 */
+        .sidebar {
+            width: 240px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 30px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 30px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: #f0f2f5;
+            color: #1e90ff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, #fee2e2 0%, transparent 100%);
+            color: #dc2626;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #dc2626;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 告警统计 */
+        .alarm-stats {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card.critical {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .stat-card.warning {
+            background: #fffbeb;
+            border-color: #fed7aa;
+        }
+
+        .stat-card.info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .stat-card.resolved {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 告警列表 */
+        .alarm-list-container {
+            flex: 1;
+            padding: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .list-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: #f9fafb;
+        }
+
+        .action-btn.primary {
+            background: #1e90ff;
+            color: white;
+            border-color: #1e90ff;
+        }
+
+        .action-btn.primary:hover {
+            background: #1873cc;
+        }
+
+        .action-btn.danger {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .action-btn.danger:hover {
+            background: #b91c1c;
+        }
+
+        /* 过滤器 */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        /* 告警列表表格 */
+        .alarm-table {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header {
+            background: #f9fafb;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px 150px 100px 80px;
+            gap: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .table-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .table-row {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px 150px 100px 80px;
+            gap: 15px;
+            font-size: 14px;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+            background: #f9fafb;
+        }
+
+        .table-row.critical {
+            border-left: 4px solid #dc2626;
+        }
+
+        .table-row.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .table-row.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* 告警级别标签 */
+        .alarm-level {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .alarm-level.critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alarm-level.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alarm-level.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* 状态标签 */
+        .alarm-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .alarm-status.active {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alarm-status.ack {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alarm-status.resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* 操作按钮 */
+        .operation-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .operation-btn.ack {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .operation-btn.ack:hover {
+            background: #2563eb;
+        }
+
+        .operation-btn.resolve {
+            background: #10b981;
+            color: white;
+        }
+
+        .operation-btn.resolve:hover {
+            background: #059669;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 响应式设计 - 10.1寸屏幕 */
+        @media (max-width: 1280px) and (max-height: 800px) {
+            .header {
+                height: 60px;
+                padding: 0 20px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .sidebar {
+                width: 200px;
+            }
+            
+            .nav-item {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+            
+            .alarm-stats {
+                padding: 20px;
+            }
+            
+            .alarm-list-container {
+                padding: 20px;
+            }
+            
+            .stat-icon {
+                font-size: 28px;
+            }
+            
+            .stat-number {
+                font-size: 24px;
+            }
+            
+            .table-header, .table-row {
+                grid-template-columns: 50px 1fr 100px 100px 120px 80px 60px;
+                gap: 10px;
+                padding: 12px 15px;
+                font-size: 12px;
+            }
+        }
+
+        /* 响应式设计 - 13.3寸屏幕 */
+        @media (min-width: 1920px) and (min-height: 1080px) {
+            .header {
+                height: 100px;
+                padding: 0 50px;
+            }
+            
+            .logo-text {
+                font-size: 28px;
+            }
+            
+            .sidebar {
+                width: 280px;
+            }
+            
+            .nav-item {
+                padding: 22px 40px;
+                font-size: 18px;
+            }
+            
+            .alarm-stats {
+                padding: 40px;
+            }
+            
+            .alarm-list-container {
+                padding: 40px;
+            }
+            
+            .stat-icon {
+                font-size: 44px;
+            }
+            
+            .stat-number {
+                font-size: 40px;
+            }
+            
+            .table-header, .table-row {
+                grid-template-columns: 80px 1fr 140px 140px 180px 120px 100px;
+                gap: 20px;
+                padding: 20px 25px;
+                font-size: 16px;
+            }
+        }
+
+        /* 实时更新动画 */
+        @keyframes newAlarm {
+            0% { background: #fee2e2; }
+            50% { background: #fecaca; }
+            100% { background: transparent; }
+        }
+
+        .table-row.new-alarm {
+            animation: newAlarm 2s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <div class="logo-text" data-lang="systemName">储能柜管理系统</div>
+            </div>
+            <div class="cabinet-info">
+                <div class="cabinet-name">储能柜 #001</div>
+                <div class="cabinet-status">
+                    <span data-lang="status">告警监控中</span>
+                    <span style="margin-left: 5px; width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-time" id="currentTime">2024-01-31 14:30:00</div>
+            
+            <!-- 语言切换按钮 -->
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleLanguageDropdown(event)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option" onclick="changeLanguage('zh', event)">
+                        <span class="flag">🇨🇳</span>
+                        <span>中文</span>
+                    </div>
+                    <div class="lang-option" onclick="changeLanguage('en', event)">
+                        <span class="flag">🇺🇸</span>
+                        <span>English</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退出按钮 -->
+            <div class="logout-wrapper">
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 侧边导航 -->
+        <nav class="sidebar">
+            <a href="home.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span data-lang="navHome">首页</span>
+            </a>
+            <a href="device-params.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span data-lang="navParams">设备参数</span>
+            </a>
+            <a href="device-control.html" class="nav-item">
+                <span class="nav-icon">🎛️</span>
+                <span data-lang="navControl">设备控制</span>
+            </a>
+            <a href="alarms.html" class="nav-item active">
+                <span class="nav-icon">⚠️</span>
+                <span data-lang="navAlarms">告警</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span data-lang="navSettings">设置</span>
+            </a>
+        </nav>
+
+        <!-- 内容区域 -->
+        <main class="content">
+            <!-- 告警统计 -->
+            <div class="alarm-stats">
+                <div class="stat-card critical">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-number" id="criticalCount">2</div>
+                    <div class="stat-label" data-lang="critical">严重告警</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-number" id="warningCount">5</div>
+                    <div class="stat-label" data-lang="warning">警告</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon">ℹ️</div>
+                    <div class="stat-number" id="infoCount">8</div>
+                    <div class="stat-label" data-lang="info">信息</div>
+                </div>
+                <div class="stat-card resolved">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-number" id="resolvedCount">23</div>
+                    <div class="stat-label" data-lang="resolved">已解决</div>
+                </div>
+            </div>
+
+            <!-- 告警列表容器 -->
+            <div class="alarm-list-container">
+                <div class="list-header">
+                    <h2 class="list-title" data-lang="alarmList">告警列表</h2>
+                    <div class="list-actions">
+                        <button class="action-btn" onclick="refreshAlarms()">
+                            🔄 <span data-lang="refresh">刷新</span>
+                        </button>
+                        <button class="action-btn primary" onclick="acknowledgeAll()">
+                            ✓ <span data-lang="ackAll">确认全部</span>
+                        </button>
+                        <button class="action-btn danger" onclick="clearResolved()">
+                            🗑️ <span data-lang="clearResolved">清除已解决</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 过滤器 -->
+                <div class="filter-bar">
+                    <div class="filter-item">
+                        <div class="filter-label" data-lang="filterLevel">告警级别</div>
+                        <select class="filter-select" id="levelFilter" onchange="filterAlarms()">
+                            <option value="all" data-lang="all">全部</option>
+                            <option value="critical" data-lang="critical">严重告警</option>
+                            <option value="warning" data-lang="warning">警告</option>
+                            <option value="info" data-lang="info">信息</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <div class="filter-label" data-lang="filterStatus">状态</div>
+                        <select class="filter-select" id="statusFilter" onchange="filterAlarms()">
+                            <option value="all" data-lang="all">全部</option>
+                            <option value="active" data-lang="active">活跃</option>
+                            <option value="ack" data-lang="acknowledged">已确认</option>
+                            <option value="resolved" data-lang="resolved">已解决</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <div class="filter-label" data-lang="filterComponent">组件</div>
+                        <select class="filter-select" id="componentFilter" onchange="filterAlarms()">
+                            <option value="all" data-lang="all">全部</option>
+                            <option value="BMS" data-lang="bms">BMS</option>
+                            <option value="PCS" data-lang="pcs">PCS</option>
+                            <option value="EMS" data-lang="ems">EMS</option>
+                            <option value="Battery" data-lang="battery">电池</option>
+                            <option value="Fire" data-lang="fire">消防</option>
+                            <option value="Cooling" data-lang="cooling">散热</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <div class="filter-label" data-lang="filterTime">时间范围</div>
+                        <select class="filter-select" id="timeFilter" onchange="filterAlarms()">
+                            <option value="all" data-lang="all">全部</option>
+                            <option value="today" data-lang="today">今天</option>
+                            <option value="week" data-lang="thisWeek">本周</option>
+                            <option value="month" data-lang="thisMonth">本月</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 告警表格 -->
+                <div class="alarm-table">
+                    <div class="table-header">
+                        <div data-lang="level">级别</div>
+                        <div data-lang="message">告警信息</div>
+                        <div data-lang="component">组件</div>
+                        <div data-lang="status">状态</div>
+                        <div data-lang="time">时间</div>
+                        <div data-lang="duration">持续</div>
+                        <div data-lang="operation">操作</div>
+                    </div>
+                    <div class="table-body" id="alarmTableBody">
+                        <!-- 告警数据将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 语言配置
+        const translations = {
+            zh: {
+                systemName: '储能柜管理系统',
+                status: '告警监控中',
+                theme: '主题',
+                language: '语言',
+                logout: '退出',
+                navHome: '首页',
+                navParams: '设备参数',
+                navControl: '设备控制',
+                navAlarms: '告警',
+                navSettings: '设置',
+                critical: '严重告警',
+                warning: '警告',
+                info: '信息',
+                resolved: '已解决',
+                alarmList: '告警列表',
+                refresh: '刷新',
+                ackAll: '确认全部',
+                clearResolved: '清除已解决',
+                filterLevel: '告警级别',
+                filterStatus: '状态',
+                filterComponent: '组件',
+                filterTime: '时间范围',
+                all: '全部',
+                active: '活跃',
+                acknowledged: '已确认',
+                bms: 'BMS',
+                pcs: 'PCS',
+                ems: 'EMS',
+                battery: '电池',
+                fire: '消防',
+                cooling: '散热',
+                today: '今天',
+                thisWeek: '本周',
+                thisMonth: '本月',
+                level: '级别',
+                message: '告警信息',
+                component: '组件',
+                time: '时间',
+                duration: '持续',
+                operation: '操作',
+                ack: '确认',
+                resolve: '解决',
+                noAlarms: '暂无告警',
+                noAlarmsDesc: '系统运行正常，当前没有告警信息',
+                alarmAcknowledged: '告警已确认',
+                alarmResolved: '告警已解决',
+                allAlarmsAcknowledged: '所有活跃告警已确认',
+                resolvedAlarmsCleared: '已解决的告警已清除'
+            },
+            en: {
+                systemName: 'Energy Storage System',
+                status: 'Alarm Monitoring',
+                theme: 'Theme',
+                language: 'Language',
+                logout: 'Logout',
+                navHome: 'Home',
+                navParams: 'Parameters',
+                navControl: 'Control',
+                navAlarms: 'Alarms',
+                navSettings: 'Settings',
+                critical: 'Critical',
+                warning: 'Warning',
+                info: 'Info',
+                resolved: 'Resolved',
+                alarmList: 'Alarm List',
+                refresh: 'Refresh',
+                ackAll: 'Ack All',
+                clearResolved: 'Clear Resolved',
+                filterLevel: 'Alarm Level',
+                filterStatus: 'Status',
+                filterComponent: 'Component',
+                filterTime: 'Time Range',
+                all: 'All',
+                active: 'Active',
+                acknowledged: 'Acknowledged',
+                bms: 'BMS',
+                pcs: 'PCS',
+                ems: 'EMS',
+                battery: 'Battery',
+                fire: 'Fire System',
+                cooling: 'Cooling',
+                today: 'Today',
+                thisWeek: 'This Week',
+                thisMonth: 'This Month',
+                level: 'Level',
+                message: 'Message',
+                component: 'Component',
+                time: 'Time',
+                duration: 'Duration',
+                operation: 'Operation',
+                ack: 'Ack',
+                resolve: 'Resolve',
+                noAlarms: 'No Alarms',
+                noAlarmsDesc: 'System is running normally, no alarm information currently',
+                alarmAcknowledged: 'Alarm acknowledged',
+                alarmResolved: 'Alarm resolved',
+                allAlarmsAcknowledged: 'All active alarms acknowledged',
+                resolvedAlarmsCleared: 'Resolved alarms cleared'
+            }
+        };
+
+        let currentLang = localStorage.getItem('touchscreen_lang') || 'zh';
+        let currentTheme = localStorage.getItem('touchscreen_theme') || 'light';
+        let alarms = [];
+        let filteredAlarms = [];
+
+        // 模拟告警数据
+        const mockAlarms = [
+            {
+                id: 1,
+                level: 'critical',
+                message: '电池单体电压过高',
+                messageEn: 'Battery cell voltage too high',
+                component: 'BMS',
+                status: 'active',
+                time: new Date(Date.now() - 1800000), // 30分钟前
+                acknowledged: false
+            },
+            {
+                id: 2,
+                level: 'critical',
+                message: 'PCS直流侧过流保护',
+                messageEn: 'PCS DC side overcurrent protection',
+                component: 'PCS',
+                status: 'ack',
+                time: new Date(Date.now() - 3600000), // 1小时前
+                acknowledged: true
+            },
+            {
+                id: 3,
+                level: 'warning',
+                message: '电池温度偏高',
+                messageEn: 'Battery temperature too high',
+                component: 'Battery',
+                status: 'active',
+                time: new Date(Date.now() - 900000), // 15分钟前
+                acknowledged: false
+            },
+            {
+                id: 4,
+                level: 'warning',
+                message: '散热风扇转速异常',
+                messageEn: 'Cooling fan speed abnormal',
+                component: 'Cooling',
+                status: 'active',
+                time: new Date(Date.now() - 2700000), // 45分钟前
+                acknowledged: false
+            },
+            {
+                id: 5,
+                level: 'warning',
+                message: 'EMS通信延迟',
+                messageEn: 'EMS communication delay',
+                component: 'EMS',
+                status: 'ack',
+                time: new Date(Date.now() - 5400000), // 1.5小时前
+                acknowledged: true
+            },
+            {
+                id: 6,
+                level: 'warning',
+                message: '绝缘电阻偏低',
+                messageEn: 'Insulation resistance too low',
+                component: 'BMS',
+                status: 'ack',
+                time: new Date(Date.now() - 7200000), // 2小时前
+                acknowledged: true
+            },
+            {
+                id: 7,
+                level: 'warning',
+                message: '电池容量不一致',
+                messageEn: 'Battery capacity inconsistent',
+                component: 'Battery',
+                status: 'active',
+                time: new Date(Date.now() - 10800000), // 3小时前
+                acknowledged: false
+            },
+            {
+                id: 8,
+                level: 'info',
+                message: '系统启动完成',
+                messageEn: 'System startup completed',
+                component: 'EMS',
+                status: 'resolved',
+                time: new Date(Date.now() - 86400000), // 1天前
+                acknowledged: true
+            },
+            {
+                id: 9,
+                level: 'info',
+                message: 'PCS并网成功',
+                messageEn: 'PCS grid connection successful',
+                component: 'PCS',
+                status: 'resolved',
+                time: new Date(Date.now() - 86100000), // 1天前
+                acknowledged: true
+            },
+            {
+                id: 10,
+                level: 'info',
+                message: '电池均衡完成',
+                messageEn: 'Battery balancing completed',
+                component: 'BMS',
+                status: 'resolved',
+                time: new Date(Date.now() - 172800000), // 2天前
+                acknowledged: true
+            }
+        ];
+
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+
+        // 切换语言
+        function switchLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('touchscreen_lang', currentLang);
+            applyLanguage();
+            renderAlarms();
+        }
+
+        // 应用语言
+        function applyLanguage() {
+            document.querySelectorAll('[data-lang]').forEach(elem => {
+                const key = elem.getAttribute('data-lang');
+                if (translations[currentLang][key]) {
+                    elem.textContent = translations[currentLang][key];
+                }
+            });
+        }
+
+        // 切换主题
+        function switchTheme() {
+            // 显示主题选择器
+            if (window.ThemeManager) {
+                ThemeManager.showThemePicker();
+            }
+        }
+
+        // 应用主题
+        function applyTheme() {
+            // 使用 ThemeManager 处理主题
+            const theme = localStorage.getItem('touchscreen_theme') || 'light';
+            if (window.ThemeManager) {
+                ThemeManager.applyTheme(theme);
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('touchscreen_user');
+            sessionStorage.removeItem('touchscreen_user');
+            window.location.href = 'login.html';
+        }
+
+        // 加载告警数据
+        function loadAlarms() {
+            alarms = mockAlarms.map(alarm => ({
+                ...alarm,
+                duration: Date.now() - alarm.time.getTime()
+            }));
+            filteredAlarms = [...alarms];
+            updateStats();
+            renderAlarms();
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            const stats = {
+                critical: alarms.filter(a => a.level === 'critical' && a.status !== 'resolved').length,
+                warning: alarms.filter(a => a.level === 'warning' && a.status !== 'resolved').length,
+                info: alarms.filter(a => a.level === 'info' && a.status !== 'resolved').length,
+                resolved: alarms.filter(a => a.status === 'resolved').length
+            };
+
+            document.getElementById('criticalCount').textContent = stats.critical;
+            document.getElementById('warningCount').textContent = stats.warning;
+            document.getElementById('infoCount').textContent = stats.info;
+            document.getElementById('resolvedCount').textContent = stats.resolved;
+        }
+
+        // 渲染告警列表
+        function renderAlarms() {
+            const tbody = document.getElementById('alarmTableBody');
+            
+            if (filteredAlarms.length === 0) {
+                tbody.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">${translations[currentLang].noAlarms}</div>
+                        <div class="empty-desc">${translations[currentLang].noAlarmsDesc}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredAlarms.map(alarm => {
+                const message = currentLang === 'zh' ? alarm.message : alarm.messageEn;
+                const duration = formatDuration(alarm.duration);
+                const timeStr = alarm.time.toLocaleString();
+                
+                return `
+                    <div class="table-row ${alarm.level}" data-id="${alarm.id}">
+                        <div>
+                            <span class="alarm-level ${alarm.level}">
+                                ${translations[currentLang][alarm.level]}
+                            </span>
+                        </div>
+                        <div>${message}</div>
+                        <div>${alarm.component}</div>
+                        <div>
+                            <span class="alarm-status ${alarm.status}">
+                                ${translations[currentLang][alarm.status]}
+                            </span>
+                        </div>
+                        <div>${timeStr}</div>
+                        <div>${duration}</div>
+                        <div>
+                            ${renderOperationButtons(alarm)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染操作按钮
+        function renderOperationButtons(alarm) {
+            if (alarm.status === 'resolved') {
+                return '-';
+            }
+            
+            let buttons = '';
+            if (!alarm.acknowledged && alarm.status === 'active') {
+                buttons += `<button class="operation-btn ack" onclick="acknowledgeAlarm(${alarm.id})">${translations[currentLang].ack}</button> `;
+            }
+            if (alarm.status === 'ack' || alarm.acknowledged) {
+                buttons += `<button class="operation-btn resolve" onclick="resolveAlarm(${alarm.id})">${translations[currentLang].resolve}</button>`;
+            }
+            
+            return buttons || '-';
+        }
+
+        // 格式化持续时间
+        function formatDuration(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) {
+                return `${days}天${hours % 24}时`;
+            } else if (hours > 0) {
+                return `${hours}时${minutes % 60}分`;
+            } else {
+                return `${minutes}分`;
+            }
+        }
+
+        // 确认告警
+        function acknowledgeAlarm(id) {
+            const alarm = alarms.find(a => a.id === id);
+            if (alarm) {
+                alarm.acknowledged = true;
+                alarm.status = 'ack';
+                updateStats();
+                renderAlarms();
+                showNotification(translations[currentLang].alarmAcknowledged);
+            }
+        }
+
+        // 解决告警
+        function resolveAlarm(id) {
+            const alarm = alarms.find(a => a.id === id);
+            if (alarm) {
+                alarm.status = 'resolved';
+                alarm.acknowledged = true;
+                updateStats();
+                renderAlarms();
+                showNotification(translations[currentLang].alarmResolved);
+            }
+        }
+
+        // 确认所有告警
+        function acknowledgeAll() {
+            let count = 0;
+            alarms.forEach(alarm => {
+                if (alarm.status === 'active' && !alarm.acknowledged) {
+                    alarm.acknowledged = true;
+                    alarm.status = 'ack';
+                    count++;
+                }
+            });
+            
+            if (count > 0) {
+                updateStats();
+                renderAlarms();
+                showNotification(translations[currentLang].allAlarmsAcknowledged);
+            }
+        }
+
+        // 清除已解决的告警
+        function clearResolved() {
+            const originalLength = alarms.length;
+            alarms = alarms.filter(alarm => alarm.status !== 'resolved');
+            filteredAlarms = filteredAlarms.filter(alarm => alarm.status !== 'resolved');
+            
+            if (alarms.length < originalLength) {
+                updateStats();
+                renderAlarms();
+                showNotification(translations[currentLang].resolvedAlarmsCleared);
+            }
+        }
+
+        // 刷新告警
+        function refreshAlarms() {
+            // 模拟新增告警
+            if (Math.random() > 0.7) {
+                const newAlarm = {
+                    id: Date.now(),
+                    level: Math.random() > 0.5 ? 'warning' : 'info',
+                    message: '系统检测到新的告警信息',
+                    messageEn: 'System detected new alarm information',
+                    component: ['BMS', 'PCS', 'EMS', 'Battery'][Math.floor(Math.random() * 4)],
+                    status: 'active',
+                    time: new Date(),
+                    acknowledged: false,
+                    duration: 0
+                };
+                
+                alarms.unshift(newAlarm);
+                updateStats();
+                filterAlarms();
+                
+                // 添加新告警动画
+                setTimeout(() => {
+                    const newRow = document.querySelector(`[data-id="${newAlarm.id}"]`);
+                    if (newRow) {
+                        newRow.classList.add('new-alarm');
+                    }
+                }, 100);
+            }
+            
+            showNotification('告警列表已刷新');
+        }
+
+        // 过滤告警
+        function filterAlarms() {
+            const levelFilter = document.getElementById('levelFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const componentFilter = document.getElementById('componentFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            
+            filteredAlarms = alarms.filter(alarm => {
+                if (levelFilter !== 'all' && alarm.level !== levelFilter) return false;
+                if (statusFilter !== 'all' && alarm.status !== statusFilter) return false;
+                if (componentFilter !== 'all' && alarm.component !== componentFilter) return false;
+                
+                if (timeFilter !== 'all') {
+                    const now = Date.now();
+                    const alarmTime = alarm.time.getTime();
+                    
+                    switch(timeFilter) {
+                        case 'today':
+                            if (now - alarmTime > 86400000) return false;
+                            break;
+                        case 'week':
+                            if (now - alarmTime > 604800000) return false;
+                            break;
+                        case 'month':
+                            if (now - alarmTime > 2592000000) return false;
+                            break;
+                    }
+                }
+                
+                return true;
+            });
+            
+            renderAlarms();
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            // 简单的通知实现
+            console.log('Notification:', message);
+            
+            // 创建临时通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                background: #10b981;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 模拟实时更新持续时间
+        function updateDurations() {
+            alarms.forEach(alarm => {
+                if (alarm.status !== 'resolved') {
+                    alarm.duration = Date.now() - alarm.time.getTime();
+                }
+            });
+            
+            // 只更新持续时间列，不重新渲染整个表格
+            document.querySelectorAll('.table-row').forEach(row => {
+                const id = parseInt(row.dataset.id);
+                const alarm = alarms.find(a => a.id === id);
+                if (alarm && alarm.status !== 'resolved') {
+                    const durationCell = row.children[5];
+                    if (durationCell) {
+                        durationCell.textContent = formatDuration(alarm.duration);
+                    }
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 检查登录状态
+            const user = localStorage.getItem('touchscreen_user') || sessionStorage.getItem('touchscreen_user');
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 应用保存的设置
+            applyLanguage();
+            applyTheme();
+
+            // 加载告警数据
+            loadAlarms();
+
+            // 更新时间
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // 定期更新持续时间
+            setInterval(updateDurations, 60000); // 每分钟更新一次
+
+            // 模拟定期刷新告警数据
+            setInterval(() => {
+                alarms.forEach(alarm => {
+                    alarm.duration = Date.now() - alarm.time.getTime();
+                });
+                updateStats();
+            }, 30000); // 每30秒更新一次
+        };
+    </script>
+    <script src="theme-manager.js"></script>
+    <script src="tech-ui-enhancement.js"></script>
+    <script src="common-header-scripts.js"></script>
+</body>
+</html>

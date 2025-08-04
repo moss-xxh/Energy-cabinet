@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>储能柜管理系统 - 设备参数</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="tech-ui-enhancement.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 头部导航 */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0a1628 100%);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .cabinet-info {
+            margin-left: 40px;
+            color: white;
+        }
+
+        .cabinet-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .cabinet-status {
+            font-size: 14px;
+            color: #4ade80;
+            margin-top: 5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-time {
+            color: white;
+            font-size: 16px;
+            font-family: 'Helvetica Neue', monospace;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* 侧边导航 */
+        .sidebar {
+            width: 240px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 30px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 30px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: #f0f2f5;
+            color: #1e90ff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, #e3f2fd 0%, transparent 100%);
+            color: #1e90ff;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #1e90ff;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 组件标签页 */
+        .component-tabs {
+            background: white;
+            padding: 0 30px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .component-tab {
+            padding: 16px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .component-tab:hover {
+            color: #1e90ff;
+            background: rgba(30, 144, 255, 0.05);
+        }
+
+        .component-tab.active {
+            color: #1e90ff;
+            border-bottom-color: #1e90ff;
+            background: rgba(30, 144, 255, 0.05);
+        }
+
+        /* 参数内容区 */
+        .params-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #f0f2f5;
+        }
+
+        /* 参数卡片 */
+        .param-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e90ff;
+            font-size: 18px;
+        }
+
+        /* 参数网格 */
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .param-item {
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .param-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #1e90ff;
+        }
+
+        .param-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .param-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .param-unit {
+            font-size: 14px;
+            color: #999;
+            font-weight: normal;
+        }
+
+        .param-status {
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-normal {
+            background: #4ade80;
+        }
+
+        .status-warning {
+            background: #fbbf24;
+        }
+
+        .status-error {
+            background: #f87171;
+        }
+
+        /* 历史数据图表 */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .chart-btn:hover {
+            background: #f9fafb;
+        }
+
+        .chart-btn.active {
+            background: #1e90ff;
+            color: white;
+            border-color: #1e90ff;
+        }
+
+        .chart-area {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        /* 实时数据动画 */
+        @keyframes dataUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .data-updating {
+            animation: dataUpdate 0.5s ease;
+        }
+
+        /* 响应式设计 - 10.1寸屏幕 */
+        @media (max-width: 1280px) and (max-height: 800px) {
+            .header {
+                height: 60px;
+                padding: 0 20px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .sidebar {
+                width: 200px;
+            }
+            
+            .nav-item {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+            
+            .params-content {
+                padding: 20px;
+            }
+            
+            .param-value {
+                font-size: 20px;
+            }
+            
+            .chart-area {
+                height: 250px;
+            }
+        }
+
+        /* 响应式设计 - 13.3寸屏幕 */
+        @media (min-width: 1920px) and (min-height: 1080px) {
+            .header {
+                height: 100px;
+                padding: 0 50px;
+            }
+            
+            .logo-text {
+                font-size: 28px;
+            }
+            
+            .sidebar {
+                width: 280px;
+            }
+            
+            .nav-item {
+                padding: 22px 40px;
+                font-size: 18px;
+            }
+            
+            .params-content {
+                padding: 40px;
+            }
+            
+            .param-value {
+                font-size: 28px;
+            }
+            
+            .chart-area {
+                height: 400px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #1e90ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <div class="logo-text" data-lang="systemName">储能柜管理系统</div>
+            </div>
+            <div class="cabinet-info">
+                <div class="cabinet-name">储能柜 #001</div>
+                <div class="cabinet-status">
+                    <span data-lang="status">运行正常</span>
+                    <span class="status-dot status-normal" style="margin-left: 5px;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-time" id="currentTime">2024-01-31 14:30:00</div>
+            <div class="header-buttons">
+                <button class="header-btn" onclick="switchTheme()">🎨 <span data-lang="theme">主题</span></button>
+                <button class="header-btn" onclick="switchLanguage()">🌐 <span data-lang="language">语言</span></button>
+                <button class="header-btn" onclick="logout()">🚪 <span data-lang="logout">退出</span></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 侧边导航 -->
+        <nav class="sidebar">
+            <a href="home.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span data-lang="navHome">首页</span>
+            </a>
+            <a href="device-params.html" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span data-lang="navParams">设备参数</span>
+            </a>
+            <a href="device-control.html" class="nav-item">
+                <span class="nav-icon">🎛️</span>
+                <span data-lang="navControl">设备控制</span>
+            </a>
+            <a href="alarms.html" class="nav-item">
+                <span class="nav-icon">⚠️</span>
+                <span data-lang="navAlarms">告警</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span data-lang="navSettings">设置</span>
+            </a>
+        </nav>
+
+        <!-- 内容区域 -->
+        <main class="content">
+            <!-- 组件标签页 -->
+            <div class="component-tabs">
+                <div class="component-tab active" onclick="switchTab('overall')" data-lang="tabOverall">整机</div>
+                <div class="component-tab" onclick="switchTab('ems')" data-lang="tabEMS">EMS</div>
+                <div class="component-tab" onclick="switchTab('pcs')" data-lang="tabPCS">逆变器</div>
+                <div class="component-tab" onclick="switchTab('bms')" data-lang="tabBMS">BMS</div>
+                <div class="component-tab" onclick="switchTab('battery')" data-lang="tabBattery">电池</div>
+                <div class="component-tab" onclick="switchTab('temperature')" data-lang="tabTemp">温度</div>
+                <div class="component-tab" onclick="switchTab('fire')" data-lang="tabFire">消防</div>
+            </div>
+
+            <!-- 参数内容区 -->
+            <div class="params-content" id="paramsContent">
+                <!-- 整机参数 -->
+                <div id="overall-params" class="tab-content">
+                    <!-- 核心运行参数 -->
+                    <div class="param-section">
+                        <h3 class="section-title">
+                            <div class="section-icon">⚡</div>
+                            <span data-lang="coreParams">核心运行参数</span>
+                        </h3>
+                        <div class="params-grid">
+                            <div class="param-item">
+                                <div class="param-label" data-lang="soc">电池电量</div>
+                                <div class="param-value">
+                                    <span id="overall-soc">88.5</span>
+                                    <span class="param-unit">%</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="socStatus">电量充足</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="soh">健康度</div>
+                                <div class="param-value">
+                                    <span id="overall-soh">96.8</span>
+                                    <span class="param-unit">%</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="sohStatus">状态良好</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="power">充放电功率</div>
+                                <div class="param-value">
+                                    <span id="overall-power">+142.8</span>
+                                    <span class="param-unit">kW</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="charging">充电中</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="temp">平均温度</div>
+                                <div class="param-value">
+                                    <span id="overall-temp">26.3</span>
+                                    <span class="param-unit">°C</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="tempNormal">温度正常</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 电气参数 -->
+                    <div class="param-section">
+                        <h3 class="section-title">
+                            <div class="section-icon">🔌</div>
+                            <span data-lang="electricParams">电气参数</span>
+                        </h3>
+                        <div class="params-grid">
+                            <div class="param-item">
+                                <div class="param-label" data-lang="voltage">电池电压</div>
+                                <div class="param-value">
+                                    <span id="overall-voltage">748.8</span>
+                                    <span class="param-unit">V</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="normal">正常</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="current">电池电流</div>
+                                <div class="param-value">
+                                    <span id="overall-current">190.8</span>
+                                    <span class="param-unit">A</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="normal">正常</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="efficiency">系统效率</div>
+                                <div class="param-value">
+                                    <span id="overall-efficiency">94.5</span>
+                                    <span class="param-unit">%</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="highEfficiency">高效运行</span>
+                                </div>
+                            </div>
+                            <div class="param-item">
+                                <div class="param-label" data-lang="insulation">绝缘电阻</div>
+                                <div class="param-value">
+                                    <span id="overall-insulation">5.2</span>
+                                    <span class="param-unit">MΩ</span>
+                                </div>
+                                <div class="param-status">
+                                    <span class="status-dot status-normal"></span>
+                                    <span data-lang="normal">正常</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 历史数据图表 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title" data-lang="historyData">历史数据</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" onclick="switchChart('power')" data-lang="powerCurve">功率曲线</button>
+                                <button class="chart-btn" onclick="switchChart('soc')" data-lang="socCurve">SOC曲线</button>
+                                <button class="chart-btn" onclick="switchChart('temp')" data-lang="tempCurve">温度曲线</button>
+                            </div>
+                        </div>
+                        <div class="chart-area" id="chartArea">
+                            <canvas id="historyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 语言配置
+        const translations = {
+            zh: {
+                systemName: '储能柜管理系统',
+                status: '运行正常',
+                theme: '主题',
+                language: '语言',
+                logout: '退出',
+                navHome: '首页',
+                navParams: '设备参数',
+                navControl: '设备控制',
+                navAlarms: '告警',
+                navSettings: '设置',
+                tabOverall: '整机',
+                tabEMS: 'EMS',
+                tabPCS: '逆变器',
+                tabBMS: 'BMS',
+                tabBattery: '电池',
+                tabTemp: '温度',
+                tabFire: '消防',
+                coreParams: '核心运行参数',
+                electricParams: '电气参数',
+                soc: '电池电量',
+                soh: '健康度',
+                power: '充放电功率',
+                temp: '平均温度',
+                voltage: '电池电压',
+                current: '电池电流',
+                efficiency: '系统效率',
+                insulation: '绝缘电阻',
+                socStatus: '电量充足',
+                sohStatus: '状态良好',
+                charging: '充电中',
+                discharging: '放电中',
+                tempNormal: '温度正常',
+                normal: '正常',
+                highEfficiency: '高效运行',
+                historyData: '历史数据',
+                powerCurve: '功率曲线',
+                socCurve: 'SOC曲线',
+                tempCurve: '温度曲线'
+            },
+            en: {
+                systemName: 'Energy Storage System',
+                status: 'Running Normal',
+                theme: 'Theme',
+                language: 'Language',
+                logout: 'Logout',
+                navHome: 'Home',
+                navParams: 'Parameters',
+                navControl: 'Control',
+                navAlarms: 'Alarms',
+                navSettings: 'Settings',
+                tabOverall: 'Overall',
+                tabEMS: 'EMS',
+                tabPCS: 'PCS',
+                tabBMS: 'BMS',
+                tabBattery: 'Battery',
+                tabTemp: 'Temperature',
+                tabFire: 'Fire System',
+                coreParams: 'Core Parameters',
+                electricParams: 'Electrical Parameters',
+                soc: 'Battery SOC',
+                soh: 'Battery SOH',
+                power: 'Power',
+                temp: 'Average Temp',
+                voltage: 'Battery Voltage',
+                current: 'Battery Current',
+                efficiency: 'System Efficiency',
+                insulation: 'Insulation',
+                socStatus: 'Sufficient',
+                sohStatus: 'Good Health',
+                charging: 'Charging',
+                discharging: 'Discharging',
+                tempNormal: 'Normal Temp',
+                normal: 'Normal',
+                highEfficiency: 'High Efficiency',
+                historyData: 'History Data',
+                powerCurve: 'Power Curve',
+                socCurve: 'SOC Curve',
+                tempCurve: 'Temp Curve'
+            }
+        };
+
+        let currentLang = localStorage.getItem('touchscreen_lang') || 'zh';
+        let currentTheme = localStorage.getItem('touchscreen_theme') || 'light';
+        let currentTab = 'overall';
+        let currentChart = 'power';
+
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+
+        // 切换语言
+        function switchLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('touchscreen_lang', currentLang);
+            applyLanguage();
+        }
+
+        // 应用语言
+        function applyLanguage() {
+            document.querySelectorAll('[data-lang]').forEach(elem => {
+                const key = elem.getAttribute('data-lang');
+                if (translations[currentLang][key]) {
+                    elem.textContent = translations[currentLang][key];
+                }
+            });
+        }
+
+        // 切换主题
+        function switchTheme() {
+            // 显示主题选择器
+            if (window.ThemeManager) {
+                ThemeManager.showThemePicker();
+            }
+        }
+
+        // 应用主题
+        function applyTheme() {
+            // 使用 ThemeManager 处理主题
+            const theme = localStorage.getItem('touchscreen_theme') || 'light';
+            if (window.ThemeManager) {
+                ThemeManager.applyTheme(theme);
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('touchscreen_user');
+            sessionStorage.removeItem('touchscreen_user');
+            window.location.href = 'login.html';
+        }
+
+        // 切换标签页
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 更新标签页状态
+            document.querySelectorAll('.component-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新内容
+            updateTabContent(tab);
+        }
+
+        // 更新标签页内容
+        function updateTabContent(tab) {
+            const paramsContent = document.getElementById('paramsContent');
+            
+            // 这里根据不同的标签页显示不同的参数
+            // 简化起见，这里只展示基本结构
+            let content = '';
+            
+            switch(tab) {
+                case 'overall':
+                    // 整机参数已在HTML中定义
+                    document.getElementById('overall-params').style.display = 'block';
+                    break;
+                    
+                case 'ems':
+                    content = generateEMSParams();
+                    break;
+                    
+                case 'pcs':
+                    content = generatePCSParams();
+                    break;
+                    
+                case 'bms':
+                    content = generateBMSParams();
+                    break;
+                    
+                case 'battery':
+                    content = generateBatteryParams();
+                    break;
+                    
+                case 'temperature':
+                    content = generateTemperatureParams();
+                    break;
+                    
+                case 'fire':
+                    content = generateFireParams();
+                    break;
+            }
+            
+            if (content) {
+                paramsContent.innerHTML = content;
+            }
+        }
+
+        // 生成EMS参数
+        function generateEMSParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">🖥️</div>
+                        <span>EMS能量管理系统</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">当前策略</div>
+                            <div class="param-value">
+                                <span>峰谷套利</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>自动执行中</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">调度指令</div>
+                            <div class="param-value">
+                                <span>充电</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>目标功率125kW</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">目标SOC</div>
+                            <div class="param-value">
+                                <span>95</span>
+                                <span class="param-unit">%</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>峰时准备</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">响应时间</div>
+                            <div class="param-value">
+                                <span>22</span>
+                                <span class="param-unit">ms</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>响应及时</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 生成PCS参数
+        function generatePCSParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">⚡</div>
+                        <span>PCS功率转换系统</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">直流侧电压</div>
+                            <div class="param-value">
+                                <span>750.2</span>
+                                <span class="param-unit">V</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>电压稳定</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">直流侧电流</div>
+                            <div class="param-value">
+                                <span>190.5</span>
+                                <span class="param-unit">A</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>电流正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">交流侧电压</div>
+                            <div class="param-value">
+                                <span>380.1</span>
+                                <span class="param-unit">V</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>三相平衡</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">转换效率</div>
+                            <div class="param-value">
+                                <span>98.2</span>
+                                <span class="param-unit">%</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>效率优秀</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 切换图表
+        function switchChart(chartType) {
+            currentChart = chartType;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新图表
+            drawChart(chartType);
+        }
+
+        // 绘制图表
+        function drawChart(type) {
+            const canvas = document.getElementById('historyChart');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置canvas尺寸
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制示例曲线
+            ctx.strokeStyle = '#1e90ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const points = 24;
+            for (let i = 0; i < points; i++) {
+                const x = (i / points) * canvas.width;
+                const y = canvas.height / 2 + Math.sin(i * 0.5) * canvas.height * 0.3 * Math.random();
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+        }
+
+        // 模拟实时数据更新
+        function updateRealtimeData() {
+            // 更新整机参数
+            const socElement = document.getElementById('overall-soc');
+            if (socElement) {
+                const currentSoc = parseFloat(socElement.textContent);
+                const newSoc = Math.max(0, Math.min(100, currentSoc + (Math.random() - 0.5) * 0.5));
+                socElement.textContent = newSoc.toFixed(1);
+                socElement.parentElement.classList.add('data-updating');
+                setTimeout(() => {
+                    socElement.parentElement.classList.remove('data-updating');
+                }, 500);
+            }
+            
+            // 更新功率
+            const powerElement = document.getElementById('overall-power');
+            if (powerElement) {
+                const currentPower = parseFloat(powerElement.textContent);
+                const newPower = currentPower + (Math.random() - 0.5) * 10;
+                powerElement.textContent = (newPower > 0 ? '+' : '') + newPower.toFixed(1);
+                
+                // 更新充放电状态
+                const statusText = powerElement.parentElement.nextElementSibling.querySelector('span:last-child');
+                if (statusText) {
+                    statusText.textContent = newPower > 0 ? 
+                        (currentLang === 'zh' ? '充电中' : 'Charging') : 
+                        (currentLang === 'zh' ? '放电中' : 'Discharging');
+                }
+            }
+            
+            // 更新温度
+            const tempElement = document.getElementById('overall-temp');
+            if (tempElement) {
+                const currentTemp = parseFloat(tempElement.textContent);
+                const newTemp = currentTemp + (Math.random() - 0.5) * 0.2;
+                tempElement.textContent = newTemp.toFixed(1);
+            }
+            
+            // 更新电压
+            const voltageElement = document.getElementById('overall-voltage');
+            if (voltageElement) {
+                const currentVoltage = parseFloat(voltageElement.textContent);
+                const newVoltage = currentVoltage + (Math.random() - 0.5) * 2;
+                voltageElement.textContent = newVoltage.toFixed(1);
+            }
+            
+            // 更新电流
+            const currentElement = document.getElementById('overall-current');
+            if (currentElement) {
+                const currentCurrent = parseFloat(currentElement.textContent);
+                const newCurrent = Math.abs(currentCurrent + (Math.random() - 0.5) * 5);
+                currentElement.textContent = newCurrent.toFixed(1);
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 检查登录状态
+            const user = localStorage.getItem('touchscreen_user') || sessionStorage.getItem('touchscreen_user');
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 应用保存的设置
+            applyLanguage();
+            applyTheme();
+
+            // 初始化图表
+            drawChart('power');
+
+            // 更新时间
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // 模拟实时数据更新
+            setInterval(updateRealtimeData, 3000);
+        };
+
+        // 响应窗口大小变化
+        window.addEventListener('resize', () => {
+            if (currentChart) {
+                drawChart(currentChart);
+            }
+        });
+
+        // 生成其他组件参数的函数
+        function generateBMSParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">🔋</div>
+                        <span>BMS电池管理系统</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">最高单体电压</div>
+                            <div class="param-value">
+                                <span>3.65</span>
+                                <span class="param-unit">V</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>电压正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">最低单体电压</div>
+                            <div class="param-value">
+                                <span>3.62</span>
+                                <span class="param-unit">V</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>电压正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">压差</div>
+                            <div class="param-value">
+                                <span>30</span>
+                                <span class="param-unit">mV</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>一致性良好</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">均衡状态</div>
+                            <div class="param-value">
+                                <span>主动均衡</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>均衡中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateBatteryParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">🔋</div>
+                        <span>电池组参数</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">电池型号</div>
+                            <div class="param-value">
+                                <span style="font-size: 18px;">LFP280Ah</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>磷酸铁锂</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">额定容量</div>
+                            <div class="param-value">
+                                <span>280</span>
+                                <span class="param-unit">Ah</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>容量正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">剩余容量</div>
+                            <div class="param-value">
+                                <span>247.8</span>
+                                <span class="param-unit">Ah</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>88.5%</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">内阻</div>
+                            <div class="param-value">
+                                <span>0.25</span>
+                                <span class="param-unit">mΩ</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>内阻正常</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTemperatureParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">🌡️</div>
+                        <span>温度监控</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">最高温度</div>
+                            <div class="param-value">
+                                <span>28.5</span>
+                                <span class="param-unit">°C</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>温度正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">最低温度</div>
+                            <div class="param-value">
+                                <span>24.2</span>
+                                <span class="param-unit">°C</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>温度正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">温差</div>
+                            <div class="param-value">
+                                <span>4.3</span>
+                                <span class="param-unit">°C</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>温差合理</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">环境温度</div>
+                            <div class="param-value">
+                                <span>22.8</span>
+                                <span class="param-unit">°C</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>环境良好</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateFireParams() {
+            return `
+                <div class="param-section">
+                    <h3 class="section-title">
+                        <div class="section-icon">🚨</div>
+                        <span>消防系统</span>
+                    </h3>
+                    <div class="params-grid">
+                        <div class="param-item">
+                            <div class="param-label">系统状态</div>
+                            <div class="param-value">
+                                <span style="font-size: 18px;">待机</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>系统正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">烟雾浓度</div>
+                            <div class="param-value">
+                                <span>12</span>
+                                <span class="param-unit">ppm</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>浓度正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">灭火剂压力</div>
+                            <div class="param-value">
+                                <span>1.2</span>
+                                <span class="param-unit">MPa</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>压力正常</span>
+                            </div>
+                        </div>
+                        <div class="param-item">
+                            <div class="param-label">声光报警</div>
+                            <div class="param-value">
+                                <span style="font-size: 18px;">关闭</span>
+                            </div>
+                            <div class="param-status">
+                                <span class="status-dot status-normal"></span>
+                                <span>无报警</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+    <script src="theme-manager.js"></script>
+    <script src="tech-ui-enhancement.js"></script>
+</body>
+</html>

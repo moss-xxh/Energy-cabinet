@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备控制 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common-header-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e1a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 科技风背景网格 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 150, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 150, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 动态光效背景 */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-effects::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+            top: -50%;
+            left: -50%;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 头部导航 */
+        .header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            gap: 40px;
+        }
+
+        /* Logo区域 */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: none;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #0096ff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-item:hover {
+            color: #00d4ff;
+            background: rgba(0, 150, 255, 0.1);
+        }
+
+        .nav-item:hover::before {
+            width: 80%;
+        }
+
+        .nav-item.active {
+            color: #00d4ff;
+            background: rgba(0, 150, 255, 0.15);
+        }
+
+        .nav-item.active::before {
+            width: 80%;
+            background: #00d4ff;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        /* 头部右侧 */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* 时间显示 */
+        .header-time {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-family: 'SF Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* 科技风图标按钮 */
+        .tech-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.6) 0%, transparent 70%);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .tech-icon-btn:hover {
+            background: rgba(0, 150, 255, 0.2);
+            border-color: rgba(0, 150, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 150, 255, 0.4);
+        }
+
+        .tech-icon-btn:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .tech-icon-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 图标样式 */
+        .tech-icon {
+            width: 20px;
+            height: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 语言切换图标 */
+        .lang-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .lang-icon::before,
+        .lang-icon::after {
+            content: '';
+            position: absolute;
+            border: 1px solid #00d4ff;
+            border-radius: 50%;
+        }
+
+        .lang-icon::before {
+            width: 100%;
+            height: 8px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .lang-icon::after {
+            width: 8px;
+            height: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 退出图标 */
+        .logout-icon {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+
+        .logout-icon::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #00d4ff;
+            border-right: none;
+            border-radius: 2px 0 0 2px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .logout-icon::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background: #00d4ff;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .logout-icon .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 4px 0 4px 6px;
+            border-color: transparent transparent transparent #00d4ff;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .tech-icon-btn:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+        /* 主内容区 */
+        .main-container {
+            margin-top: 60px;
+            padding: 16px;
+            padding-bottom: 0;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 控制面板样式 */
+        .control-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 最后一个控制面板和主容器中的最后一个元素不需要底部边距 */
+        .main-container > *:last-child,
+        .main-container > div:last-child > .control-panel {
+            margin-bottom: 0 !important;
+        }
+
+        .control-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 运行模式控制 */
+        .mode-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        a.mode-btn {
+            text-decoration: none;
+        }
+
+        .mode-btn i {
+            font-size: 24px;
+            color: #00d4ff;
+        }
+
+        .mode-btn:hover {
+            background: rgba(0, 150, 255, 0.2);
+            border-color: rgba(0, 150, 255, 0.5);
+            text-decoration: none;
+        }
+        
+        a.mode-btn:hover {
+            color: #e2e8f0;
+        }
+
+        .mode-btn.active {
+            background: rgba(0, 150, 255, 0.3);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .mode-btn.charge i {
+            color: #10b981;
+        }
+
+        .mode-btn.discharge i {
+            color: #f59e0b;
+        }
+
+        .mode-btn.stop i {
+            color: #ef4444;
+        }
+
+        /* 控制组 */
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            row-gap: 20px;
+        }
+
+        .control-row-three {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            row-gap: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .control-row-three:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            min-width: 90px;
+            color: #cbd5e1;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .control-input,
+        .control-select {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            color: #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .control-input:focus,
+        .control-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
+        }
+
+        .control-input:disabled,
+        .control-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 滑动条和输入框组合 */
+        .slider-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .control-slider {
+            flex: 1;
+            height: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 150, 255, 0.5);
+            transition: all 0.2s;
+        }
+
+        .control-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 16px rgba(0, 150, 255, 0.6);
+        }
+
+        .control-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 150, 255, 0.5);
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .control-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 16px rgba(0, 150, 255, 0.6);
+        }
+
+        .control-slider:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .control-slider:disabled::-webkit-slider-thumb,
+        .control-slider:disabled::-moz-range-thumb {
+            cursor: not-allowed;
+        }
+
+        .control-input-small {
+            width: 60px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            color: #e2e8f0;
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .control-input-small:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
+        }
+
+        .control-input-small:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .unit-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            min-width: 25px;
+            margin-left: 4px;
+        }
+
+        /* 时间轴样式 */
+        .time-axis {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .time-axis-title {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .time-blocks {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            min-height: 30px;
+        }
+
+        .time-block {
+            height: 30px;
+            background: #6b7280;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: block !important;
+            min-width: 10px;
+        }
+
+        .time-block.peak {
+            background: #ef4444;
+        }
+
+        .time-block.valley {
+            background: #3b82f6;
+        }
+
+        .time-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .time-block::after {
+            content: attr(data-hour);
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #64748b;
+        }
+
+        .time-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        /* 编辑控制按钮 */
+        .edit-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(0, 150, 255, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            z-index: 10;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.6);
+        }
+
+        .edit-btn.secondary {
+            background: #6b7280;
+        }
+
+        /* 保存取消按钮组 */
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            border: none;
+            box-shadow: 0 4px 16px rgba(0, 150, 255, 0.4);
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.6);
+        }
+
+        .cancel-btn {
+            background: #6b7280;
+            border: none;
+            color: white;
+            box-shadow: 0 4px 16px rgba(107, 114, 128, 0.4);
+        }
+
+        .cancel-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.6);
+        }
+
+        /* 特殊按钮样式 */
+        .special-btn {
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            color: #00d4ff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .special-btn:hover {
+            background: rgba(0, 150, 255, 0.3);
+            border-color: rgba(0, 150, 255, 0.5);
+        }
+
+        .special-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 紧急按钮样式 */
+        .emergency-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .emergency-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .emergency-btn i {
+            color: #ef4444;
+        }
+
+        /* 13.3寸屏幕优化 */
+        @media (max-height: 768px) {
+            .main-container {
+                padding: 10px 10px 0 10px;
+            }
+            .control-panel {
+                padding: 8px;
+                margin-bottom: 6px;
+            }
+            .page-title {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+            .control-section-title {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+            .time-block {
+                height: 20px !important;
+            }
+            .time-blocks {
+                min-height: 20px !important;
+            }
+            .control-group {
+                margin-bottom: 8px;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .control-row-three {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-row-three {
+                grid-template-columns: 1fr;
+            }
+            
+            .mode-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景效果 -->
+    <div class="bg-effects"></div>
+
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <div class="logo-text">储能柜管理系统</div>
+            </div>
+        </div>
+        
+        <!-- 导航菜单 -->
+        <nav class="nav-menu">
+            <a href="home.html" class="nav-item">首页</a>
+            <a href="#" class="nav-item" onclick="switchPage('data'); return false;">数据</a>
+            <a href="#" class="nav-item active" onclick="switchPage('control'); return false;">控制</a>
+            <a href="#" class="nav-item" onclick="switchPage('alarm'); return false;">告警</a>
+            <a href="#" class="nav-item" onclick="switchPage('log'); return false;">日志</a>
+            <a href="#" class="nav-item" onclick="switchPage('settings'); return false;">设置</a>
+        </nav>
+        
+        <div class="header-right">
+            <div class="header-time" id="currentTime">2024-01-31 14:30:00</div>
+            
+            <!-- 语言切换按钮 -->
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleLanguageDropdown(event)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option" onclick="changeLanguage('zh', event)">
+                        <span class="flag">🇨🇳</span>
+                        <span>中文</span>
+                    </div>
+                    <div class="lang-option" onclick="changeLanguage('en', event)">
+                        <span class="flag">🇺🇸</span>
+                        <span>English</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退出按钮 -->
+            <div class="logout-wrapper">
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1 class="page-title" style="margin: 0;">
+                <i class="fas fa-sliders-h"></i>
+                设备控制
+            </h1>
+            <!-- 编辑控制按钮 -->
+            <div id="editControls">
+                <button class="edit-btn" id="editModeBtn" onclick="window.toggleEditMode()">
+                    <i class="fas fa-edit"></i>
+                    编辑
+                </button>
+            </div>
+        </div>
+
+        <!-- 运行模式控制 -->
+        <div class="control-panel" style="margin-top: -10px;">
+            <div class="control-section-title">
+                <i class="fas fa-play-circle"></i>
+                运行模式控制
+            </div>
+            
+            <!-- 运行模式选择 -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 10px;">运行模式</label>
+                <div style="display: flex; gap: 20px;" id="modeRadioGroup">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: not-allowed; opacity: 0.6;" class="mode-label">
+                        <input type="radio" name="mode" value="auto" checked disabled onchange="window.changeMode(this.value)">
+                        <span style="font-size: 14px; color: #e2e8f0;">自动模式</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: not-allowed; opacity: 0.6;" class="mode-label">
+                        <input type="radio" name="mode" value="manual" disabled onchange="window.changeMode(this.value)">
+                        <span style="font-size: 14px; color: #e2e8f0;">手动模式</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 手动模式控制 -->
+            <div id="manualControl" style="display: none;">
+                <div id="manualButtons" style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button class="manual-mode-btn" data-mode="charge" onclick="window.selectManualMode('charge')" 
+                            style="flex: 1; padding: 6px; border: 2px solid rgba(0, 150, 255, 0.3); border-radius: 8px; 
+                                   background: rgba(30, 41, 59, 0.8); color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; 
+                                   transition: all 0.2s;">
+                        <i class="fas fa-battery-three-quarters" style="margin-right: 8px;"></i>充电
+                    </button>
+                    <button class="manual-mode-btn" data-mode="discharge" onclick="window.selectManualMode('discharge')"
+                            style="flex: 1; padding: 6px; border: 2px solid rgba(0, 150, 255, 0.3); border-radius: 8px; 
+                                   background: rgba(30, 41, 59, 0.8); color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; 
+                                   transition: all 0.2s;">
+                        <i class="fas fa-bolt" style="margin-right: 8px;"></i>放电
+                    </button>
+                </div>
+                
+                <!-- 状态显示区 -->
+                <div id="manualStatus" style="padding: 10px; background: rgba(30, 41, 59, 0.6); border-radius: 8px; text-align: center; display: none; border: 1px solid rgba(0, 150, 255, 0.2);">
+                    <div id="statusContent" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                        <!-- 动态内容 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自动模式时间轴 - 只在自动模式下显示 -->
+            <div id="timePolicyPanel" style="display: block; margin-top: 16px; margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <i class="fas fa-robot" style="color: #10b981; font-size: 18px;"></i>
+                    <div style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">系统根据下方时间轴自动控制充放电</div>
+                </div>
+                <div class="time-axis">
+                    <div class="time-axis-title">峰谷电价时段</div>
+                    <div class="time-blocks" id="timeBlocks">
+                        <!-- 预生成的时间块 -->
+                        <div class="time-block valley" data-hour="0" title="0:00"></div>
+                        <div class="time-block valley" data-hour="1" title="1:00"></div>
+                        <div class="time-block valley" data-hour="2" title="2:00"></div>
+                        <div class="time-block valley" data-hour="3" title="3:00"></div>
+                        <div class="time-block valley" data-hour="4" title="4:00"></div>
+                        <div class="time-block valley" data-hour="5" title="5:00"></div>
+                        <div class="time-block normal" data-hour="6" title="6:00"></div>
+                        <div class="time-block normal" data-hour="7" title="7:00"></div>
+                        <div class="time-block peak" data-hour="8" title="8:00"></div>
+                        <div class="time-block peak" data-hour="9" title="9:00"></div>
+                        <div class="time-block peak" data-hour="10" title="10:00"></div>
+                        <div class="time-block peak" data-hour="11" title="11:00"></div>
+                        <div class="time-block normal" data-hour="12" title="12:00"></div>
+                        <div class="time-block normal" data-hour="13" title="13:00"></div>
+                        <div class="time-block peak" data-hour="14" title="14:00"></div>
+                        <div class="time-block peak" data-hour="15" title="15:00"></div>
+                        <div class="time-block peak" data-hour="16" title="16:00"></div>
+                        <div class="time-block peak" data-hour="17" title="17:00"></div>
+                        <div class="time-block peak" data-hour="18" title="18:00"></div>
+                        <div class="time-block peak" data-hour="19" title="19:00"></div>
+                        <div class="time-block normal" data-hour="20" title="20:00"></div>
+                        <div class="time-block normal" data-hour="21" title="21:00"></div>
+                        <div class="time-block valley" data-hour="22" title="22:00"></div>
+                        <div class="time-block valley" data-hour="23" title="23:00"></div>
+                    </div>
+                    <div class="time-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ef4444;"></div>
+                            <span>峰值时段</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3b82f6;"></div>
+                            <span>谷值时段</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #6b7280;"></div>
+                            <span>平价时段</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 参数设置区域 - 两列布局 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; margin-bottom: -16px;">
+        <!-- 电池参数设置 -->
+        <div class="control-panel" style="padding-bottom: 26px;">
+            <div class="control-section-title">
+                <i class="fas fa-battery-full"></i>
+                电池参数设置
+            </div>
+            <div class="control-group">
+                <div class="control-row">
+                    <div class="control-item">
+                        <label class="control-label">充电停止SOC</label>
+                        <div class="slider-input-group">
+                            <input type="range" class="control-slider" id="chargeStopSOCSlider" value="95" min="0" max="100" disabled 
+                                   oninput="syncSliderInput('chargeStopSOC', this.value)">
+                            <input type="number" class="control-input-small" id="chargeStopSOC" value="95" min="0" max="100" disabled
+                                   oninput="syncInputSlider('chargeStopSOCSlider', this.value)">
+                            <span class="unit-label">%</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">充电功率</label>
+                        <div class="slider-input-group">
+                            <input type="range" class="control-slider" id="chargePowerSlider" value="250" min="0" max="500" disabled
+                                   oninput="syncSliderInput('chargePower', this.value)">
+                            <input type="number" class="control-input-small" id="chargePower" value="250" min="0" max="500" disabled
+                                   oninput="syncInputSlider('chargePowerSlider', this.value)">
+                            <span class="unit-label">kW</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-row">
+                    <div class="control-item">
+                        <label class="control-label">放电停止SOC</label>
+                        <div class="slider-input-group">
+                            <input type="range" class="control-slider" id="dischargeStopSOCSlider" value="10" min="0" max="100" disabled
+                                   oninput="syncSliderInput('dischargeStopSOC', this.value)">
+                            <input type="number" class="control-input-small" id="dischargeStopSOC" value="10" min="0" max="100" disabled
+                                   oninput="syncInputSlider('dischargeStopSOCSlider', this.value)">
+                            <span class="unit-label">%</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">放电功率</label>
+                        <div class="slider-input-group">
+                            <input type="range" class="control-slider" id="dischargePowerSlider" value="250" min="0" max="500" disabled
+                                   oninput="syncSliderInput('dischargePower', this.value)">
+                            <input type="number" class="control-input-small" id="dischargePower" value="250" min="0" max="500" disabled
+                                   oninput="syncInputSlider('dischargePowerSlider', this.value)">
+                            <span class="unit-label">kW</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group" style="margin-top: 24px;">
+                <div class="control-group-title">系统控制</div>
+                <div class="control-row">
+                    <div class="control-item">
+                        <label class="control-label">均衡控制</label>
+                        <select class="control-select" id="balanceControl" disabled>
+                            <option value="active">主动均衡</option>
+                            <option value="passive">被动均衡</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">风扇控制</label>
+                        <select class="control-select" id="fanControl" disabled>
+                            <option value="auto">自动</option>
+                            <option value="on">开启</option>
+                            <option value="off">关闭</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">温度保护</label>
+                        <select class="control-select" id="tempProtection" disabled>
+                            <option value="on">开启</option>
+                            <option value="off">关闭</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消防控制 -->
+        <div class="control-panel">
+            <div class="control-section-title">
+                <i class="fas fa-fire-extinguisher"></i>
+                消防控制
+            </div>
+            <div class="control-group">
+                <div class="control-row" style="margin-bottom: 20px;">
+                    <div class="control-item">
+                        <label class="control-label">灭火启动</label>
+                        <select class="control-select" id="fireExtinguisherMode" disabled>
+                            <option value="auto">自动启动</option>
+                            <option value="manual">手动启动</option>
+                            <option value="disabled">禁用</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">灭火剂类型</label>
+                        <select class="control-select" id="extinguisherType" disabled>
+                            <option value="perfluorohexanone">全氟己酮</option>
+                            <option value="hfc227ea">七氟丙烷</option>
+                            <option value="ig541">IG541混合气体</option>
+                            <option value="co2">二氧化碳</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-row" style="margin-bottom: 20px;">
+                    <div class="control-item">
+                        <label class="control-label">声光报警</label>
+                        <select class="control-select" id="alarmSystem" disabled>
+                            <option value="enabled">启用</option>
+                            <option value="disabled">禁用</option>
+                            <option value="test">测试模式</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">通风控制</label>
+                        <select class="control-select" id="ventilationControl" disabled>
+                            <option value="auto">自动控制</option>
+                            <option value="on">强制开启</option>
+                            <option value="off">强制关闭</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="control-item">
+                        <label class="control-label">紧急断电</label>
+                        <select class="control-select" id="emergencyPowerOff" disabled>
+                            <option value="auto">自动</option>
+                            <option value="manual">手动</option>
+                            <option value="disabled">禁用</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <!-- 空占位，保持对齐 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <script>
+        console.log('Control.html JavaScript开始执行');
+        
+        // 立即将关键函数添加到window对象
+        window.toggleEditMode = function() {
+            console.log('=== toggleEditMode 被调用 ===');
+            if (typeof toggleEditModeInternal === 'function') {
+                toggleEditModeInternal();
+            } else {
+                console.error('toggleEditModeInternal 函数未定义');
+            }
+        };
+        
+        let isEditMode = false;
+        let originalSettings = {};
+        let currentManualMode = null;
+
+        // 切换编辑模式内部实现
+        function toggleEditModeInternal() {
+            console.log('toggleEditModeInternal 被调用');
+            console.log('当前 isEditMode:', isEditMode);
+            
+            if (isEditMode) {
+                // 当前是编辑模式，要退出
+                exitEditMode();
+            } else {
+                // 当前不是编辑模式，要进入
+                enterEditMode();
+            }
+        }
+        
+        // 进入编辑模式
+        function enterEditMode() {
+            console.log('进入编辑模式');
+            isEditMode = true;
+            
+            // 保存原始设置
+            saveOriginalSettings();
+            
+            // 启用所有控件
+            enableAllControls();
+            
+            // 隐藏编辑按钮
+            const editBtn = document.getElementById('editModeBtn');
+            if (editBtn) {
+                editBtn.style.display = 'none';
+            }
+            
+            // 添加保存和取消按钮
+            const editControls = document.getElementById('editControls');
+            if (editControls) {
+                // 创建按钮容器
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.gap = '8px';
+                
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'edit-btn cancel-btn';
+                cancelBtn.style.cssText = 'background: #6b7280; margin-left: 8px;';
+                cancelBtn.innerHTML = '<i class="fas fa-times"></i> 取消';
+                cancelBtn.onclick = function() {
+                    console.log('取消按钮被点击');
+                    window.cancelEdit();
+                };
+                
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'edit-btn save-btn';
+                saveBtn.style.cssText = 'margin-left: 8px;';
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> 保存';
+                saveBtn.onclick = function() {
+                    console.log('保存按钮被点击');
+                    window.saveSettings();
+                };
+                
+                btnContainer.appendChild(cancelBtn);
+                btnContainer.appendChild(saveBtn);
+                editControls.appendChild(btnContainer);
+            }
+            
+            showNotification('已进入编辑模式', 'info');
+        }
+        
+        // 退出编辑模式
+        function exitEditMode() {
+            console.log('退出编辑模式');
+            isEditMode = false;
+            
+            // 禁用所有控件
+            disableAllControls();
+            
+            // 移除保存和取消按钮容器
+            const editControls = document.getElementById('editControls');
+            if (editControls) {
+                // 移除所有子元素除了原始的编辑按钮
+                while (editControls.children.length > 1) {
+                    editControls.lastChild.remove();
+                }
+            }
+            
+            // 显示编辑按钮
+            const editBtn = document.getElementById('editModeBtn');
+            if (editBtn) {
+                editBtn.style.display = 'flex';
+            }
+        }
+
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // 确保所有函数在全局作用域
+        // window.toggleEditMode 已经在顶部定义
+        window.changeMode = changeMode;
+        window.selectManualMode = selectManualMode;
+        window.stopManualMode = stopManualMode;
+        window.saveSettings = saveSettings;
+        window.cancelEdit = cancelEdit;
+        window.testFireAlarm = testFireAlarm;
+        window.resetFireSystem = resetFireSystem;
+        window.emergencyStop = emergencyStop;
+        window.switchPage = switchPage;
+        window.logout = logout;
+        window.syncSliderInput = syncSliderInput;
+        window.syncInputSlider = syncInputSlider;
+        window.toggleTimeBlock = toggleTimeBlock;
+        window.showNotification = showNotification;
+        window.disableAllControls = disableAllControls;
+        window.enableAllControls = enableAllControls;
+        window.createBottomButtons = createBottomButtons;
+        window.removeBottomButtons = removeBottomButtons;
+        window.saveOriginalSettings = saveOriginalSettings;
+        window.applyManualMode = applyManualMode;
+        window.enterEditMode = enterEditMode;
+        window.exitEditMode = exitEditMode;
+        
+        // 页面初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded - 页面DOM加载完成');
+            console.log('toggleEditMode类型:', typeof window.toggleEditMode);
+            
+            // 检查登录状态
+            const user = localStorage.getItem('touchscreen_user') || sessionStorage.getItem('touchscreen_user');
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 更新时间
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // 生成时间轴
+            generateTimeBlocks();
+            
+            // 延迟再次生成，确保DOM完全加载
+            setTimeout(() => {
+                generateTimeBlocks();
+                console.log('Time blocks regenerated after delay');
+            }, 500);
+            
+            // 初始化时禁用所有控件（除了编辑按钮）
+            console.log('Calling disableAllControls...');
+            disableAllControls();
+            
+            // 初始化显示自动模式状态（默认是自动模式）
+            document.getElementById('timePolicyPanel').style.display = 'block';
+            // 确保手动控制面板隐藏
+            document.getElementById('manualControl').style.display = 'none';
+            // 确保自动模式被选中
+            document.querySelector('input[name="mode"][value="auto"]').checked = true;
+            
+            // 测试编辑按钮
+            const editBtn = document.getElementById('editModeBtn');
+            if (editBtn) {
+                console.log('编辑按钮找到，onclick属性:', editBtn.onclick);
+                console.log('toggleEditMode函数存在:', typeof window.toggleEditMode);
+            }
+        });
+
+        // 生成时间轴块
+        function generateTimeBlocks() {
+            const container = document.getElementById('timeBlocks');
+            if (!container) {
+                console.error('timeBlocks container not found!');
+                return;
+            }
+            
+            // 如果已经有时间块，就不再生成
+            if (container.children.length > 0) {
+                console.log('Time blocks already exist, skipping generation');
+                // 为已存在的时间块添加点击事件
+                const blocks = container.querySelectorAll('.time-block');
+                blocks.forEach(block => {
+                    const hour = parseInt(block.getAttribute('data-hour'));
+                    block.onclick = () => toggleTimeBlock(hour);
+                });
+                return;
+            }
+            
+            const timeConfig = [
+                { hour: 0, type: 'valley' },
+                { hour: 1, type: 'valley' },
+                { hour: 2, type: 'valley' },
+                { hour: 3, type: 'valley' },
+                { hour: 4, type: 'valley' },
+                { hour: 5, type: 'valley' },
+                { hour: 6, type: 'normal' },
+                { hour: 7, type: 'normal' },
+                { hour: 8, type: 'peak' },
+                { hour: 9, type: 'peak' },
+                { hour: 10, type: 'peak' },
+                { hour: 11, type: 'peak' },
+                { hour: 12, type: 'normal' },
+                { hour: 13, type: 'normal' },
+                { hour: 14, type: 'peak' },
+                { hour: 15, type: 'peak' },
+                { hour: 16, type: 'peak' },
+                { hour: 17, type: 'peak' },
+                { hour: 18, type: 'peak' },
+                { hour: 19, type: 'peak' },
+                { hour: 20, type: 'normal' },
+                { hour: 21, type: 'normal' },
+                { hour: 22, type: 'valley' },
+                { hour: 23, type: 'valley' }
+            ];
+
+            container.innerHTML = '';
+            
+            // 添加错误处理
+            try {
+                timeConfig.forEach(config => {
+                    const block = document.createElement('div');
+                    block.className = `time-block ${config.type}`;
+                    block.setAttribute('data-hour', config.hour);
+                    block.setAttribute('title', `${config.hour}:00`);
+                    block.onclick = () => toggleTimeBlock(config.hour);
+                    container.appendChild(block);
+                });
+                
+                // 验证生成结果
+                if (container.children.length === 0) {
+                    console.error('No time blocks were generated!');
+                    // 备用方案：直接插入HTML
+                    let html = '';
+                    timeConfig.forEach(config => {
+                        html += `<div class="time-block ${config.type}" data-hour="${config.hour}" title="${config.hour}:00"></div>`;
+                    });
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error generating time blocks:', error);
+            }
+        }
+
+        // 切换时间块类型
+        function toggleTimeBlock(hour) {
+            if (!isEditMode) return;
+            
+            const block = document.querySelector(`[data-hour="${hour}"]`);
+            const types = ['normal', 'peak', 'valley'];
+            const currentType = types.find(type => block.classList.contains(type)) || 'normal';
+            const currentIndex = types.indexOf(currentType);
+            const nextType = types[(currentIndex + 1) % types.length];
+            
+            block.classList.remove(...types);
+            block.classList.add(nextType);
+        }
+
+        // 切换控制模式
+        function changeMode(mode) {
+            // 需要在编辑模式下才能切换
+            if (!isEditMode) {
+                showNotification('请先点击编辑按钮进入编辑模式', 'warning');
+                // 恢复原来的选中状态
+                const currentMode = document.getElementById('manualControl').style.display === 'none' ? 'auto' : 'manual';
+                document.querySelector(`input[name="mode"][value="${currentMode}"]`).checked = true;
+                return;
+            }
+            
+            if (mode === 'manual') {
+                document.getElementById('manualControl').style.display = 'block';
+                document.getElementById('timePolicyPanel').style.display = 'none';
+            } else {
+                document.getElementById('manualControl').style.display = 'none';
+                document.getElementById('timePolicyPanel').style.display = 'block';
+            }
+        }
+        
+        // 停止手动模式
+        function stopManualMode() {
+            // 需要在编辑模式下才能停止
+            if (!isEditMode) {
+                showNotification('请先点击编辑按钮进入编辑模式', 'warning');
+                return;
+            }
+            
+            // 显示按钮，隐藏状态
+            const manualButtons = document.getElementById('manualButtons');
+            const manualStatus = document.getElementById('manualStatus');
+            
+            manualButtons.style.display = 'flex';
+            manualStatus.style.display = 'none';
+            
+            // 重置所有按钮样式
+            document.querySelectorAll('.manual-mode-btn').forEach(btn => {
+                btn.style.background = 'rgba(30, 41, 59, 0.8)';
+                btn.style.borderColor = 'rgba(0, 150, 255, 0.3)';
+                btn.style.color = '#e2e8f0';
+            });
+            
+            currentManualMode = null;
+            showNotification('已停止手动操作', 'info');
+        }
+        
+        // 应用手动模式设置
+        function applyManualMode() {
+            if (!currentManualMode) {
+                return;
+            }
+            
+            const manualStatus = document.getElementById('manualStatus');
+            const statusContent = document.getElementById('statusContent');
+            const manualButtons = document.getElementById('manualButtons');
+            
+            if (currentManualMode === 'charge') {
+                // 充电模式 - 隐藏按钮，显示状态
+                manualButtons.style.display = 'none';
+                manualStatus.style.display = 'block';
+                const stopBtnStyle = isEditMode 
+                    ? 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-left: auto;'
+                    : 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: not-allowed; margin-left: auto; opacity: 0.6;';
+                statusContent.innerHTML = `
+                    <i class="fas fa-battery-three-quarters" style="color: #3b82f6; font-size: 20px;"></i>
+                    <div style="text-align: left;">
+                        <div style="font-size: 14px; font-weight: 600; color: #e2e8f0;">充电中</div>
+                        <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-top: 4px;">充电功率: 250kW</div>
+                    </div>
+                    <button onclick="window.stopManualMode()" style="${stopBtnStyle}">
+                        <i class="fas fa-stop" style="margin-right: 6px;"></i>停止
+                    </button>
+                `;
+            } else if (currentManualMode === 'discharge') {
+                // 放电模式 - 隐藏按钮，显示状态
+                manualButtons.style.display = 'none';
+                manualStatus.style.display = 'block';
+                const stopBtnStyle = isEditMode 
+                    ? 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-left: auto;'
+                    : 'padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: not-allowed; margin-left: auto; opacity: 0.6;';
+                statusContent.innerHTML = `
+                    <i class="fas fa-bolt" style="color: #f59e0b; font-size: 20px;"></i>
+                    <div style="text-align: left;">
+                        <div style="font-size: 14px; font-weight: 600; color: #e2e8f0;">放电中</div>
+                        <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-top: 4px;">放电功率: 250kW</div>
+                    </div>
+                    <button onclick="window.stopManualMode()" style="${stopBtnStyle}">
+                        <i class="fas fa-stop" style="margin-right: 6px;"></i>停止
+                    </button>
+                `;
+            }
+        }
+        
+        // 选择手动模式操作
+        function selectManualMode(mode) {
+            // 需要在编辑模式下才能选择
+            if (!isEditMode) {
+                showNotification('请先点击编辑按钮进入编辑模式', 'warning');
+                return;
+            }
+            
+            // 重置所有按钮样式
+            document.querySelectorAll('.manual-mode-btn').forEach(btn => {
+                btn.style.background = 'rgba(30, 41, 59, 0.8)';
+                btn.style.borderColor = 'rgba(0, 150, 255, 0.3)';
+                btn.style.color = '#e2e8f0';
+            });
+            
+            // 设置选中的按钮样式
+            const selectedBtn = document.querySelector(`[data-mode="${mode}"]`);
+            if (selectedBtn) {
+                currentManualMode = mode;
+                
+                // 根据不同模式设置不同的颜色
+                const colors = {
+                    'charge': '#3b82f6',     // 蓝色
+                    'discharge': '#f59e0b'   // 橙色
+                };
+                
+                selectedBtn.style.background = colors[mode];
+                selectedBtn.style.borderColor = colors[mode];
+                selectedBtn.style.color = 'white';
+            }
+        }
+
+        // 创建底部按钮（现在不再需要，保留空函数以兼容）
+        function createBottomButtons() {
+            // 不再创建底部按钮，使用顶部按钮切换
+        }
+        
+        // 移除底部按钮（现在不再需要，保留空函数以兼容）
+        function removeBottomButtons() {
+            // 不再需要移除底部按钮
+        }
+        
+        // 保存原始设置
+        function saveOriginalSettings() {
+            originalSettings = {
+                chargeStopSOC: document.getElementById('chargeStopSOC').value,
+                chargePower: document.getElementById('chargePower').value,
+                dischargeStopSOC: document.getElementById('dischargeStopSOC').value,
+                dischargePower: document.getElementById('dischargePower').value,
+                balanceControl: document.getElementById('balanceControl').value,
+                fanControl: document.getElementById('fanControl').value,
+                tempProtection: document.getElementById('tempProtection').value,
+                fireExtinguisherMode: document.getElementById('fireExtinguisherMode').value,
+                extinguisherType: document.getElementById('extinguisherType').value,
+                alarmSystem: document.getElementById('alarmSystem').value,
+                emergencyPowerOff: document.getElementById('emergencyPowerOff').value,
+                ventilationControl: document.getElementById('ventilationControl').value
+            };
+        }
+
+        // 启用所有控件
+        function enableAllControls() {
+            // 启用输入框、选择框、滑动条和特殊按钮
+            const inputs = document.querySelectorAll('.control-input, .control-select, .special-btn, .control-slider, .control-input-small');
+            inputs.forEach(input => input.disabled = false);
+            
+            // 启用运行模式的radio按钮
+            const modeRadios = document.querySelectorAll('input[name="mode"]');
+            modeRadios.forEach(radio => {
+                radio.disabled = false;
+                radio.onchange = function() {
+                    window.changeMode(this.value);
+                };
+            });
+            
+            // 启用label
+            const modeLabels = document.querySelectorAll('.mode-label');
+            modeLabels.forEach(label => {
+                label.style.cursor = 'pointer';
+                label.style.opacity = '1';
+            });
+            
+            // 启用手动模式按钮
+            const manualBtns = document.querySelectorAll('.manual-mode-btn');
+            manualBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            });
+            
+            // 启用时间轴点击
+            const timeBlocks = document.querySelectorAll('.time-block');
+            timeBlocks.forEach(block => {
+                block.style.pointerEvents = 'auto';
+                block.style.opacity = '1';
+            });
+        }
+
+        // 禁用所有控件
+        function disableAllControls() {
+            console.log('disableAllControls called');
+            
+            // 禁用输入框、选择框、滑动条和特殊按钮
+            const inputs = document.querySelectorAll('.control-input, .control-select, .special-btn, .control-slider, .control-input-small');
+            console.log(`Found ${inputs.length} inputs to disable`);
+            inputs.forEach(input => input.disabled = true);
+            
+            // 禁用运行模式的radio按钮
+            const modeRadios = document.querySelectorAll('input[name="mode"]');
+            console.log(`Found ${modeRadios.length} radio buttons to disable`);
+            modeRadios.forEach(radio => {
+                radio.disabled = true;
+                radio.onchange = null; // 移除事件处理
+                console.log(`Disabled radio ${radio.value}`);
+            });
+            
+            // 禁用label
+            const modeLabels = document.querySelectorAll('.mode-label');
+            modeLabels.forEach(label => {
+                label.style.cursor = 'not-allowed';
+                label.style.opacity = '0.6';
+            });
+            
+            // 禁用手动模式按钮
+            const manualBtns = document.querySelectorAll('.manual-mode-btn');
+            manualBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'not-allowed';
+            });
+            
+            // 禁用时间轴点击
+            const timeBlocks = document.querySelectorAll('.time-block');
+            timeBlocks.forEach(block => {
+                block.style.pointerEvents = 'none';
+                block.style.opacity = '0.8';
+            });
+        }
+
+        // 保存设置
+        function saveSettings() {
+            showNotification('正在保存设置...', 'info');
+            
+            // 模拟保存延迟
+            setTimeout(() => {
+                // 如果在手动模式下且选择了操作，应用该操作
+                const isManualMode = document.querySelector('input[name="mode"][value="manual"]').checked;
+                if (isManualMode && currentManualMode) {
+                    applyManualMode();
+                }
+                
+                showNotification('设置保存成功', 'success');
+                // 退出编辑模式
+                exitEditMode();
+            }, 1000);
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            // 恢复原始设置
+            Object.keys(originalSettings).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = originalSettings[key];
+                }
+            });
+            
+            exitEditMode();
+            showNotification('已取消编辑', 'info');
+        }
+
+        // 测试火灾报警
+        function testFireAlarm() {
+            if (!isEditMode) return;
+            showNotification('正在测试火灾报警系统...', 'info');
+            setTimeout(() => {
+                showNotification('火灾报警测试完成，系统正常', 'success');
+            }, 2000);
+        }
+
+        // 重置消防系统
+        function resetFireSystem() {
+            if (!isEditMode) return;
+            if (confirm('确定要重置消防系统吗？这将清除所有报警记录。')) {
+                showNotification('正在重置消防系统...', 'info');
+                setTimeout(() => {
+                    showNotification('消防系统已重置', 'success');
+                }, 1500);
+            }
+        }
+
+        // 紧急停机
+        function emergencyStop() {
+            // 紧急停机不需要编辑模式
+            if (confirm('确定要执行紧急停机吗？\n\n这将立即停止所有充放电操作！')) {
+                showNotification('紧急停机已执行！', 'error');
+                
+                // 切换到手动模式并停止所有操作
+                document.querySelector('input[name="mode"][value="manual"]').checked = true;
+                changeMode('manual');
+                
+                // 模拟停机效果
+                setTimeout(() => {
+                    showNotification('系统已安全停机', 'warning');
+                }, 1000);
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#ffa500' : '#3b82f6'};
+                color: white;
+                border-radius: 6px;
+                font-size: 14px;
+                z-index: 10000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 触发动画
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // 3秒后消失
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 切换页面
+        function switchPage(page) {
+            // 页面跳转
+            if (page === 'home') {
+                window.location.href = 'home.html';
+            } else if (page === 'data') {
+                window.location.href = 'data.html';
+            } else if (page === 'alarm') {
+                window.location.href = 'alarm.html';
+            } else if (page === 'log') {
+                window.location.href = 'logs.html';
+            } else if (page === 'settings') {
+                window.location.href = 'settings.html';
+            }
+            // control page stays on current page
+        }
+
+        // 切换语言下拉菜单
+        function toggleLanguage(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 选择语言
+        function selectLanguage(lang, event) {
+            event.stopPropagation();
+            
+            // 更新选中状态
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 保存语言设置
+            localStorage.setItem('touchscreen_lang', lang);
+            
+            // 关闭下拉菜单
+            document.getElementById('langDropdown').classList.remove('show');
+            
+            // 这里可以添加语言切换逻辑
+            console.log('切换语言到:', lang);
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            const langBtn = document.querySelector('.tech-icon-btn');
+            if (langBtn && !langBtn.contains(e.target)) {
+                document.getElementById('langDropdown').classList.remove('show');
+            }
+        });
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('touchscreen_user');
+                sessionStorage.removeItem('touchscreen_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 同步滑动条到输入框
+        function syncSliderInput(inputId, value) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = value;
+            }
+        }
+
+        // 同步输入框到滑动条
+        function syncInputSlider(sliderId, value) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                // 确保值在范围内
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const numValue = parseFloat(value) || 0;
+                const clampedValue = Math.max(min, Math.min(max, numValue));
+                
+                slider.value = clampedValue;
+                // 如果输入值超出范围，更新输入框显示正确的值
+                if (numValue !== clampedValue) {
+                    const input = document.getElementById(sliderId.replace('Slider', ''));
+                    if (input) {
+                        input.value = clampedValue;
+                    }
+                }
+            }
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="common-header-scripts.js"></script>
+</body>
+</html>
