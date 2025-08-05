@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志管理 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 页面布局 */
+        .main-content {
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Tab样式 */
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover {
+            color: #3b82f6;
+        }
+
+        .tab-btn.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .tab-content {
+            padding: 0;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .search-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .search-input {
+            width: 300px;
+            height: 40px;
+            padding-left: 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-select,
+        .date-input {
+            width: 200px;
+            height: 40px;
+            padding: 0 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-input:focus,
+        .form-select:focus,
+        .date-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            height: 40px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: auto;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .log-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .log-type.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .log-type.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .log-type.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .log-type.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .pagination-info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .page-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 侧边栏菜单样式修正 */
+        .sidebar .menu-item {
+            display: flex;
+            justify-content: flex-start;
+            padding-right: 16px;
+        }
+
+        .sidebar .submenu {
+            padding-left: 0;
+        }
+
+        .sidebar .submenu .menu-item {
+            padding-left: 40px !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+            padding-right: 16px !important;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <div class="notification-badge">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </div>
+            <div class="user-menu" onclick="logout()">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item" data-menu="dashboard">
+                <span style="font-size: 18px; margin-right: 12px;">📊</span>
+                <span id="menuDashboard">仪表盘</span>
+            </a>
+            <a href="site1.html" class="menu-item" data-menu="site1">
+                <span style="font-size: 18px; margin-right: 12px;">🏢</span>
+                <span>站点管理</span>
+            </a>
+            <a href="devices.html" class="menu-item" data-menu="devices">
+                <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
+                <span id="menuDevices">设备管理</span>
+            </a>
+            <a href="alarm-management.html" class="menu-item" data-menu="alarm-management">
+                <span style="font-size: 18px; margin-right: 12px;">🔔</span>
+                <span id="menuAlarms">告警管理</span>
+            </a>
+            <a href="rule-engine.html" class="menu-item" data-menu="rule-engine" style="display: none;">
+                <i class="fas fa-code-branch"></i>
+                <span>规则引擎</span>
+            </a>
+            <div class="menu-item-group">
+                <a href="javascript:void(0)" class="menu-item active" data-menu="settings" onclick="toggleSubmenu(this)">
+                    <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
+                    <span id="menuSettings">系统管理</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
+                </a>
+                <div class="submenu" style="display: block;">
+                    <a href="menus.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
+                        <span>菜单管理</span>
+                    </a>
+                    <a href="roles.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👥</span>
+                        <span>角色管理</span>
+                    </a>
+                    <a href="personnel.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👤</span>
+                        <span>人员管理</span>
+                    </a>
+                    <a href="logs.html" class="menu-item submenu-item active">
+                        <span style="font-size: 16px; margin-right: 10px;">📄</span>
+                        <span>日志管理</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content" id="mainContent">
+        <!-- Tab切换 -->
+        <div class="tab-header" style="display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px;">
+            <button class="tab-btn active" onclick="switchTab('operation')">操作日志</button>
+            <button class="tab-btn" onclick="switchTab('login')">登录日志</button>
+        </div>
+
+        <div class="tab-content">
+                <!-- 操作日志 -->
+                <div class="tab-pane active" id="operationTab">
+                    <!-- 查询区域 -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="search-container">
+                            <div class="search-left" style="display: grid; grid-template-columns: auto auto 1fr; gap: 16px; align-items: center; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" for="operKeyword" style="margin-bottom: 0; min-width: 50px;">关键词</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-search input-icon"></i>
+                                        <input type="text" class="search-input" id="operKeyword" placeholder="搜索操作内容..." onkeypress="if(event.keyCode==13) searchLogs(event, 'operation')" style="width: 200px;">
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" for="operType" style="margin-bottom: 0; min-width: 60px;">操作类型</label>
+                                    <select class="form-select" id="operType" style="width: 120px;">
+                                        <option value="">全部</option>
+                                        <option value="create">新增</option>
+                                        <option value="update">更新</option>
+                                        <option value="delete">删除</option>
+                                        <option value="query">查询</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" style="margin-bottom: 0; min-width: 60px;">日期范围</label>
+                                    <input type="date" class="date-input" id="operStartDate" style="width: 140px;">
+                                    <span style="color: #6b7280;">-</span>
+                                    <input type="date" class="date-input" id="operEndDate" style="width: 140px;">
+                                </div>
+                            </div>
+                            <div class="search-right">
+                                <button class="btn btn-primary" onclick="searchLogs(event, 'operation')">
+                                    <i class="fas fa-search"></i> 查询
+                                </button>
+                                <button class="btn btn-secondary" onclick="resetSearch('operation')">
+                                    <i class="fas fa-redo"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表格视图容器 -->
+                    <div class="card" style="position: relative;">
+                        <button class="btn btn-primary" onclick="exportLogs()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                        <div class="table-container" style="background: transparent; box-shadow: none; margin-bottom: 0; padding-top: 60px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>操作模块</th>
+                                    <th>操作类型</th>
+                                    <th>操作内容</th>
+                                    <th>状态</th>
+                                    <th>操作用户</th>
+                                    <th>操作IP</th>
+                                    <th>操作时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="operationTableBody">
+                                <!-- 数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                        </div>
+                        
+                        <!-- 分页 -->
+                        <div class="pagination" style="margin-top: 20px;">
+                            <div class="pagination-info">
+                                显示 <span id="operStartRecord">1</span> - <span id="operEndRecord">10</span> 条，共 <span id="operTotalRecords">0</span> 条
+                            </div>
+                            <div class="pagination-controls" id="operPaginationControls">
+                                <!-- 分页按钮将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 登录日志 -->
+                <div class="tab-pane" id="loginTab">
+                    <!-- 查询区域 -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="search-container">
+                            <div class="search-left" style="display: grid; grid-template-columns: auto auto 1fr; gap: 16px; align-items: center; flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" for="loginUser" style="margin-bottom: 0; min-width: 50px;">用户名</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-search input-icon"></i>
+                                        <input type="text" class="search-input" id="loginUser" placeholder="搜索用户名..." onkeypress="if(event.keyCode==13) searchLogs(event, 'login')" style="width: 200px;">
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" for="loginStatus" style="margin-bottom: 0; min-width: 60px;">登录状态</label>
+                                    <select class="form-select" id="loginStatus" style="width: 120px;">
+                                        <option value="">全部</option>
+                                        <option value="success">成功</option>
+                                        <option value="failed">失败</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label class="form-label" style="margin-bottom: 0; min-width: 60px;">日期范围</label>
+                                    <input type="date" class="date-input" id="loginStartDate" style="width: 140px;">
+                                    <span style="color: #6b7280;">-</span>
+                                    <input type="date" class="date-input" id="loginEndDate" style="width: 140px;">
+                                </div>
+                            </div>
+                            <div class="search-right">
+                                <button class="btn btn-primary" onclick="searchLogs(event, 'login')">
+                                    <i class="fas fa-search"></i> 查询
+                                </button>
+                                <button class="btn btn-secondary" onclick="resetSearch('login')">
+                                    <i class="fas fa-redo"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表格视图容器 -->
+                    <div class="card" style="position: relative;">
+                        <button class="btn btn-primary" onclick="exportLogs()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                        <div class="table-container" style="background: transparent; box-shadow: none; margin-bottom: 0; padding-top: 60px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>登录方式</th>
+                                    <th>浏览器</th>
+                                    <th>操作系统</th>
+                                    <th>状态</th>
+                                    <th>IP地址</th>
+                                    <th>登录时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loginTableBody">
+                                <!-- 数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                        </div>
+                        
+                        <!-- 分页 -->
+                        <div class="pagination" style="margin-top: 20px;">
+                            <div class="pagination-info">
+                                显示 <span id="loginStartRecord">1</span> - <span id="loginEndRecord">10</span> 条，共 <span id="loginTotalRecords">0</span> 条
+                            </div>
+                            <div class="pagination-controls" id="loginPaginationControls">
+                                <!-- 分页按钮将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </main>
+
+    <!-- 引入公共脚本 -->
+    <script src="common.js"></script>
+    <script>
+        // 检查登录状态
+        checkAuth();
+        
+        // 当前选中的tab
+        let currentTab = 'operation';
+        
+        // 操作日志数据
+        let operationLogs = [
+            { time: '2024-01-20 10:30:45', user: '管理员', module: '设备管理', type: 'create', content: '新增储能柜设备：ESS-001', ip: '192.168.1.100', status: 'success' },
+            { time: '2024-01-20 10:25:30', user: '张三', module: '角色管理', type: 'update', content: '更新角色权限：运维人员', ip: '192.168.1.101', status: 'success' },
+            { time: '2024-01-20 10:20:15', user: '李四', module: '告警管理', type: 'query', content: '查询告警列表', ip: '192.168.1.102', status: 'success' },
+            { time: '2024-01-20 10:15:00', user: '管理员', module: '人员管理', type: 'delete', content: '删除用户：测试用户', ip: '192.168.1.100', status: 'success' },
+            { time: '2024-01-20 10:10:45', user: '王五', module: '设备管理', type: 'update', content: '更新设备参数：电池温度保护', ip: '192.168.1.103', status: 'warning' },
+            { time: '2024-01-20 10:05:30', user: '管理员', module: '菜单管理', type: 'create', content: '新增菜单：日志管理', ip: '192.168.1.100', status: 'success' },
+            { time: '2024-01-20 10:00:15', user: '张三', module: '站点管理', type: 'update', content: '更新站点信息：北京站', ip: '192.168.1.101', status: 'success' },
+            { time: '2024-01-20 09:55:00', user: '李四', module: '设备管理', type: 'query', content: '导出设备列表', ip: '192.168.1.102', status: 'success' },
+            { time: '2024-01-20 09:50:45', user: '管理员', module: '系统设置', type: 'update', content: '更新系统配置', ip: '192.168.1.100', status: 'error' },
+            { time: '2024-01-20 09:45:30', user: '王五', module: '告警管理', type: 'update', content: '处理告警：电池温度过高', ip: '192.168.1.103', status: 'success' }
+        ];
+
+        // 登录日志数据
+        let loginLogs = [
+            { time: '2024-01-20 10:30:00', user: '管理员', method: '账号密码', ip: '192.168.1.100', browser: 'Chrome 120', os: 'Windows 10', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 10:25:00', user: '张三', method: '账号密码', ip: '192.168.1.101', browser: 'Firefox 121', os: 'macOS', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 10:20:00', user: '测试用户', method: '账号密码', ip: '192.168.1.105', browser: 'Chrome 119', os: 'Windows 11', status: 'failed', remark: '密码错误' },
+            { time: '2024-01-20 10:15:00', user: '李四', method: '账号密码', ip: '192.168.1.102', browser: 'Safari 17', os: 'macOS', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 10:10:00', user: '王五', method: '账号密码', ip: '192.168.1.103', browser: 'Edge 120', os: 'Windows 10', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 10:05:00', user: '管理员', method: '账号密码', ip: '192.168.1.100', browser: 'Chrome 120', os: 'Windows 10', status: 'failed', remark: '账号被锁定' },
+            { time: '2024-01-20 10:00:00', user: '测试用户2', method: '账号密码', ip: '192.168.1.106', browser: 'Chrome 118', os: 'Linux', status: 'failed', remark: '账号不存在' },
+            { time: '2024-01-20 09:55:00', user: '张三', method: '账号密码', ip: '192.168.1.101', browser: 'Firefox 121', os: 'macOS', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 09:50:00', user: '李四', method: '账号密码', ip: '192.168.1.102', browser: 'Safari 17', os: 'macOS', status: 'success', remark: '登录成功' },
+            { time: '2024-01-20 09:45:00', user: '管理员', method: '账号密码', ip: '192.168.1.100', browser: 'Chrome 120', os: 'Windows 10', status: 'success', remark: '登录成功' }
+        ];
+
+        let operCurrentPage = 1;
+        let loginCurrentPage = 1;
+        const pageSize = 10;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOperationLogs();
+            renderLoginLogs();
+        });
+
+        // 切换Tab
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 更新tab按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 切换内容
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            if (tab === 'operation') {
+                document.getElementById('operationTab').classList.add('active');
+            } else {
+                document.getElementById('loginTab').classList.add('active');
+            }
+        }
+
+        // 渲染操作日志
+        function renderOperationLogs() {
+            const tbody = document.getElementById('operationTableBody');
+            const keyword = document.getElementById('operKeyword').value.toLowerCase();
+            const type = document.getElementById('operType').value;
+            const startDate = document.getElementById('operStartDate').value;
+            const endDate = document.getElementById('operEndDate').value;
+            
+            // 过滤数据
+            let filteredData = operationLogs;
+            if (keyword) {
+                filteredData = filteredData.filter(log => 
+                    log.content.toLowerCase().includes(keyword) ||
+                    log.user.toLowerCase().includes(keyword) ||
+                    log.module.toLowerCase().includes(keyword)
+                );
+            }
+            if (type) {
+                filteredData = filteredData.filter(log => log.type === type);
+            }
+            if (startDate) {
+                filteredData = filteredData.filter(log => log.time >= startDate);
+            }
+            if (endDate) {
+                filteredData = filteredData.filter(log => log.time <= endDate + ' 23:59:59');
+            }
+            
+            // 分页
+            const totalRecords = filteredData.length;
+            const totalPages = Math.ceil(totalRecords / pageSize);
+            const startIndex = (operCurrentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalRecords);
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            // 渲染表格
+            tbody.innerHTML = pageData.map(log => `
+                <tr>
+                    <td>${log.module}</td>
+                    <td>
+                        <span class="log-type ${getLogTypeClass(log.type)}">
+                            ${getLogTypeText(log.type)}
+                        </span>
+                    </td>
+                    <td>${log.content}</td>
+                    <td>
+                        <span class="log-type ${log.status}">
+                            ${getStatusText(log.status)}
+                        </span>
+                    </td>
+                    <td>${log.user}</td>
+                    <td>${log.ip}</td>
+                    <td>${log.time}</td>
+                </tr>
+            `).join('');
+            
+            // 更新分页信息
+            document.getElementById('operStartRecord').textContent = totalRecords > 0 ? startIndex + 1 : 0;
+            document.getElementById('operEndRecord').textContent = endIndex;
+            document.getElementById('operTotalRecords').textContent = totalRecords;
+            
+            // 渲染分页控件
+            renderPagination('operPaginationControls', totalPages, operCurrentPage, 'operation');
+        }
+
+        // 渲染登录日志
+        function renderLoginLogs() {
+            const tbody = document.getElementById('loginTableBody');
+            const user = document.getElementById('loginUser').value.toLowerCase();
+            const status = document.getElementById('loginStatus').value;
+            const startDate = document.getElementById('loginStartDate').value;
+            const endDate = document.getElementById('loginEndDate').value;
+            
+            // 过滤数据
+            let filteredData = loginLogs;
+            if (user) {
+                filteredData = filteredData.filter(log => 
+                    log.user.toLowerCase().includes(user)
+                );
+            }
+            if (status) {
+                filteredData = filteredData.filter(log => log.status === status);
+            }
+            if (startDate) {
+                filteredData = filteredData.filter(log => log.time >= startDate);
+            }
+            if (endDate) {
+                filteredData = filteredData.filter(log => log.time <= endDate + ' 23:59:59');
+            }
+            
+            // 分页
+            const totalRecords = filteredData.length;
+            const totalPages = Math.ceil(totalRecords / pageSize);
+            const startIndex = (loginCurrentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalRecords);
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            // 渲染表格
+            tbody.innerHTML = pageData.map(log => `
+                <tr>
+                    <td>${log.user}</td>
+                    <td>${log.method}</td>
+                    <td>${log.browser}</td>
+                    <td>${log.os}</td>
+                    <td>
+                        <span class="log-type ${log.status === 'success' ? 'success' : 'error'}">
+                            ${log.status === 'success' ? '成功' : '失败'}
+                        </span>
+                    </td>
+                    <td>${log.ip}</td>
+                    <td>${log.time}</td>
+                </tr>
+            `).join('');
+            
+            // 更新分页信息
+            document.getElementById('loginStartRecord').textContent = totalRecords > 0 ? startIndex + 1 : 0;
+            document.getElementById('loginEndRecord').textContent = endIndex;
+            document.getElementById('loginTotalRecords').textContent = totalRecords;
+            
+            // 渲染分页控件
+            renderPagination('loginPaginationControls', totalPages, loginCurrentPage, 'login');
+        }
+
+        // 渲染分页控件
+        function renderPagination(containerId, totalPages, currentPage, type) {
+            const controls = document.getElementById(containerId);
+            let html = '';
+            
+            // 上一页
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1}, '${type}')" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+            
+            // 页码
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i}, '${type}')">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<span style="padding: 0 8px;">...</span>`;
+                }
+            }
+            
+            // 下一页
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1}, '${type}')" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+            
+            controls.innerHTML = html;
+        }
+
+        // 跳转页面
+        function goToPage(page, type) {
+            if (type === 'operation') {
+                const totalPages = Math.ceil(operationLogs.length / pageSize);
+                if (page >= 1 && page <= totalPages) {
+                    operCurrentPage = page;
+                    renderOperationLogs();
+                }
+            } else {
+                const totalPages = Math.ceil(loginLogs.length / pageSize);
+                if (page >= 1 && page <= totalPages) {
+                    loginCurrentPage = page;
+                    renderLoginLogs();
+                }
+            }
+        }
+
+        // 搜索日志
+        function searchLogs(event, type) {
+            event.preventDefault();
+            if (type === 'operation') {
+                operCurrentPage = 1;
+                renderOperationLogs();
+            } else {
+                loginCurrentPage = 1;
+                renderLoginLogs();
+            }
+        }
+
+        // 重置搜索
+        function resetSearch(type) {
+            if (type === 'operation') {
+                document.getElementById('operKeyword').value = '';
+                document.getElementById('operType').value = '';
+                document.getElementById('operStartDate').value = '';
+                document.getElementById('operEndDate').value = '';
+                operCurrentPage = 1;
+                renderOperationLogs();
+            } else {
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginStatus').value = '';
+                document.getElementById('loginStartDate').value = '';
+                document.getElementById('loginEndDate').value = '';
+                loginCurrentPage = 1;
+                renderLoginLogs();
+            }
+        }
+
+        // 导出日志
+        function exportLogs() {
+            alert('导出功能开发中...');
+        }
+
+        // 获取操作类型样式
+        function getLogTypeClass(type) {
+            switch(type) {
+                case 'create': return 'success';
+                case 'update': return 'info';
+                case 'delete': return 'error';
+                case 'query': return 'info';
+                default: return 'info';
+            }
+        }
+
+        // 获取操作类型文本
+        function getLogTypeText(type) {
+            switch(type) {
+                case 'create': return '新增';
+                case 'update': return '更新';
+                case 'delete': return '删除';
+                case 'query': return '查询';
+                default: return type;
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            switch(status) {
+                case 'success': return '成功';
+                case 'warning': return '警告';
+                case 'error': return '失败';
+                default: return status;
+            }
+        }
+
+        // 侧边栏切换
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+                
+                // 切换箭头方向
+                const arrow = element.querySelector('.fa-chevron-down');
+                if (arrow) {
+                    arrow.style.transform = submenu.style.display === 'none' ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

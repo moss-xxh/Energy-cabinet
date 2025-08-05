@@ -863,25 +863,25 @@
                 <span>规则引擎</span>
             </a>
             <div class="menu-item-group">
-                <a href="javascript:void(0)" class="menu-item" data-menu="system-management" onclick="toggleSubmenu(this)">
-                    <span style="font-size: 18px; margin-right: 12px;">🔧</span>
-                    <span id="menuSystem">系统管理</span>
+                <a href="javascript:void(0)" class="menu-item" data-menu="settings" onclick="toggleSubmenu(this)">
+                    <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
+                    <span id="menuSettings">系统管理</span>
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
                 </a>
                 <div class="submenu" style="display: none;">
-                    <a href="system-management.html?module=menus" class="menu-item submenu-item">
+                    <a href="menus.html" class="menu-item submenu-item">
                         <span style="font-size: 16px; margin-right: 10px;">📋</span>
                         <span>菜单管理</span>
                     </a>
-                    <a href="system-management.html?module=roles" class="menu-item submenu-item">
+                    <a href="roles.html" class="menu-item submenu-item">
                         <span style="font-size: 16px; margin-right: 10px;">👥</span>
                         <span>角色管理</span>
                     </a>
-                    <a href="system-management.html?module=personnel" class="menu-item submenu-item">
+                    <a href="personnel.html" class="menu-item submenu-item">
                         <span style="font-size: 16px; margin-right: 10px;">👤</span>
                         <span>人员管理</span>
                     </a>
-                    <a href="system-management.html?module=logs" class="menu-item submenu-item">
+                    <a href="logs.html" class="menu-item submenu-item">
                         <span style="font-size: 16px; margin-right: 10px;">📄</span>
                         <span>日志管理</span>
                     </a>
@@ -988,10 +988,14 @@
 
         <!-- 表格视图容器 -->
         <div id="table-view" class="card">
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
                 <button class="btn btn-primary" onclick="showAddDeviceModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
                     <i class="fas fa-plus"></i>
                     添加设备
+                </button>
+                <button class="btn btn-primary" onclick="showOTAUpgrade()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block; background: #10b981;">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    OTA升级
                 </button>
             </div>
             <div style="overflow-x: auto;">
@@ -1767,6 +1771,143 @@
                 drawer.style.display = 'none';
                 document.getElementById('addDeviceForm').reset();
             }, 300);
+        }
+
+        // 显示OTA升级弹窗
+        function showOTAUpgrade() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="background: white; border-radius: 12px; width: 500px; max-width: 90vw; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                    <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级</h3>
+                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                            <span style="transform: rotate(45deg);">+</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding: 20px;">
+                        <form id="otaUpgradeForm" onsubmit="handleOTAUpgrade(event)">
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
+                                    选择升级文件 <span style="color: #ef4444;">*</span>
+                                </label>
+                                <input type="file" name="otaFile" class="form-input" accept=".bin,.hex,.img" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">支持的文件格式：.bin, .hex, .img</p>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
+                                    选择设备 <span style="color: #ef4444;">*</span>
+                                </label>
+                                <select name="deviceIds" class="form-select" multiple required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-height: 120px;">
+                                    ${devices.map(device => `
+                                        <option value="${device.id}">${device.code} - ${device.name}</option>
+                                    `).join('')}
+                                </select>
+                                <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">按住 Ctrl/Cmd 键可多选设备</p>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
+                                    版本说明
+                                </label>
+                                <textarea name="versionNote" class="form-input" rows="3" placeholder="请输入版本更新说明..." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="button" class="btn" onclick="this.closest('.modal').remove()" style="padding: 8px 16px;">取消</button>
+                        <button type="submit" form="otaUpgradeForm" class="btn btn-primary" style="padding: 8px 16px; background: #10b981;">开始升级</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        // 处理OTA升级
+        function handleOTAUpgrade(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const selectedDevices = Array.from(event.target.deviceIds.selectedOptions).map(opt => opt.text);
+            
+            if (selectedDevices.length === 0) {
+                alert('请至少选择一个设备');
+                return;
+            }
+            
+            // 关闭OTA升级弹窗
+            event.target.closest('.modal').remove();
+            
+            // 显示升级进度弹窗
+            const progressModal = document.createElement('div');
+            progressModal.className = 'modal show';
+            progressModal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            
+            progressModal.innerHTML = `
+                <div class="modal-content" style="background: white; border-radius: 12px; width: 500px; max-width: 90vw; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                    <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级进度</h3>
+                    </div>
+                    <div class="modal-body" style="padding: 20px;">
+                        <div style="margin-bottom: 16px;">
+                            <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">正在升级 ${selectedDevices.length} 个设备...</p>
+                            <div style="background: #f3f4f6; border-radius: 8px; height: 8px; overflow: hidden;">
+                                <div id="otaProgress" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                            <p id="otaProgressText" style="font-size: 12px; color: #64748b; margin-top: 8px; text-align: center;">0%</p>
+                        </div>
+                        <div id="otaDeviceList" style="max-height: 200px; overflow-y: auto;">
+                            ${selectedDevices.map(device => `
+                                <div class="device-upgrade-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; background: #f9fafb;">
+                                    <span style="font-size: 14px; color: #374151;">${device}</span>
+                                    <span class="upgrade-status" style="font-size: 12px; color: #6b7280;">等待中...</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                        <button type="button" class="btn btn-primary" onclick="this.closest('.modal').remove()" style="padding: 8px 16px; display: none;" id="otaCompleteBtn">完成</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(progressModal);
+            
+            // 模拟升级进度
+            let progress = 0;
+            const progressBar = document.getElementById('otaProgress');
+            const progressText = document.getElementById('otaProgressText');
+            const statusElements = progressModal.querySelectorAll('.upgrade-status');
+            const completeBtn = document.getElementById('otaCompleteBtn');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.floor(progress) + '%';
+                
+                // 更新设备状态
+                statusElements.forEach((el, index) => {
+                    const deviceProgress = progress - (index * 20);
+                    if (deviceProgress >= 100) {
+                        el.textContent = '升级完成';
+                        el.style.color = '#10b981';
+                    } else if (deviceProgress > 0) {
+                        el.textContent = '升级中...';
+                        el.style.color = '#3b82f6';
+                    }
+                });
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = '升级完成！';
+                    completeBtn.style.display = 'block';
+                }
+            }, 500);
         }
 
         // 处理添加/编辑设备表单提交

@@ -31,14 +31,14 @@
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-user input-icon"></i>
-                        <input type="text" class="form-input" id="username" placeholder="请输入用户名" required>
+                        <input type="text" class="form-input" id="username" placeholder="请输入用户名">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-lock input-icon"></i>
-                        <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
+                        <input type="password" class="form-input" id="password" placeholder="请输入密码">
                     </div>
                 </div>
 
@@ -76,24 +76,22 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            // 简化验证逻辑 - 只要有输入就允许登录
-            if (username.trim() && password.trim()) {
-                // 模拟登录过程
-                const loginBtn = document.getElementById('loginBtn');
-                const originalText = loginBtn.innerHTML;
-                
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>登录中...</span>';
-                loginBtn.disabled = true;
-                
-                setTimeout(() => {
-                    // 保存登录状态
-                    localStorage.setItem('isLoggedIn', 'true');
-                    // 跳转到仪表盘页面
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-            } else {
-                alert(currentLang === 'zh' ? '请输入用户名和密码' : 'Please enter username and password');
-            }
+            // 不进行任何校验，直接登录
+            // 模拟登录过程
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>登录中...</span>';
+            loginBtn.disabled = true;
+            
+            setTimeout(() => {
+                // 保存登录状态
+                localStorage.setItem('isLoggedIn', 'true');
+                // 如果用户名为空，使用默认值
+                localStorage.setItem('username', username || 'guest');
+                // 云端直接跳转到仪表盘，无需加载动画
+                window.location.href = 'dashboard.html';
+            }, 1500);
         }
     </script>
 </body>

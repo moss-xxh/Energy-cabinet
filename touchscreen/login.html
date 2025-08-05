@@ -525,8 +525,8 @@
                     sessionStorage.setItem('touchscreen_user', username || 'guest');
                 }
                 
-                // 跳转到首页
-                window.location.href = 'home.html';
+                // 跳转到登录加载页面
+                window.location.href = 'login-loading.html';
             }, 500);
         }
 
@@ -541,7 +541,7 @@
         window.onload = function() {
             const user = localStorage.getItem('touchscreen_user') || sessionStorage.getItem('touchscreen_user');
             if (user) {
-                window.location.href = 'home.html';
+                window.location.href = 'login-loading.html';
             }
         };
     </script>

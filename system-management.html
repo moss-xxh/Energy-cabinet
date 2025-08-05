@@ -741,21 +741,6 @@
         </div>
 
         <!-- 内容区 -->
-        <!-- 菜单管理 -->
-        <div id="menusModule" class="system-module">
-            <div class="page-content">
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
-                    <button class="btn btn-secondary" onclick="expandAll()">展开全部</button>
-                    <button class="btn btn-secondary" onclick="collapseAll()">收起全部</button>
-                    <button class="btn btn-secondary" onclick="sortMenus()">自动排序</button>
-                </div>
-
-                <div style="position: relative;" id="menuTreeContainer">
-                    <!-- 菜单树结构将通过JavaScript动态生成 -->
-                </div>
-            </div>
-        </div>
-
         <!-- 角色管理 -->
         <div id="rolesModule" class="system-module" style="display: none;">
             <!-- 筛选面板 -->
@@ -914,75 +899,21 @@
         <!-- 菜单管理 -->
         <div id="menusModule" class="system-module">
             <div class="page-content">
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
-                    <button class="btn btn-secondary" onclick="expandAll()">展开全部</button>
-                    <button class="btn btn-secondary" onclick="collapseAll()">收起全部</button>
-                    <button class="btn btn-secondary" onclick="sortMenus()">自动排序</button>
-                </div>
-
-                <div style="position: relative;" id="menuTreeContainer">
-                    <!-- 菜单树结构将通过JavaScript动态生成 -->
+                <!-- 菜单列表 -->
+                <div class="menu-list-container" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+                    <div class="menu-list-header" style="padding: 20px; border-bottom: 1px solid #f0f0f0; background: #fafafa;">
+                        <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">菜单列表</h3>
+                        <p style="margin: 8px 0 0 0; font-size: 14px; color: #666;">拖拽可调整菜单顺序</p>
+                    </div>
+                    
+                    <div class="menu-list" id="menuTreeContainer" style="padding: 20px;">
+                        <!-- 菜单项将通过JavaScript动态生成 -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 新增/编辑菜单模态框 -->
-    <div id="menuModal" class="modal">
-        <div class="modal-content" style="width: 500px; max-width: 90%; max-height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">新增菜单</h2>
-                <button class="close-btn" onclick="closeMenuModal()">&times;</button>
-            </div>
-            
-            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 24px;">
-                <form id="menuForm">
-                    <div class="form-group">
-                        <label class="form-label" for="menuName">
-                            菜单名称 <span style="color: #ef4444;">*</span>
-                        </label>
-                        <input type="text" class="form-input" id="menuName" name="name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="menuPath">菜单路径</label>
-                        <input type="text" class="form-input" id="menuPath" name="path" placeholder="例如：./station-management.html">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="parentMenu">父级菜单</label>
-                        <select class="form-select" id="parentMenu" name="parent">
-                            <option value="">无（作为一级菜单）</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="menuIcon">菜单图标</label>
-                        <input type="text" class="form-input" id="menuIcon" name="icon" placeholder="例如：🏠">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">状态</label>
-                        <div style="display: flex; gap: 1rem;">
-                            <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="status" value="enabled" checked style="margin-right: 0.5rem;">
-                                <span>启用</span>
-                            </label>
-                            <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="status" value="disabled" style="margin-right: 0.5rem;">
-                                <span>禁用</span>
-                            </label>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            
-            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeMenuModal()" style="width: 88px; height: 36px;">取消</button>
-                <button type="button" class="btn btn-primary" onclick="saveMenu()" style="width: 88px; height: 36px;">保存</button>
-            </div>
-        </div>
-    </div>
 
     <!-- 添加人员模态框 -->
     <div class="modal" id="addPersonnelModal">
@@ -1325,6 +1256,26 @@
     <!-- 移动端遮罩 -->
     <div id="mobileOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;" onclick="closeMobileSidebar()"></div>
 
+    <!-- 删除确认模态框 -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">确认删除</h2>
+                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>您确定要删除菜单 "<span id="deleteMenuName"></span>" 吗？</p>
+                <p style="color: #dc2626; font-size: 14px; margin-top: 8px;">删除后不可恢复，请谨慎操作。</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+                <button type="button" class="btn btn-danger" onclick="performDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
     <script src="common.js"></script>
     <script src="notification-fix.js"></script>
     <script>
@@ -1565,10 +1516,6 @@
             }
         }
 
-        // 编辑菜单
-        function editMenu(menuId) {
-            showNotification('菜单编辑功能开发中', 'info');
-        }
 
         // 添加菜单
         function addMenu() {
@@ -1588,12 +1535,6 @@
             }
         }
 
-        // 删除菜单
-        function deleteMenu(menuId) {
-            if (confirm('确定要删除该菜单吗？')) {
-                showNotification('菜单已删除', 'success');
-            }
-        }
 
         // 查看角色成员
         // 编辑角色
@@ -1798,121 +1739,238 @@
             }
         });
 
+        // ================== 菜单管理核心功能 ==================
+
         // 渲染菜单树
         function renderMenuTree() {
             const container = document.getElementById('menuTreeContainer');
             if (!container) return;
             container.innerHTML = '';
             
-            menuData.forEach(menu => {
-                renderMenuItem(menu, container, 0);
+            menuData.forEach((menu, index) => {
+                renderMenuItem(menu, container, 0, index);
             });
         }
 
         // 渲染单个菜单项
-        function renderMenuItem(menu, container, level) {
-            const menuElement = document.createElement('div');
-            menuElement.className = `tree-item menu-level-${level}`;
-            menuElement.dataset.menuId = menu.id;
-            menuElement.draggable = true;
+        function renderMenuItem(menu, container, level, index) {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.draggable = true;
+            menuItem.dataset.menuId = menu.id;
+            menuItem.dataset.level = level;
             
-            // 判断是否有子菜单
-            const hasChildren = menu.children && menu.children.length > 0;
-            const isExpanded = expandedMenus.has(menu.id);
+            const indent = level * 20;
             
-            menuElement.innerHTML = `
-                <span style="cursor: grab; color: #9ca3af; margin-right: 0.5rem;">⋮⋮</span>
-                ${hasChildren ? `<span class="expand-toggle ${isExpanded ? 'expanded' : ''}" onclick="toggleMenuExpand(${menu.id})">${isExpanded ? '▼' : '▶'}</span>` : '<span class="expand-spacer" style="width: 16px; display: inline-block;"></span>'}
-                <span class="tree-item-icon">${menu.icon}</span>
-                <div class="tree-item-content">
-                    <span class="tree-item-name">${menu.name}</span>
-                    ${menu.path ? `<span class="tree-item-path">${menu.path}</span>` : ''}
-                    <span class="tree-item-status status-${menu.status}">
-                        ${menu.status === 'active' ? '启用' : '禁用'}
-                    </span>
-                </div>
-                <div class="tree-item-actions">
-                    <button style="padding: 4px 8px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s ease; background: #eff6ff; color: #2563eb;" onclick="editMenu(${menu.id})">编辑</button>
-                    <button style="padding: 4px 8px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s ease; background: #fef2f2; color: #dc2626;" onclick="deleteMenu(${menu.id})">删除</button>
+            menuItem.innerHTML = `
+                <div class="menu-item-content" style="
+                    display: flex; 
+                    align-items: center; 
+                    padding: 12px 16px; 
+                    margin-left: ${indent}px;
+                    background: white; 
+                    border: 1px solid #e5e7eb; 
+                    border-radius: 8px; 
+                    margin-bottom: 8px;
+                    transition: all 0.2s ease;
+                    cursor: move;
+                ">
+                    <div class="menu-info" style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                        <span class="menu-icon" style="font-size: 18px; width: 24px; text-align: center;">
+                            ${menu.icon || '📄'}
+                        </span>
+                        <div class="menu-details">
+                            <div class="menu-name" style="font-weight: 500; color: #374151; font-size: 14px;">
+                                ${menu.name}
+                            </div>
+                            <div class="menu-path" style="font-size: 12px; color: #6b7280;">
+                                ${menu.path || '无路径'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-status" style="margin-right: 12px;">
+                        <span class="status-badge" style="
+                            padding: 2px 8px; 
+                            border-radius: 12px; 
+                            font-size: 12px; 
+                            font-weight: 500;
+                            ${menu.status === 'active' ? 
+                                'background: #dcfce7; color: #166534;' : 
+                                'background: #fef2f2; color: #dc2626;'
+                            }
+                        ">
+                            ${menu.status === 'active' ? '启用' : '禁用'}
+                        </span>
+                    </div>
+                    
+                    <div class="menu-actions" style="display: flex; gap: 8px;">
+                        <button class="action-btn edit-btn" onclick="editMenu(${menu.id})" style="
+                            padding: 6px 12px; 
+                            border: none; 
+                            border-radius: 4px; 
+                            background: #3b82f6; 
+                            color: white; 
+                            font-size: 12px; 
+                            cursor: pointer;
+                            transition: background 0.2s ease;
+                        " 
+                        onmouseover="this.style.background='#2563eb'" 
+                        onmouseout="this.style.background='#3b82f6'">
+                            编辑
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteMenu(${menu.id})" style="
+                            padding: 6px 12px; 
+                            border: none; 
+                            border-radius: 4px; 
+                            background: #ef4444; 
+                            color: white; 
+                            font-size: 12px; 
+                            cursor: pointer;
+                            transition: background 0.2s ease;
+                        "
+                        onmouseover="this.style.background='#dc2626'" 
+                        onmouseout="this.style.background='#ef4444'">
+                            删除
+                        </button>
+                        <div class="drag-handle" style="
+                            padding: 6px; 
+                            color: #9ca3af; 
+                            cursor: move;
+                            display: flex;
+                            align-items: center;
+                        ">
+                            ⋮⋮
+                        </div>
+                    </div>
                 </div>
             `;
             
-            container.appendChild(menuElement);
+            container.appendChild(menuItem);
             
-            // 渲染子菜单（根据展开状态决定是否显示）
-            if (hasChildren && isExpanded) {
-                menu.children.forEach(child => {
-                    renderMenuItem(child, container, level + 1);
+            // 渲染子菜单
+            if (menu.children && menu.children.length > 0) {
+                menu.children.forEach((child, childIndex) => {
+                    renderMenuItem(child, container, level + 1, childIndex);
                 });
             }
         }
 
-        // 设置拖拽功能
-        function setupDragAndDrop() {
-            const container = document.getElementById('menuTreeContainer');
-            if (!container) return;
-            
-            container.addEventListener('dragstart', function(e) {
-                if (e.target.classList.contains('tree-item')) {
-                    draggedElement = e.target;
-                    e.target.classList.add('dragging');
+        // ================== 菜单管理辅助函数 ==================
+
+        // 查找菜单
+        function findMenuById(menuId) {
+            const find = (menus) => {
+                for (let menu of menus) {
+                    if (menu.id === menuId) return menu;
+                    if (menu.children && menu.children.length > 0) {
+                        const found = find(menu.children);
+                        if (found) return found;
+                    }
                 }
-            });
-            
-            container.addEventListener('dragend', function(e) {
-                if (e.target.classList.contains('tree-item')) {
-                    e.target.classList.remove('dragging');
-                    draggedElement = null;
-                }
-            });
-            
-            container.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                const afterElement = getDragAfterElement(container, e.clientY);
-                if (afterElement == null) {
-                    container.appendChild(draggedElement);
-                } else {
-                    container.insertBefore(draggedElement, afterElement);
-                }
-            });
+                return null;
+            };
+            return find(menuData);
         }
 
-        // 显示新增菜单模态框
+        // 更新菜单
+        function updateMenuById(menuId, menuInfo) {
+            const update = (menus) => {
+                for (let menu of menus) {
+                    if (menu.id === menuId) {
+                        Object.assign(menu, menuInfo);
+                        return true;
+                    }
+                    if (menu.children && menu.children.length > 0) {
+                        if (update(menu.children)) return true;
+                    }
+                }
+                return false;
+            };
+            return update(menuData);
+        }
+
+        // 删除菜单
+        function removeMenuById(menuId) {
+            const remove = (menus) => {
+                for (let i = 0; i < menus.length; i++) {
+                    if (menus[i].id === menuId) {
+                        menus.splice(i, 1);
+                        return true;
+                    }
+                    if (menus[i].children && menus[i].children.length > 0) {
+                        if (remove(menus[i].children)) return true;
+                    }
+                }
+                return false;
+            };
+            return remove(menuData);
+        }
+
+        // ================== 菜单管理核心操作 ==================
+
+        // 新增菜单
         function showAddMenuModal() {
             currentEditingMenu = null;
             document.getElementById('modalTitle').textContent = '新增菜单';
             document.getElementById('menuForm').reset();
             updateParentMenuOptions();
-            document.getElementById('menuModal').classList.add('show');
+            document.getElementById('menuModal').style.display = 'flex';
         }
 
         // 编辑菜单
         function editMenu(menuId) {
             const menu = findMenuById(menuId);
-            if (!menu) return;
+            if (!menu) {
+                showNotification('菜单不存在', 'error');
+                return;
+            }
             
-            currentEditingMenu = menu;
+            currentEditingMenu = menuId;
             document.getElementById('modalTitle').textContent = '编辑菜单';
             
             // 填充表单
             document.getElementById('menuName').value = menu.name;
-            document.getElementById('menuIcon').value = menu.icon;
-            document.getElementById('menuPath').value = menu.path;
-            document.getElementById('parentMenu').value = menu.parent || '';
-            document.getElementById('menuSort').value = menu.sort;
+            document.getElementById('menuIcon').value = menu.icon || '';
+            document.getElementById('menuPath').value = menu.path || '';
             document.getElementById('menuStatus').value = menu.status;
             
-            updateParentMenuOptions();
-            document.getElementById('menuModal').classList.add('show');
+            updateParentMenuOptions(menu.parent);
+            document.getElementById('menuModal').style.display = 'flex';
         }
 
         // 删除菜单
+        let currentDeleteMenuId = null;
         function deleteMenu(menuId) {
-            if (confirm('确定要删除此菜单吗？删除后不可恢复。')) {
-                removeMenuById(menuId);
-                renderMenuTree();
-                showMessage('菜单删除成功', 'success');
+            const menu = findMenuById(menuId);
+            if (!menu) {
+                showNotification('菜单不存在', 'error');
+                return;
             }
+            
+            currentDeleteMenuId = menuId;
+            document.getElementById('deleteMenuName').textContent = menu.name;
+            document.getElementById('deleteConfirmModal').style.display = 'flex';
+        }
+
+        // 执行删除
+        function performDelete() {
+            if (!currentDeleteMenuId) return;
+            
+            if (removeMenuById(currentDeleteMenuId)) {
+                showNotification('菜单删除成功', 'success');
+                renderMenuTree();
+            } else {
+                showNotification('菜单删除失败', 'error');
+            }
+            
+            closeDeleteModal();
+        }
+
+        // 关闭删除确认模态框
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+            currentDeleteMenuId = null;
         }
 
         // 保存菜单
@@ -1920,37 +1978,47 @@
             const form = document.getElementById('menuForm');
             const formData = new FormData(form);
             
-            const menuDataObj = {
-                name: formData.get('name'),
-                icon: formData.get('icon'),
-                path: formData.get('path'),
+            const menuName = formData.get('name');
+            if (!menuName) {
+                showNotification('请输入菜单名称', 'error');
+                return;
+            }
+            
+            const menuInfo = {
+                name: menuName,
+                icon: formData.get('icon') || '',
+                path: formData.get('path') || '',
                 parent: formData.get('parent') ? parseInt(formData.get('parent')) : null,
-                sort: 1,
                 status: formData.get('status')
             };
             
             if (currentEditingMenu) {
-                // 编辑现有菜单
-                Object.assign(currentEditingMenu, menuDataObj);
-                showMessage('菜单更新成功', 'success');
+                // 编辑模式
+                if (updateMenuById(currentEditingMenu, menuInfo)) {
+                    showNotification('菜单更新成功', 'success');
+                } else {
+                    showNotification('菜单更新失败', 'error');
+                }
             } else {
-                // 新增菜单
+                // 新增模式
                 const newMenu = {
                     id: ++maxMenuId,
-                    ...menuDataObj,
+                    ...menuInfo,
                     children: []
                 };
                 
                 if (newMenu.parent) {
-                    const parent = findMenuById(newMenu.parent);
-                    if (parent) {
-                        parent.children.push(newMenu);
+                    const parentMenu = findMenuById(newMenu.parent);
+                    if (parentMenu) {
+                        parentMenu.children.push(newMenu);
+                    } else {
+                        menuData.push(newMenu);
                     }
                 } else {
                     menuData.push(newMenu);
                 }
                 
-                showMessage('菜单创建成功', 'success');
+                showNotification('菜单创建成功', 'success');
             }
             
             renderMenuTree();
@@ -1959,49 +2027,374 @@
 
         // 关闭模态框
         function closeMenuModal() {
-            document.getElementById('menuModal').classList.remove('show');
+            document.getElementById('menuModal').style.display = 'none';
+            document.getElementById('menuForm').reset();
+            currentEditingMenu = null;
         }
 
         // 更新父级菜单选项
-        function updateParentMenuOptions() {
+        function updateParentMenuOptions(selectedParent) {
             const select = document.getElementById('parentMenu');
-            select.innerHTML = '<option value="">根菜单</option>';
+            select.innerHTML = '<option value="">无（作为一级菜单）</option>';
             
-            menuData.forEach(menu => {
-                if (!currentEditingMenu || menu.id !== currentEditingMenu.id) {
-                    select.appendChild(new Option(menu.name, menu.id));
-                }
-            });
+            const addOptions = (menus, level = 0) => {
+                menus.forEach(menu => {
+                    if (!currentEditingMenu || menu.id !== currentEditingMenu) {
+                        const option = document.createElement('option');
+                        option.value = menu.id;
+                        option.textContent = '　'.repeat(level) + menu.name;
+                        if (selectedParent && menu.id === selectedParent) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                        
+                        if (menu.children && menu.children.length > 0) {
+                            addOptions(menu.children, level + 1);
+                        }
+                    }
+                });
+            };
+            
+            addOptions(menuData);
         }
 
-        // 查找菜单
-        function findMenuById(id) {
-            for (let menu of menuData) {
-                if (menu.id === id) return menu;
-                for (let child of menu.children) {
-                    if (child.id === id) return child;
+        // ================== 拖拽排序功能 ==================
+
+        let draggedItem = null;
+        let draggedMenuId = null;
+
+        // 设置拖拽功能
+        function setupDragAndDrop() {
+            const container = document.getElementById('menuTreeContainer');
+            if (!container) return;
+            
+            // 为容器添加拖拽事件监听
+            container.addEventListener('dragstart', handleDragStart);
+            container.addEventListener('dragover', handleDragOver);
+            container.addEventListener('drop', handleDrop);
+            container.addEventListener('dragend', handleDragEnd);
+        }
+
+        function handleDragStart(e) {
+            if (!e.target.closest('.menu-item')) return;
+            
+            draggedItem = e.target.closest('.menu-item');
+            draggedMenuId = parseInt(draggedItem.dataset.menuId);
+            draggedItem.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const targetItem = e.target.closest('.menu-item');
+            if (!targetItem || targetItem === draggedItem) return;
+            
+            // 添加视觉反馈
+            const allItems = container.querySelectorAll('.menu-item');
+            allItems.forEach(item => item.classList.remove('drag-over'));
+            targetItem.classList.add('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            const targetItem = e.target.closest('.menu-item');
+            if (!targetItem || targetItem === draggedItem) return;
+            
+            const targetMenuId = parseInt(targetItem.dataset.menuId);
+            const targetLevel = parseInt(targetItem.dataset.level);
+            const draggedLevel = parseInt(draggedItem.dataset.level);
+            
+            // 移动菜单
+            moveMenu(draggedMenuId, targetMenuId, targetLevel);
+            
+            // 清除视觉反馈
+            targetItem.classList.remove('drag-over');
+        }
+
+        function handleDragEnd(e) {
+            if (draggedItem) {
+                draggedItem.style.opacity = '';
+                const allItems = container.querySelectorAll('.menu-item');
+                allItems.forEach(item => item.classList.remove('drag-over'));
+            }
+            draggedItem = null;
+            draggedMenuId = null;
+        }
+
+        // 移动菜单
+        function moveMenu(draggedId, targetId, targetLevel) {
+            // 找到被拖拽的菜单
+            const draggedMenu = findMenuById(draggedId);
+            if (!draggedMenu) return;
+            
+            // 从原位置删除
+            removeMenuById(draggedId);
+            
+            // 找到目标位置并插入
+            const targetMenu = findMenuById(targetId);
+            if (!targetMenu) return;
+            
+            if (targetLevel === 0) {
+                // 插入到根级别
+                const targetIndex = menuData.findIndex(menu => menu.id === targetId);
+                menuData.splice(targetIndex + 1, 0, draggedMenu);
+            } else {
+                // 插入到子级别
+                const parentMenu = findParentMenu(targetId);
+                if (parentMenu) {
+                    const targetIndex = parentMenu.children.findIndex(menu => menu.id === targetId);
+                    parentMenu.children.splice(targetIndex + 1, 0, draggedMenu);
                 }
             }
-            return null;
+            
+            // 重新渲染
+            renderMenuTree();
+            showNotification('菜单顺序已更新', 'success');
         }
 
-        // 删除菜单
-        function removeMenuById(id) {
-            // 从根菜单删除
-            let index = menuData.findIndex(menu => menu.id === id);
-            if (index !== -1) {
-                menuData.splice(index, 1);
+        // 查找父菜单
+        function findParentMenu(childId) {
+            const findParent = (menus) => {
+                for (let menu of menus) {
+                    if (menu.children && menu.children.some(child => child.id === childId)) {
+                        return menu;
+                    }
+                    if (menu.children && menu.children.length > 0) {
+                        const found = findParent(menu.children);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            return findParent(menuData);
+        }
+
+        // 添加拖拽样式
+        const dragStyles = document.createElement('style');
+        dragStyles.textContent = `
+            .menu-item.dragging {
+                opacity: 0.5;
+                transform: rotate(2deg);
+            }
+            
+            .menu-item.drag-over {
+                background: #f0f9ff;
+                border-color: #3b82f6 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            }
+            
+            .menu-item:hover .menu-item-content {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        `;
+        document.head.appendChild(dragStyles);
+
+        // 显示新增菜单模态框
+        function showAddMenuModal() {
+            currentEditingMenu = null;
+            document.getElementById('modalTitle').textContent = '新增菜单';
+            document.getElementById('menuForm').reset();
+            updateParentMenuOptions();
+            document.getElementById('menuModal').style.display = 'flex';
+        }
+
+
+
+
+        // 关闭模态框
+
+        // 更新父级菜单选项
+        function updateParentMenuOptions(selectedParent) {
+            const select = document.getElementById('parentMenu');
+            select.innerHTML = '<option value="">无（作为一级菜单）</option>';
+            
+            const addOptions = (menus, level = 0) => {
+                menus.forEach(menu => {
+                    if (!currentEditingMenu || menu.id !== currentEditingMenu) {
+                        const option = document.createElement('option');
+                        option.value = menu.id;
+                        option.textContent = '　'.repeat(level) + menu.name;
+                        if (selectedParent && menu.id === selectedParent) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                        
+                        if (menu.children && menu.children.length > 0) {
+                            addOptions(menu.children, level + 1);
+                        }
+                    }
+                });
+            };
+            
+            addOptions(menuData);
+        }
+
+        // 编辑菜单
+        function editMenu(menuId) {
+            const menu = findMenuById(menuId);
+            if (!menu) {
+                showNotification('菜单不存在', 'error');
                 return;
             }
             
-            // 从子菜单删除
-            for (let menu of menuData) {
-                index = menu.children.findIndex(child => child.id === id);
-                if (index !== -1) {
-                    menu.children.splice(index, 1);
-                    return;
+            currentEditingMenu = menuId;
+            document.getElementById('modalTitle').textContent = '编辑菜单';
+            
+            // 填充表单
+            document.getElementById('menuName').value = menu.name;
+            document.getElementById('menuIcon').value = menu.icon || '';
+            document.getElementById('menuPath').value = menu.path || '';
+            document.getElementById('menuStatus').value = menu.status;
+            
+            updateParentMenuOptions(menu.parent);
+            document.getElementById('menuModal').style.display = 'flex';
+        }
+
+        // 查找菜单
+        function findMenuById(menuId) {
+            const find = (menus) => {
+                for (let menu of menus) {
+                    if (menu.id === menuId) return menu;
+                    if (menu.children && menu.children.length > 0) {
+                        const found = find(menu.children);
+                        if (found) return found;
+                    }
                 }
+                return null;
+            };
+            return find(menuData);
+        }
+
+        // 删除菜单
+        function removeMenuById(menuId) {
+            const remove = (menus) => {
+                for (let i = 0; i < menus.length; i++) {
+                    if (menus[i].id === menuId) {
+                        menus.splice(i, 1);
+                        return true;
+                    }
+                    if (menus[i].children && menus[i].children.length > 0) {
+                        if (remove(menus[i].children)) return true;
+                    }
+                }
+                return false;
+            };
+            return remove(menuData);
+        }
+
+        // 删除菜单函数
+        let currentDeleteMenuId = null;
+        function deleteMenu(menuId) {
+            const menu = findMenuById(menuId);
+            if (!menu) {
+                showNotification('菜单不存在', 'error');
+                return;
             }
+            
+            currentDeleteMenuId = menuId;
+            document.getElementById('deleteMenuName').textContent = menu.name;
+            document.getElementById('deleteConfirmModal').style.display = 'flex';
+        }
+
+        // 执行删除
+        function performDelete() {
+            if (!currentDeleteMenuId) return;
+            
+            if (removeMenuById(currentDeleteMenuId)) {
+                showNotification('菜单删除成功', 'success');
+                renderMenuTree();
+            } else {
+                showNotification('菜单删除失败', 'error');
+            }
+            
+            closeDeleteModal();
+        }
+
+        // 关闭删除确认模态框
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+            currentDeleteMenuId = null;
+        }
+
+        // 保存菜单
+        function saveMenu() {
+            const form = document.getElementById('menuForm');
+            const formData = new FormData(form);
+            
+            const menuName = formData.get('name');
+            if (!menuName) {
+                showNotification('请输入菜单名称', 'error');
+                return;
+            }
+            
+            const menuInfo = {
+                name: menuName,
+                icon: formData.get('icon') || '',
+                path: formData.get('path') || '',
+                parent: formData.get('parent') ? parseInt(formData.get('parent')) : null,
+                status: formData.get('status')
+            };
+            
+            if (currentEditingMenu) {
+                // 编辑模式
+                if (updateMenuById(currentEditingMenu, menuInfo)) {
+                    showNotification('菜单更新成功', 'success');
+                } else {
+                    showNotification('菜单更新失败', 'error');
+                }
+            } else {
+                // 新增模式
+                const newMenu = {
+                    id: ++maxMenuId,
+                    ...menuInfo,
+                    children: []
+                };
+                
+                if (newMenu.parent) {
+                    const parentMenu = findMenuById(newMenu.parent);
+                    if (parentMenu) {
+                        parentMenu.children.push(newMenu);
+                    } else {
+                        menuData.push(newMenu);
+                    }
+                } else {
+                    menuData.push(newMenu);
+                }
+                
+                showNotification('菜单创建成功', 'success');
+            }
+            
+            renderMenuTree();
+            closeMenuModal();
+        }
+
+        // 关闭模态框
+        function closeMenuModal() {
+            document.getElementById('menuModal').style.display = 'none';
+            document.getElementById('menuForm').reset();
+            currentEditingMenu = null;
+        }
+
+        // 更新菜单
+        function updateMenuById(menuId, menuInfo) {
+            const update = (menus) => {
+                for (let menu of menus) {
+                    if (menu.id === menuId) {
+                        Object.assign(menu, menuInfo);
+                        return true;
+                    }
+                    if (menu.children && menu.children.length > 0) {
+                        if (update(menu.children)) return true;
+                    }
+                }
+                return false;
+            };
+            return update(menuData);
         }
 
         // 切换单个菜单的展开/收起状态
@@ -2014,51 +2407,9 @@
             renderMenuTree();
         }
 
-        // 切换菜单展开/收起
-        function toggleMenuExpand(menuId) {
-            if (expandedMenus.has(menuId)) {
-                expandedMenus.delete(menuId);
-            } else {
-                expandedMenus.add(menuId);
-            }
-            renderMenuTree();
-        }
 
-        // 展开全部
-        function expandAll() {
-            // 添加所有有子菜单的菜单ID到展开集合
-            menuData.forEach(menu => {
-                if (menu.children && menu.children.length > 0) {
-                    expandedMenus.add(menu.id);
-                }
-            });
-            renderMenuTree();
-            showMessage('已展开所有菜单', 'success');
-        }
 
-        // 收起全部
-        function collapseAll() {
-            // 清空展开集合
-            expandedMenus.clear();
-            renderMenuTree();
-            showMessage('已收起所有菜单', 'success');
-        }
 
-        // 自动排序
-        function sortMenus() {
-            // 对根级菜单排序
-            menuData.sort((a, b) => a.sort - b.sort);
-            
-            // 对每个菜单的子菜单排序
-            menuData.forEach(menu => {
-                if (menu.children && menu.children.length > 0) {
-                    menu.children.sort((a, b) => a.sort - b.sort);
-                }
-            });
-            
-            renderMenuTree();
-            showMessage('菜单自动排序完成', 'success');
-        }
 
         // 消息提示
         function showMessage(message, type) {
@@ -2239,54 +2590,70 @@
 
         // 编辑菜单
         function editMenu(menuId) {
+            console.log('editMenu called with id:', menuId);
             const menu = findMenuById(menuId);
-            if (!menu) return;
+            if (!menu) {
+                console.log('Menu not found:', menuId);
+                return;
+            }
             
+            console.log('Found menu:', menu);
             currentEditingMenu = menuId;
-            document.getElementById('modalTitle').textContent = '编辑菜单';
             
-            // 填充表单
-            document.getElementById('menuName').value = menu.name;
-            document.getElementById('menuPath').value = menu.path || '';
-            document.getElementById('menuIcon').value = menu.icon || '';
-            document.getElementById('menuSort').value = menu.sort || 0;
-            document.getElementById('menuStatus').value = menu.status;
+            // 检查模态框元素是否存在
+            const modal = document.getElementById('menuModal');
+            if (!modal) {
+                console.error('Modal not found');
+                return;
+            }
             
-            // 构建父级菜单选项
-            document.getElementById('parentMenu').innerHTML = '<option value="">无（作为一级菜单）</option>';
+            // 检查表单元素是否存在
+            const titleEl = document.getElementById('modalTitle');
+            const nameEl = document.getElementById('menuName');
+            const pathEl = document.getElementById('menuPath');
+            const iconEl = document.getElementById('menuIcon');
+            const statusEl = document.getElementById('menuStatus');
+            const parentEl = document.getElementById('parentMenu');
             
-            const buildOptions = (menus, level = 0) => {
-                menus.forEach(m => {
-                    if (m.id !== menuId) { // 排除自己
-                        const option = document.createElement('option');
-                        option.value = m.id;
-                        option.textContent = '　'.repeat(level) + m.name;
-                        if (m.id === menu.parent) {
-                            option.selected = true;
-                        }
-                        document.getElementById('parentMenu').appendChild(option);
-                    }
-                    
-                    if (m.children && m.children.length > 0) {
-                        buildOptions(m.children, level + 1);
-                    }
-                });
-            };
+            console.log('Elements found:', {
+                title: !!titleEl,
+                name: !!nameEl,
+                path: !!pathEl,
+                icon: !!iconEl,
+                status: !!statusEl,
+                parent: !!parentEl
+            });
             
-            buildOptions(menuData);
-            document.getElementById('menuModal').style.display = 'flex';
+            if (titleEl) titleEl.textContent = '编辑菜单';
+            if (nameEl) nameEl.value = menu.name;
+            if (pathEl) pathEl.value = menu.path || '';
+            if (iconEl) iconEl.value = menu.icon || '';
+            if (statusEl) statusEl.value = menu.status;
+            
+            // 显示模态框
+            modal.style.display = 'flex';
+            console.log('Modal should be visible now');
         }
 
         // 删除菜单
+        // 确认删除菜单
+        let currentDeleteMenuId = null;
         function deleteMenu(menuId) {
+            currentDeleteMenuId = menuId;
             const menu = findMenuById(menuId);
-            if (!menu) return;
-            
-            if (confirm(`确定要删除菜单"${menu.name}"吗？`)) {
+            if (menu) {
+                document.getElementById('deleteMenuName').textContent = menu.name;
+                document.getElementById('deleteConfirmModal').classList.add('show');
+            }
+        }
+
+        // 执行删除
+        function performDelete() {
+            if (currentDeleteMenuId) {
                 // 从菜单数据中删除
                 const removeMenu = (menus) => {
                     for (let i = 0; i < menus.length; i++) {
-                        if (menus[i].id === menuId) {
+                        if (menus[i].id === currentDeleteMenuId) {
                             menus.splice(i, 1);
                             return true;
                         }
@@ -2298,9 +2665,16 @@
                 };
                 
                 removeMenu(menuData);
-                showMessage('菜单删除成功', 'success');
+                showNotification('菜单删除成功', 'success');
                 renderMenuTree();
+                closeDeleteModal();
             }
+        }
+
+        // 关闭删除确认模态框
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+            currentDeleteMenuId = null;
         }
 
         // 查找菜单
