@@ -879,7 +879,7 @@
             background: #f59e0b;
         }
 
-        /* 自定义确认弹窗 */
+        /* 自定义确认弹窗 - 深蓝色主题 */
         .confirm-modal {
             display: none;
             position: fixed;
@@ -900,9 +900,9 @@
         }
 
         .confirm-content {
-            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
             backdrop-filter: blur(20px);
-            border: 2px solid rgba(0, 150, 255, 0.3);
+            border: 2px solid rgba(78, 145, 189, 0.3);
             border-radius: 20px;
             padding: 40px;
             max-width: 480px;
@@ -934,14 +934,16 @@
             height: 90px;
             margin: 0 auto 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.25) 100%);
+            background: rgba(239, 68, 68, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            border: 3px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .confirm-icon i {
+            font-size: 36px;
             color: #ef4444;
-            border: 2px solid rgba(239, 68, 68, 0.5);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .confirm-title {
@@ -955,7 +957,7 @@
         .confirm-message {
             font-size: 18px;
             color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 36px;
+            margin-bottom: 32px;
             line-height: 1.5;
             letter-spacing: 0.3px;
         }
@@ -985,24 +987,24 @@
         .confirm-btn.primary {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: #ffffff;
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
         }
 
         .confirm-btn.primary:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            border-color: #dc2626;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-            background: linear-gradient(135deg, #f56565 0%, #ef4444 100%);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
         }
 
         .confirm-btn.secondary {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.08);
             color: rgba(255, 255, 255, 0.9);
             border-color: rgba(255, 255, 255, 0.2);
         }
 
         .confirm-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.15);
             border-color: rgba(255, 255, 255, 0.3);
             color: #ffffff;
         }
@@ -1151,13 +1153,13 @@
         
         <!-- 导航菜单 -->
         <nav class="nav-menu">
-            <a href="home.html" class="nav-item" onclick="switchPage('home')">首页</a>
-            <a href="data.html" class="nav-item" onclick="switchPage('data')">数据</a>
-            <a href="control.html" class="nav-item" onclick="switchPage('control')">控制</a>
-            <a href="alarm.html" class="nav-item active" onclick="switchPage('alarm')">告警</a>
+            <div class="nav-item" onclick="switchPage('home')">首页</div>
+            <a href="#data" class="nav-item" onclick="switchPage('data')">数据</a>
             <a href="#" class="nav-item" onclick="switchPage('history')">历史</a>
-            <a href="logs.html" class="nav-item" onclick="switchPage('log')">日志</a>
-            <a href="settings.html" class="nav-item" onclick="switchPage('settings')">设置</a>
+            <a href="#control" class="nav-item" onclick="switchPage('control')">控制</a>
+            <a href="#alarm" class="nav-item active" onclick="switchPage('alarm')">告警</a>
+            <a href="#log" class="nav-item" onclick="switchPage('log')">日志</a>
+            <a href="#settings" class="nav-item" onclick="switchPage('settings')">设置</a>
         </nav>
         
         <div class="header-right">

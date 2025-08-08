@@ -158,26 +158,6 @@
             pointer-events: none;
         }
 
-        /* 记住密码 */
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            user-select: none;
-        }
-
-        .remember-me input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .remember-me label {
-            color: #666;
-            cursor: pointer;
-            font-size: 14px;
-        }
 
         /* 登录按钮 */
         .login-button {
@@ -418,10 +398,6 @@
                 <span class="input-icon">🔐</span>
             </div>
 
-            <div class="remember-me">
-                <input type="checkbox" id="remember">
-                <label for="remember" data-lang="remember">记住我</label>
-            </div>
 
             <button type="submit" class="login-button">
                 <span class="button-text" data-lang="login">登录</span>
@@ -440,7 +416,6 @@
                 subtitle: '请登录您的账户',
                 username: '用户名',
                 password: '密码',
-                remember: '记住我',
                 login: '登录',
                 usernamePlaceholder: '请输入用户名',
                 passwordPlaceholder: '请输入密码',
@@ -453,7 +428,6 @@
                 subtitle: 'Please login to your account',
                 username: 'Username',
                 password: 'Password',
-                remember: 'Remember me',
                 login: 'Login',
                 usernamePlaceholder: 'Enter your username',
                 passwordPlaceholder: 'Enter your password',
@@ -509,7 +483,6 @@
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
             const button = event.target.querySelector('.login-button');
 
             // 显示加载状态
@@ -518,12 +491,8 @@
 
             // 直接登录，不进行校验
             setTimeout(() => {
-                // 保存登录状态
-                if (remember) {
-                    localStorage.setItem('touchscreen_user', username || 'guest');
-                } else {
-                    sessionStorage.setItem('touchscreen_user', username || 'guest');
-                }
+                // 保存登录状态到sessionStorage
+                sessionStorage.setItem('touchscreen_user', username || 'guest');
                 
                 // 跳转到登录加载页面
                 window.location.href = 'login-loading.html';

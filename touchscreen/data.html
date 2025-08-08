@@ -1132,9 +1132,9 @@
         }
 
         .confirm-content {
-            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
             backdrop-filter: blur(20px);
-            border: 2px solid rgba(0, 150, 255, 0.3);
+            border: 2px solid rgba(78, 145, 189, 0.3);
             border-radius: 20px;
             padding: 40px;
             max-width: 480px;
@@ -1598,9 +1598,9 @@
         }
 
         .confirm-content {
-            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
             backdrop-filter: blur(20px);
-            border: 2px solid rgba(0, 150, 255, 0.3);
+            border: 2px solid rgba(78, 145, 189, 0.3);
             border-radius: 20px;
             padding: 40px;
             max-width: 480px;
@@ -1734,13 +1734,13 @@
         
         <!-- 导航菜单 -->
         <nav class="nav-menu">
-            <a href="home.html" class="nav-item">首页</a>
-            <a href="data.html" class="nav-item active">数据</a>
-            <a href="control.html" class="nav-item">控制</a>
-            <a href="alarm.html" class="nav-item">告警</a>
+            <div class="nav-item" onclick="switchPage('home')">首页</div>
+            <a href="#data" class="nav-item active" onclick="switchPage('data')">数据</a>
             <a href="#" class="nav-item" onclick="switchPage('history')">历史</a>
-            <a href="logs.html" class="nav-item">日志</a>
-            <a href="settings.html" class="nav-item">设置</a>
+            <a href="#control" class="nav-item" onclick="switchPage('control')">控制</a>
+            <a href="#alarm" class="nav-item" onclick="switchPage('alarm')">告警</a>
+            <a href="#log" class="nav-item" onclick="switchPage('log')">日志</a>
+            <a href="#settings" class="nav-item" onclick="switchPage('settings')">设置</a>
         </nav>
         
         <div class="header-right">
