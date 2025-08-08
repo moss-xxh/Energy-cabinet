@@ -621,16 +621,6 @@
                 </div>
             </div>
             
-            <!-- 退出按钮 -->
-            <div class="logout-wrapper">
-                <button class="logout-btn" onclick="logout()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
         </div>
     </header>
 
@@ -773,7 +763,6 @@
                 status: '告警监控中',
                 theme: '主题',
                 language: '语言',
-                logout: '退出',
                 navHome: '首页',
                 navParams: '设备参数',
                 navControl: '设备控制',
@@ -823,7 +812,6 @@
                 status: 'Alarm Monitoring',
                 theme: 'Theme',
                 language: 'Language',
-                logout: 'Logout',
                 navHome: 'Home',
                 navParams: 'Parameters',
                 navControl: 'Control',
@@ -1028,12 +1016,6 @@
             }
         }
 
-        // 退出登录
-        function logout() {
-            localStorage.removeItem('touchscreen_user');
-            sessionStorage.removeItem('touchscreen_user');
-            window.location.href = 'login.html';
-        }
 
         // 加载告警数据
         function loadAlarms() {

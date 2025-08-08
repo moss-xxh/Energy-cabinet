@@ -270,48 +270,6 @@
             transform: translate(-50%, -50%);
         }
 
-        /* 退出图标 */
-        .logout-icon {
-            width: 20px;
-            height: 20px;
-            position: relative;
-        }
-
-        .logout-icon::before {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #00d4ff;
-            border-right: none;
-            border-radius: 2px 0 0 2px;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .logout-icon::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 2px;
-            background: #00d4ff;
-            right: 2px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .logout-icon .arrow {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 4px 0 4px 6px;
-            border-color: transparent transparent transparent #00d4ff;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
 
         /* 语言下拉菜单 */
         .lang-dropdown {
@@ -1016,13 +974,6 @@
                 </div>
             </div>
             
-            <!-- 退出按钮 -->
-            <div class="tech-icon-btn" onclick="logout()">
-                <div class="logout-icon tech-icon">
-                    <span class="arrow"></span>
-                </div>
-                <span class="tooltip">退出登录</span>
-            </div>
         </div>
     </header>
 
@@ -2066,14 +2017,6 @@
             }
         });
 
-        // 退出登录
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('touchscreen_user');
-                sessionStorage.removeItem('touchscreen_user');
-                window.location.href = 'login.html';
-            }
-        }
 
         // 初始化图表
         let charts = {};

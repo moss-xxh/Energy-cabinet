@@ -593,6 +593,9 @@
                             账号 <span style="color: #ef4444;">*</span>
                         </label>
                         <input type="email" class="form-input" id="personEmail" placeholder="请输入邮箱作为账号" required>
+                        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                            密码123456
+                        </div>
                     </div>
                     
                     <div class="form-group" id="changePasswordGroup" style="display: none;">
@@ -602,11 +605,14 @@
                         </label>
                     </div>
                     
-                    <div class="form-group" id="passwordGroup">
+                    <div class="form-group" id="passwordGroup" style="display: none;">
                         <label class="form-label" for="personPassword">
-                            密码 <span style="color: #ef4444;">*</span>
+                            密码
                         </label>
-                        <input type="password" class="form-input" id="personPassword" required>
+                        <input type="password" class="form-input" id="personPassword" value="123456" readonly>
+                        <div style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                            默认密码：123456
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -1029,8 +1035,8 @@
             document.getElementById('modalTitle').textContent = '新增人员';
             document.getElementById('personForm').reset();
             document.getElementById('changePasswordGroup').style.display = 'none';
-            document.getElementById('passwordGroup').style.display = 'block';
-            document.getElementById('personPassword').required = true;
+            document.getElementById('passwordGroup').style.display = 'none';
+            document.getElementById('personPassword').required = false;
             renderSitePermissionTree();
             document.getElementById('personModal').classList.add('show');
         }
@@ -1088,10 +1094,11 @@
                 return;
             }
             
-            if (!currentEditingPerson && !personPassword) {
-                alert('新增用户必须设置密码');
-                return;
-            }
+            // 新增用户时，使用默认密码123456，不需要验证
+            // if (!currentEditingPerson && !personPassword) {
+            //     alert('新增用户必须设置密码');
+            //     return;
+            // }
             
             // 编辑模式下，如果勾选了修改密码但没有输入密码
             if (currentEditingPerson) {
@@ -1130,13 +1137,9 @@
                     roles: selectedRoles,
                     sites: selectedSites,
                     status: personStatus,
-                    createTime: new Date().toLocaleString('zh-CN')
+                    createTime: new Date().toLocaleString('zh-CN'),
+                    password: '123456' // 默认密码
                 };
-                
-                // 新增时，如果设置了密码
-                if (changePassword && personPassword) {
-                    newPerson.password = personPassword; // 实际应该加密存储
-                }
                 
                 personnelData.push(newPerson);
             }

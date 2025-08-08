@@ -73,12 +73,11 @@
             align-items: center;
             padding: 0 30px;
             border-bottom: 1px solid rgba(0, 150, 255, 0.3);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            position: relative;
+            z-index: 100;
             gap: 40px;
+            flex-wrap: nowrap;
+            min-width: 0;
         }
 
         /* Logo区域 */
@@ -126,20 +125,24 @@
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
             flex: 1;
             justify-content: center;
+            flex-wrap: nowrap;
+            min-width: 0;
         }
 
         .nav-item {
-            padding: 8px 20px;
+            padding: 12px 28px;
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
-            font-size: 15px;
+            font-size: 17px;
             position: relative;
             transition: all 0.3s ease;
             cursor: pointer;
             border-radius: 8px;
+            white-space: nowrap;
+            display: inline-block;
         }
 
         .nav-item::before {
@@ -274,48 +277,6 @@
             transform: translate(-50%, -50%);
         }
 
-        /* 退出图标 */
-        .logout-icon {
-            width: 20px;
-            height: 20px;
-            position: relative;
-        }
-
-        .logout-icon::before {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #00d4ff;
-            border-right: none;
-            border-radius: 2px 0 0 2px;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .logout-icon::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 2px;
-            background: #00d4ff;
-            right: 2px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .logout-icon .arrow {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 4px 0 4px 6px;
-            border-color: transparent transparent transparent #00d4ff;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
 
         /* 工具提示 */
         .tooltip {
@@ -344,29 +305,35 @@
         /* 主内容区 */
         .main-content {
             height: calc(100vh - 60px);
-            margin-top: 60px;
+            margin-top: 0px;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         /* 查询条件区域 */
         .alarm-query-section {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.3);
             border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 20px;
-            margin-top: 0;
+            padding: 8px 12px;
+            margin: 0 6px 6px 6px;
             position: relative;
             z-index: 10;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            display: none;
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
             color: #00d4ff;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -381,25 +348,24 @@
         }
 
         .query-form {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
         .form-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             flex: 1;
-            min-width: 200px;
+            min-width: 280px;
         }
 
         .form-label {
-            font-size: 14px;
+            font-size: 18px;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
             white-space: nowrap;
             min-width: fit-content;
         }
@@ -407,15 +373,16 @@
         .form-select,
         .form-input {
             flex: 1;
-            height: 40px;
-            padding: 0 12px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            border-radius: 8px;
-            font-size: 14px;
+            height: 52px;
+            padding: 0 16px;
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 10px;
+            font-size: 18px;
             background: rgba(15, 25, 42, 0.8);
             color: rgba(255, 255, 255, 0.9);
             transition: all 0.2s;
             cursor: pointer;
+            min-height: 52px;
         }
 
         .form-select:focus,
@@ -427,8 +394,8 @@
 
         /* 时间范围输入样式 */
         .date-range-group {
-            flex: 1.5;
-            min-width: 300px;
+            grid-column: 1 / -1;
+            min-width: 400px;
         }
 
         .date-range-input {
@@ -449,19 +416,21 @@
         }
 
         .btn {
-            height: 40px;
-            padding: 0 16px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            border-radius: 8px;
-            font-size: 14px;
+            height: 52px;
+            padding: 0 24px;
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 10px;
+            font-size: 18px;
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.2s;
             background: rgba(30, 41, 59, 0.8);
             color: rgba(255, 255, 255, 0.9);
+            min-width: 120px;
+            justify-content: center;
         }
 
         .btn:hover {
@@ -495,15 +464,23 @@
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(0, 150, 255, 0.2);
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            position: relative;
+            z-index: 1;
+            margin-top: 10px;
         }
 
         .list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
         .list-actions {
@@ -511,6 +488,14 @@
             gap: 12px;
         }
 
+        /* 表格容器 */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-bottom: 8px;
+        }
+        
         /* 表格样式 */
         .alarm-table {
             width: 100%;
@@ -525,17 +510,20 @@
             background: rgba(15, 25, 42, 0.8);
             color: rgba(255, 255, 255, 0.9);
             font-weight: 600;
-            padding: 16px 12px;
+            padding: 20px 18px;
             text-align: left;
-            font-size: 14px;
+            font-size: 20px;
             border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            white-space: nowrap;
         }
 
         .alarm-table td {
-            padding: 14px 12px;
+            padding: 18px 16px;
             border-bottom: 1px solid rgba(0, 150, 255, 0.1);
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            vertical-align: middle;
+            font-weight: 500;
         }
 
         .alarm-table tbody tr:hover {
@@ -544,13 +532,14 @@
 
         /* 告警级别标签 */
         .alarm-level-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: 600;
             text-align: center;
-            min-width: 60px;
+            min-width: 80px;
             display: inline-block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .alarm-level-badge.critical {
@@ -573,13 +562,15 @@
 
         /* 告警状态标签 */
         .alarm-status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
             text-align: center;
-            min-width: 60px;
-            display: inline-block;
+            min-width: 90px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .alarm-status-badge.resolved {
@@ -599,14 +590,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(0, 150, 255, 0.2);
+            padding: 16px 0;
+            margin-top: 15px;
         }
 
         .pagination-info {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
         }
 
         .pagination-controls {
@@ -615,15 +606,17 @@
         }
 
         .pagination-btn {
-            height: 36px;
-            padding: 0 12px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            border-radius: 6px;
+            height: 48px;
+            padding: 0 20px;
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 8px;
             background: rgba(30, 41, 59, 0.8);
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
+            font-size: 16px;
+            min-width: 48px;
+            font-weight: 500;
         }
 
         .pagination-btn:hover:not(:disabled) {
@@ -638,22 +631,93 @@
 
         /* 复选框样式 */
         .checkbox {
-            width: 16px;
-            height: 16px;
+            width: 24px;
+            height: 24px;
             accent-color: #00d4ff;
+            cursor: pointer;
         }
 
         /* 操作按钮 */
         .action-btn {
-            padding: 4px 8px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            border-radius: 4px;
-            background: rgba(30, 41, 59, 0.8);
-            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 18px;
+            border: 2px solid rgba(0, 150, 255, 0.5);
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.9);
+            color: #00d4ff;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 16px;
+            font-weight: 600;
             transition: all 0.2s;
-            margin-right: 4px;
+            margin-right: 8px;
+            min-width: 85px;
+            min-height: 44px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        /* 触摸屏优化 */
+        @media (max-width: 1366px) {
+            .alarm-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .alarm-table th,
+            .alarm-table td {
+                white-space: nowrap;
+                padding: 16px 12px;
+            }
+            
+            .alarm-table td:nth-child(3) {
+                white-space: normal;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+            
+            .query-form {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .date-range-group {
+                grid-column: 1;
+                min-width: 100%;
+            }
+            
+            .alarm-query-section,
+            .alarm-list-section {
+                margin: 0 8px 16px 8px;
+                padding: 20px 16px;
+            }
+        }
+        
+        /* 行高增加，便于触摸 */
+        .alarm-table tbody tr {
+            min-height: 60px;
+        }
+        
+        /* 滚动条样式 */
+        .alarm-table::-webkit-scrollbar {
+            height: 12px;
+        }
+        
+        .alarm-table::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        
+        .alarm-table::-webkit-scrollbar-thumb {
+            background: rgba(0, 150, 255, 0.4);
+            border-radius: 6px;
+        }
+        
+        .alarm-table::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 150, 255, 0.6);
         }
 
         .action-btn:hover {
@@ -685,62 +749,100 @@
         }
 
         .modal-content {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            margin: 5% auto;
-            padding: 24px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(15px);
+            margin: 1% auto;
+            padding: 20px;
+            border: 2px solid rgba(0, 150, 255, 0.4);
+            border-radius: 16px;
             width: 80%;
-            max-width: 600px;
-            max-height: 80vh;
+            max-width: 850px;
+            max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 150, 255, 0.4);
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(0, 150, 255, 0.3);
         }
 
         .modal-title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             color: #00d4ff;
+            letter-spacing: 1px;
         }
 
         .close {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 24px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
         }
 
         .close:hover {
             color: #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+            transform: rotate(90deg);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 16px;
+            margin: 12px 0;
+            flex: 1;
         }
 
         .detail-row {
             display: flex;
-            margin-bottom: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(0, 150, 255, 0.1);
+            flex-direction: column;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 150, 255, 0.25);
+            transition: all 0.2s ease;
+        }
+        
+        .detail-row:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(0, 150, 255, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .detail-row.full-width {
+            grid-column: 1 / -1;
         }
 
         .detail-label {
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            width: 120px;
-            flex-shrink: 0;
+            font-weight: 700;
+            color: rgba(0, 212, 255, 0.9);
+            font-size: 15px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .detail-value {
-            color: rgba(255, 255, 255, 0.9);
-            flex: 1;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.4;
         }
 
         /* 通知样式 */
@@ -777,6 +879,135 @@
             background: #f59e0b;
         }
 
+        /* 自定义确认弹窗 */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .confirm-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-content {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: scaleIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { 
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confirm-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.25) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #ef4444;
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .confirm-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-message {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 36px;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 14px 48px;
+            border: 1px solid;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-btn.primary {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .confirm-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, #f56565 0%, #ef4444 100%);
+        }
+
+        .confirm-btn.secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .confirm-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+        
+
         /* 响应式设计 */
         @media (max-width: 1024px) {
             .query-form {
@@ -800,6 +1031,25 @@
             .modal-content {
                 width: 95%;
                 margin: 2% auto;
+                padding: 16px;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .detail-row {
+                padding: 10px;
+            }
+            
+            .detail-label {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+            
+            .detail-value {
+                font-size: 15px;
             }
         }
 
@@ -852,6 +1102,36 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 150, 255, 0.5);
         }
+
+        /* 退出按钮样式 - 与语言按钮一致 */
+        .logout-wrapper {
+            margin-left: 15px;
+        }
+
+        .logout-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .logout-btn svg {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -875,6 +1155,7 @@
             <a href="data.html" class="nav-item" onclick="switchPage('data')">数据</a>
             <a href="control.html" class="nav-item" onclick="switchPage('control')">控制</a>
             <a href="alarm.html" class="nav-item active" onclick="switchPage('alarm')">告警</a>
+            <a href="#" class="nav-item" onclick="switchPage('history')">历史</a>
             <a href="logs.html" class="nav-item" onclick="switchPage('log')">日志</a>
             <a href="settings.html" class="nav-item" onclick="switchPage('settings')">设置</a>
         </nav>
@@ -913,52 +1194,12 @@
                     </svg>
                 </button>
             </div>
+            
         </div>
     </header>
 
     <!-- 主内容区 -->
     <div class="main-content">
-        <!-- 查询条件 -->
-        <div class="alarm-query-section">
-            <div class="query-form">
-                <div class="form-group">
-                    <label class="form-label">告警级别</label>
-                    <select class="form-select" id="levelSelect">
-                        <option value="">全部级别</option>
-                        <option value="critical">严重</option>
-                        <option value="major">重要</option>
-                        <option value="minor">一般</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">告警状态</label>
-                    <select class="form-select" id="statusSelect">
-                        <option value="">全部状态</option>
-                        <option value="resolved">已解决</option>
-                        <option value="unresolved">未解决</option>
-                    </select>
-                </div>
-                <div class="form-group date-range-group">
-                    <label class="form-label">时间范围</label>
-                    <div class="date-range-input">
-                        <input type="date" class="form-input date-input" id="startDate" placeholder="开始日期">
-                        <span class="date-separator">至</span>
-                        <input type="date" class="form-input date-input" id="endDate" placeholder="结束日期">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-left: auto; flex: 0 0 auto; min-width: auto; gap: 8px;">
-                    <button class="btn primary" onclick="queryAlarms()">
-                        <i class="fas fa-search"></i>
-                        查询
-                    </button>
-                    <button class="btn" onclick="resetQuery()">
-                        <i class="fas fa-undo"></i>
-                        重置
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- 告警列表 -->
         <div class="alarm-list-section">
             <div class="list-header">
@@ -971,41 +1212,63 @@
                 </div>
             </div>
 
-            <table class="alarm-table">
-                <thead>
-                    <tr>
-                        <th width="50">
-                            <input type="checkbox" class="checkbox" id="selectAll" onchange="toggleAllAlarms()">
-                        </th>
-                        <th width="180">告警类型</th>
-                        <th width="300">告警描述</th>
-                        <th width="80">级别</th>
-                        <th width="80">状态</th>
-                        <th width="160">告警时间</th>
-                        <th width="120">操作</th>
-                    </tr>
-                </thead>
-                <tbody id="alarmTableBody">
-                    <!-- 动态生成告警数据 -->
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="alarm-table">
+                    <thead>
+                        <tr>
+                            <th width="80">
+                                <input type="checkbox" class="checkbox" id="selectAll" onchange="toggleAllAlarms()">
+                            </th>
+                            <th width="350">告警类型</th>
+                            <th width="500">告警描述</th>
+                            <th width="150">级别</th>
+                            <th width="250">告警时间</th>
+                            <th width="280">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alarmTableBody">
+                        <!-- 动态生成告警数据 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-            <!-- 分页控件 -->
-            <div class="alarm-pagination">
-                <div class="pagination-info" id="paginationInfo">
-                    第 1-10 条，共 0 条记录
-                </div>
-                <div class="pagination-controls">
-                    <button class="pagination-btn" id="prevPageBtn" onclick="previousPage()" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                        上一页
-                    </button>
-                    <span id="pageInfo" style="padding: 8px 12px; color: rgba(255,255,255,0.7);">第 1 页，共 1 页</span>
-                    <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()" disabled>
-                        下一页
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+        <!-- 分页控件 -->
+        <div class="alarm-pagination">
+            <div class="pagination-info" id="paginationInfo">
+                第 1-10 条，共 0 条记录
+            </div>
+            <div class="pagination-controls">
+                <button class="pagination-btn" id="prevPageBtn" onclick="previousPage()" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    上一页
+                </button>
+                <span id="pageInfo" style="padding: 8px 12px; color: rgba(255,255,255,0.7);">第 1 页，共 1 页</span>
+                <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()" disabled>
+                    下一页
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义确认弹窗 -->
+    <div id="confirmModal" class="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="confirm-title" id="confirmTitle">操作确认</div>
+            <div class="confirm-message" id="confirmMessage">您确定要执行此操作吗？</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn secondary" onclick="closeConfirmModal()">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+                <button class="confirm-btn primary" id="confirmButton" onclick="confirmAction()">
+                    <i class="fas fa-check"></i>
+                    确认
+                </button>
             </div>
         </div>
     </div>
@@ -1020,22 +1283,18 @@
             <div id="alarmDetailContent">
                 <!-- 动态生成详情内容 -->
             </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn success" onclick="resolveAlarmFromDetail()" id="resolveDetailBtn">
-                    <i class="fas fa-check"></i>
-                    解决告警
-                </button>
-            </div>
         </div>
     </div>
+
 
     <script>
         // 全局变量
         let allAlarms = [];
         let filteredAlarms = [];
         let currentPage = 1;
-        const pageSize = 10;
+        const pageSize = 4;
         let selectedAlarmId = null;
+        let confirmCallback = null;
 
         // 告警数据
         const alarmTypes = {
@@ -1089,14 +1348,6 @@
                 return;
             }
 
-            // 设置默认日期范围（最近7天）
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(endDate.getDate() - 7);
-            
-            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
-            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
-
             // 更新时间
             updateTime();
             setInterval(updateTime, 1000);
@@ -1132,6 +1383,8 @@
                 window.location.href = 'data.html';
             } else if (page === 'control') {
                 window.location.href = 'control.html';
+            } else if (page === 'history') {
+                window.location.href = 'history.html';
             } else if (page === 'log') {
                 window.location.href = 'logs.html';
             } else if (page === 'settings') {
@@ -1175,14 +1428,6 @@
             }
         });
 
-        // 退出登录
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('touchscreen_user');
-                sessionStorage.removeItem('touchscreen_user');
-                window.location.href = 'login.html';
-            }
-        }
 
         // 生成告警数据
         function generateAlarmData() {
@@ -1252,63 +1497,6 @@
             return valueMap[type] || 'N/A';
         }
 
-        // 查询告警
-        function queryAlarms() {
-            const site = document.getElementById('siteSelect').value;
-            const device = document.getElementById('deviceInput').value;
-            const level = document.getElementById('levelSelect').value;
-            const status = document.getElementById('statusSelect').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-            filteredAlarms = allAlarms.filter(alarm => {
-                let match = true;
-                
-                if (site && alarm.site !== site) match = false;
-                if (device && !alarm.device.toLowerCase().includes(device.toLowerCase())) match = false;
-                if (level && alarm.level !== level) match = false;
-                if (status && alarm.status !== status) match = false;
-                
-                if (startDate) {
-                    const alarmDate = new Date(alarm.time);
-                    const start = new Date(startDate);
-                    if (alarmDate < start) match = false;
-                }
-                
-                if (endDate) {
-                    const alarmDate = new Date(alarm.time);
-                    const end = new Date(endDate);
-                    end.setHours(23, 59, 59, 999);
-                    if (alarmDate > end) match = false;
-                }
-                
-                return match;
-            });
-
-            currentPage = 1;
-            renderAlarmTable();
-            showNotification('查询完成', 'success');
-        }
-
-        // 重置查询
-        function resetQuery() {
-            document.getElementById('siteSelect').value = '';
-            document.getElementById('deviceInput').value = '';
-            document.getElementById('levelSelect').value = '';
-            document.getElementById('statusSelect').value = '';
-            
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(endDate.getDate() - 7);
-            
-            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
-            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
-
-            filteredAlarms = [...allAlarms];
-            currentPage = 1;
-            renderAlarmTable();
-            showNotification('查询条件已重置', 'info');
-        }
 
         // 渲染告警表格
         function renderAlarmTable() {
@@ -1329,10 +1517,7 @@
                         <td>
                             <span class="alarm-level-badge ${alarm.level}">${alarm.levelText}</span>
                         </td>
-                        <td>
-                            <span class="alarm-status-badge ${alarm.status}">${alarm.statusText}</span>
-                        </td>
-                        <td>${alarm.time}</td>
+                        <td style="white-space: nowrap;">${alarm.time}</td>
                         <td style="white-space: nowrap;">
                             <button class="action-btn" onclick="viewAlarmDetail(${alarm.id})" style="display: inline-block;">
                                 <i class="fas fa-eye"></i>
@@ -1411,6 +1596,35 @@
             selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < totalCheckboxes.length;
         }
 
+        // 显示确认弹窗
+        function showConfirmModal(title, message, callback) {
+            const modal = document.getElementById('confirmModal');
+            const titleEl = document.getElementById('confirmTitle');
+            const messageEl = document.getElementById('confirmMessage');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            confirmCallback = callback;
+            
+            modal.classList.add('show');
+        }
+
+        // 关闭确认弹窗
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('show');
+            confirmCallback = null;
+        }
+
+        // 确认操作
+        function confirmAction() {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            closeConfirmModal();
+        }
+
         // 批量解决告警
         function batchResolve() {
             const checkedBoxes = document.querySelectorAll('.alarm-checkbox:checked');
@@ -1418,19 +1632,23 @@
             
             if (alarmIds.length === 0) return;
             
-            if (confirm(`确定要解决选中的 ${alarmIds.length} 个告警吗？`)) {
-                alarmIds.forEach(id => {
-                    const alarm = allAlarms.find(a => a.id === id);
-                    if (alarm && alarm.status === 'unresolved') {
-                        alarm.status = 'resolved';
-                        alarm.statusText = '已解决';
-                        alarm.resolveTime = new Date().toLocaleString('zh-CN');
-                    }
-                });
-                
-                renderAlarmTable();
-                showNotification(`成功解决 ${alarmIds.length} 个告警`, 'success');
-            }
+            showConfirmModal(
+                '批量解决告警',
+                `您确定要解决选中的 ${alarmIds.length} 个告警吗？此操作不可撤销。`,
+                function() {
+                    alarmIds.forEach(id => {
+                        const alarm = allAlarms.find(a => a.id === id);
+                        if (alarm && alarm.status === 'unresolved') {
+                            alarm.status = 'resolved';
+                            alarm.statusText = '已解决';
+                            alarm.resolveTime = new Date().toLocaleString('zh-CN');
+                        }
+                    });
+                    
+                    renderAlarmTable();
+                    showNotification(`成功解决 ${alarmIds.length} 个告警`, 'success');
+                }
+            );
         }
 
         // 查看告警详情
@@ -1442,73 +1660,94 @@
             
             const detailContent = document.getElementById('alarmDetailContent');
             detailContent.innerHTML = `
-                <div class="detail-row">
-                    <div class="detail-label">告警ID:</div>
-                    <div class="detail-value">${alarm.id}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">告警类型:</div>
-                    <div class="detail-value">${alarm.type}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">告警描述:</div>
-                    <div class="detail-value">${alarm.description}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">告警级别:</div>
-                    <div class="detail-value">
-                        <span class="alarm-level-badge ${alarm.level}">${alarm.levelText}</span>
+                <div class="detail-grid">
+                    <!-- 顶部告警类型 -->
+                    <div class="detail-row full-width" style="background: linear-gradient(135deg, rgba(0, 150, 255, 0.1), rgba(0, 212, 255, 0.05)); border: 2px solid rgba(0, 212, 255, 0.3); padding: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="detail-label" style="font-size: 16px; color: #00d4ff; margin-bottom: 10px;">
+                                    <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                                    告警类型
+                                </div>
+                                <div class="detail-value" style="font-size: 22px; font-weight: 600;">
+                                    ${alarm.type}
+                                    <span class="alarm-level-badge ${alarm.level}" style="margin-left: 12px; padding: 8px 16px; font-size: 15px;">${alarm.levelText}</span>
+                                </div>
+                            </div>
+                            ${alarm.status === 'resolved' ? `
+                                <span class="alarm-status-badge resolved" style="padding: 10px 20px; font-size: 16px; font-weight: 600;">
+                                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i>
+                                    已解决
+                                </span>
+                            ` : ''}
+                        </div>
                     </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">设备名称:</div>
-                    <div class="detail-value">${alarm.device}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">站点名称:</div>
-                    <div class="detail-value">${alarm.site}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">当前值:</div>
-                    <div class="detail-value">${alarm.currentValue}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">阈值:</div>
-                    <div class="detail-value">${alarm.threshold}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">告警状态:</div>
-                    <div class="detail-value">
-                        <span class="alarm-status-badge ${alarm.status}">${alarm.statusText}</span>
+                    
+                    <!-- 告警描述 -->
+                    <div class="detail-row full-width">
+                        <div class="detail-label">
+                            <i class="fas fa-info-circle" style="margin-right: 8px; color: #00d4ff;"></i>
+                            告警描述
+                        </div>
+                        <div class="detail-value" style="font-size: 20px; line-height: 1.5; color: #fff;">${alarm.description}</div>
                     </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">告警时间:</div>
-                    <div class="detail-value">${alarm.time}</div>
-                </div>
-                ${alarm.resolveTime ? `
+                    
+                    <!-- 数值信息 -->
+                    <div class="detail-row" style="background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2);">
+                        <div class="detail-label">
+                            <i class="fas fa-chart-line" style="margin-right: 8px; color: #ef4444;"></i>
+                            当前值
+                        </div>
+                        <div class="detail-value" style="font-size: 20px; color: #ef4444; font-weight: 600;">${alarm.currentValue}</div>
+                    </div>
+                    
+                    <div class="detail-row" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2);">
+                        <div class="detail-label">
+                            <i class="fas fa-exclamation" style="margin-right: 8px; color: #f59e0b;"></i>
+                            阈值
+                        </div>
+                        <div class="detail-value" style="font-size: 20px; color: #f59e0b; font-weight: 600;">${alarm.threshold}</div>
+                    </div>
+                    
+                    <!-- 时间信息 -->
                     <div class="detail-row">
-                        <div class="detail-label">解决时间:</div>
-                        <div class="detail-value">${alarm.resolveTime}</div>
+                        <div class="detail-label">
+                            <i class="fas fa-clock" style="margin-right: 8px; color: #00d4ff;"></i>
+                            告警时间
+                        </div>
+                        <div class="detail-value" style="font-size: 18px;">${alarm.time}</div>
+                    </div>
+                    ${alarm.resolveTime ? `
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-check-circle" style="margin-right: 8px; color: #10b981;"></i>
+                                消警时间
+                            </div>
+                            <div class="detail-value" style="font-size: 18px; color: #10b981;">${alarm.resolveTime}</div>
+                        </div>
+                    ` : `
+                        <div class="detail-row" style="opacity: 0.5;">
+                            <div class="detail-label">
+                                <i class="fas fa-times-circle" style="margin-right: 8px; color: #666;"></i>
+                                消警时间
+                            </div>
+                            <div class="detail-value" style="font-size: 18px; color: #666;">未解决</div>
+                        </div>
+                    `}
+                </div>
+                
+                <!-- 底部操作按钮 -->
+                ${alarm.status === 'unresolved' ? `
+                    <div style="display: flex; justify-content: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(0, 150, 255, 0.2);">
+                        <button class="action-btn success" onclick="resolveAlarmFromDetail()" style="padding: 14px 36px; font-size: 18px; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                            <i class="fas fa-check" style="margin-right: 8px;"></i>
+                            解决告警
+                        </button>
                     </div>
                 ` : ''}
-                <div class="detail-row">
-                    <div class="detail-label">处理记录:</div>
-                    <div class="detail-value">
-                        ${alarm.status === 'resolved' ? 
-                            `${alarm.resolveTime} - 告警已解决<br>
-                             ${alarm.time} - 告警产生` : 
-                            `${alarm.time} - 告警产生`}
-                    </div>
-                </div>
             `;
             
-            const resolveBtn = document.getElementById('resolveDetailBtn');
-            if (alarm.status === 'resolved') {
-                resolveBtn.style.display = 'none';
-            } else {
-                resolveBtn.style.display = 'inline-flex';
-            }
+            // 解决按钮已移至告警类型行右侧，不再需要底部按钮控制
             
             document.getElementById('alarmDetailModal').style.display = 'block';
         }
@@ -1525,12 +1764,18 @@
         function resolveAlarm(alarmId) {
             const alarm = allAlarms.find(a => a.id === alarmId);
             if (alarm && alarm.status === 'unresolved') {
-                alarm.status = 'resolved';
-                alarm.statusText = '已解决';
-                alarm.resolveTime = new Date().toLocaleString('zh-CN');
-                
-                renderAlarmTable();
-                showNotification('告警已解决', 'success');
+                showConfirmModal(
+                    '解决告警',
+                    `您确定要解决告警"${alarm.type}"吗？此操作不可撤销。`,
+                    function() {
+                        alarm.status = 'resolved';
+                        alarm.statusText = '已解决';
+                        alarm.resolveTime = new Date().toLocaleString('zh-CN');
+                        
+                        renderAlarmTable();
+                        showNotification('告警已解决', 'success');
+                    }
+                );
             }
         }
 
@@ -1601,12 +1846,55 @@
 
         // 点击模态框外部关闭
         window.onclick = function(event) {
-            const modal = document.getElementById('alarmDetailModal');
-            if (event.target === modal) {
+            const alarmModal = document.getElementById('alarmDetailModal');
+            const confirmModal = document.getElementById('confirmModal');
+            
+            if (event.target === alarmModal) {
                 closeAlarmDetail();
             }
+            if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
+        }
+
+        // 登出功能 - 显示弹窗
+        function logout() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('show');
+        }
+
+        // 关闭退出弹窗
+        function closeLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('show');
+        }
+
+        // 确认退出
+        function confirmLogout() {
+            localStorage.removeItem('touchscreen_user');
+            sessionStorage.removeItem('touchscreen_user');
+            window.location.href = 'login.html';
         }
     </script>
     <script src="common-header-scripts.js"></script>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logoutModal" class="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <div class="confirm-title">退出登录</div>
+            <div class="confirm-message">您确定要退出当前账户吗？</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn secondary" onclick="closeLogoutModal()">
+                    取消
+                </button>
+                <button class="confirm-btn primary" onclick="confirmLogout()">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

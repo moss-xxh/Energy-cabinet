@@ -95,10 +95,22 @@
         
         .energy-section-new:first-child {
             height: 389px;
+            display: flex;
+            flex-direction: column;
         }
         
         .energy-section-new:last-child {
             height: 195px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .energy-section-new.expanded {
+            height: 534px !important;
+        }
+        
+        .energy-section-new.collapsed {
+            height: 50px !important;
         }
 
         .energy-section-new h3 {
@@ -315,6 +327,19 @@
                 height: 400px;
             }
         }
+        
+        /* 悬停效果 */
+        .clickable-stat {
+            transition: all 0.3s ease;
+        }
+        
+        .clickable-stat:hover {
+            transform: translateY(-2px);
+        }
+        
+        .clickable-stat:hover > div:first-child {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -401,40 +426,140 @@
     <main class="main-content" id="mainContent">
         <!-- 移除页面标题 -->
 
-        <!-- 总储能状态 -->
-        <div class="card" style="margin-bottom: 24px;">
-            <div style="padding: 24px;">
-                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">总电站</div>
-                        <div style="font-size: 24px; font-weight: 600; color: var(--text-primary);">5</div>
+        <!-- 运行情况和电站排行榜 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- 运行情况 -->
+            <div style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden;">
+                <div style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #f1f5f9;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #1a202c; margin: 0; letter-spacing: -0.025em;">运行概览</h3>
+                </div>
+                <div style="padding: 16px;">
+                    <!-- 主要数据展示 -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; align-items: start;">
+                        <div class="clickable-stat" style="cursor: pointer; text-align: center; padding: 20px 16px; border-radius: 12px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; height: 120px; justify-content: space-between;" onclick="window.location.href='site1.html'">
+                            <div style="font-size: 28px; font-weight: 700; color: #1e293b; line-height: 1; display: flex; align-items: baseline; height: 34px;">
+                                5
+                            </div>
+                            <div style="font-size: 12px; color: #64748b; font-weight: 500; letter-spacing: 0.025em; display: flex; align-items: center; height: 16px;">
+                                总电站
+                            </div>
+                            <div style="font-size: 10px; color: #10b981; font-weight: 500; display: flex; align-items: center; height: 14px;">
+                                比昨日 +0
+                            </div>
+                        </div>
+                        <div class="clickable-stat" style="cursor: pointer; text-align: center; padding: 20px 16px; border-radius: 12px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; height: 120px; justify-content: space-between;" onclick="window.location.href='devices.html'">
+                            <div style="font-size: 28px; font-weight: 700; color: #166534; line-height: 1; display: flex; align-items: baseline; height: 34px;">
+                                8
+                            </div>
+                            <div style="font-size: 12px; color: #16a34a; font-weight: 500; letter-spacing: 0.025em; display: flex; align-items: center; height: 16px;">
+                                储能柜
+                            </div>
+                            <div style="font-size: 10px; color: #10b981; font-weight: 500; display: flex; align-items: center; height: 14px;">
+                                比昨日 +2
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 20px 16px; border-radius: 12px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fbbf24; display: flex; flex-direction: column; align-items: center; height: 120px; justify-content: space-between;">
+                            <div style="font-size: 22px; font-weight: 700; color: #92400e; line-height: 1; display: flex; align-items: baseline; height: 34px;">
+                                ¥368,542
+                            </div>
+                            <div style="font-size: 12px; color: #d97706; font-weight: 500; letter-spacing: 0.025em; display: flex; align-items: center; height: 16px;">
+                                总收益
+                            </div>
+                            <div style="font-size: 10px; color: #10b981; font-weight: 500; display: flex; align-items: center; height: 14px;">
+                                比昨日 +¥8,256
+                            </div>
+                        </div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">故障电站</div>
-                        <div style="font-size: 24px; font-weight: 600; color: #ef4444;">1</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">失联电站</div>
-                        <div style="font-size: 24px; font-weight: 600; color: #f59e0b;">0</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">当日充电量</div>
-                        <div style="font-size: 24px; font-weight: 600; color: #10b981;">486.3 <span style="font-size: 14px; font-weight: 400;">kWh</span></div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">当日放电量</div>
-                        <div style="font-size: 24px; font-weight: 600; color: #3b82f6;">372.5 <span style="font-size: 14px; font-weight: 400;">kWh</span></div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">今日收益</div>
-                        <div style="font-size: 24px; font-weight: 600; color: #10b981;">¥1,580</div>
+                    
+                    <!-- 运行数据 -->
+                    <div>
+                        <!-- 今日数据 -->
+                        <div id="op-today-view" style="display: block;">
+                            <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px 20px; position: relative; min-height: 120px;">
+                                <!-- 切换按钮组 -->
+                                <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 16px;">
+                                    <button onclick="switchOperationView('today')" id="op-today-btn" style="border: none; background: transparent; color: #3b82f6; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s;">今日</button>
+                                    <button onclick="switchOperationView('month')" id="op-month-btn" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">本月</button>
+                                    <button onclick="switchOperationView('total')" id="op-total-btn" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">累计</button>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">充电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">486.3 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">放电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">372.5 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">收益</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #ea580c;">¥1,580</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 本月数据 -->
+                        <div id="op-month-view" style="display: none;">
+                            <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px 20px; position: relative; min-height: 120px;">
+                                <!-- 切换按钮组 -->
+                                <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 16px;">
+                                    <button onclick="switchOperationView('today')" id="op-today-btn-2" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">今日</button>
+                                    <button onclick="switchOperationView('month')" id="op-month-btn-2" style="border: none; background: transparent; color: #3b82f6; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s;">本月</button>
+                                    <button onclick="switchOperationView('total')" id="op-total-btn-2" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">累计</button>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">充电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">14,293 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">放电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">11,876 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">收益</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #ea580c;">¥36,842</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 累计数据 -->
+                        <div id="op-total-view" style="display: none;">
+                            <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px 20px; position: relative; min-height: 120px;">
+                                <!-- 切换按钮组 -->
+                                <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 16px;">
+                                    <button onclick="switchOperationView('today')" id="op-today-btn-3" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">今日</button>
+                                    <button onclick="switchOperationView('month')" id="op-month-btn-3" style="border: none; background: transparent; color: #64748b; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s;">本月</button>
+                                    <button onclick="switchOperationView('total')" id="op-total-btn-3" style="border: none; background: transparent; color: #3b82f6; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s;">累计</button>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">充电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">286,549 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">放电量</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">234,782 <span style="font-size: 12px; font-weight: 500; color: #64748b;">kWh</span></div>
+                                    </div>
+                                    <div style="width: 1px; height: 50px; background: #e2e8f0; margin: 0 24px;"></div>
+                                    <div style="text-align: center; flex: 1;">
+                                        <div style="font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;">收益</div>
+                                        <div style="font-size: 20px; font-weight: 700; color: #ea580c;">¥368,542</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- 电站排行榜和告警分布 -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            
             <!-- 电站排行榜 -->
             <div class="card">
                 <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
@@ -463,24 +588,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- 告警分布饼图 -->
-            <div class="card">
-                <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">告警分布</h3>
-                        <!-- Tab切换 -->
-                        <div style="display: flex; gap: 4px; background: #f5f5f5; border-radius: 6px; padding: 2px;">
-                            <button class="alarm-tab active" data-period="today" style="padding: 6px 12px; border: none; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">今日</button>
-                            <button class="alarm-tab" data-period="week" style="padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">本周</button>
-                            <button class="alarm-tab" data-period="month" style="padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">本月</button>
-                        </div>
-                    </div>
-                </div>
-                <div style="padding: 24px; height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <canvas id="alarmDistributionChart" style="width: 100%; height: 100%;"></canvas>
-                </div>
-            </div>
         </div>
 
         <!-- 能量潮流图 -->
@@ -493,7 +600,7 @@
                     <!-- 电站选择下拉列表 -->
                     <select id="stationSelect" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; cursor: pointer; min-width: 150px;">
                         <option value="all">全部电站</option>
-                        <option value="station1">科技园区站</option>
+                        <option value="station1" selected>科技园区站</option>
                         <option value="station2">工业园区站</option>
                         <option value="station3">商业中心站</option>
                         <option value="station4">物流园区站</option>
@@ -511,33 +618,46 @@
                     <div id="energy-settings-panel">
                         <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #333;">显示指标选择</div>
                         <div style="display: flex; flex-direction: column; gap: 6px;">
-                            <!-- 光伏指标 -->
-                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">光伏</div>
+                            <!-- 储能柜指标 -->
+                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">储能柜</div>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="pv-daily" style="margin: 0;">
-                                <span style="font-size: 13px; color: #666;">日发电量</span>
+                                <input type="checkbox" checked data-metric-item="cabinet-total" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">总数</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="pv-total" style="margin: 0;">
-                                <span style="font-size: 13px; color: #666;">总发电量</span>
-                            </label>
-                            
-                            <!-- 储能指标 -->
-                            <div style="font-size: 13px; font-weight: 600; color: #333; margin-top: 8px;">储能</div>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="storage-daily-charge" style="margin: 0;">
-                                <span style="font-size: 13px; color: #666;">日充电量</span>
+                                <input type="checkbox" checked data-metric-item="cabinet-capacity" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">总容量</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="storage-total-charge" style="margin: 0;">
+                                <input type="checkbox" checked data-metric-item="cabinet-offline" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">离线</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="cabinet-fault" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">故障</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="cabinet-daily-charge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">今日充电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="cabinet-daily-discharge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">今日放电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="cabinet-monthly-charge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">本月充电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" checked data-metric-item="cabinet-monthly-discharge" style="margin: 0;">
+                                <span style="font-size: 13px; color: #666;">本月放电量</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
+                                <input type="checkbox" data-metric-item="cabinet-total-charge" style="margin: 0;">
                                 <span style="font-size: 13px; color: #666;">累计充电量</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="storage-daily-discharge" style="margin: 0;">
-                                <span style="font-size: 13px; color: #666;">日放电量</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding-left: 12px;">
-                                <input type="checkbox" checked data-metric-item="storage-total-discharge" style="margin: 0;">
+                                <input type="checkbox" data-metric-item="cabinet-total-discharge" style="margin: 0;">
                                 <span style="font-size: 13px; color: #666;">累计放电量</span>
                             </label>
                             
@@ -603,9 +723,9 @@
                     <!-- 右侧数据统计 -->
                     <div class="energy-stats-new">
                         <!-- 储能柜数据 -->
-                        <div class="energy-section-new">
+                        <div class="energy-section-new" id="cabinet-section">
                             <h3>储能柜</h3>
-                            <div class="energy-metrics-new" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
+                            <div class="energy-metrics-new" id="cabinet-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
                                 <div class="energy-metric-item-new" data-metric-item="cabinet-total" style="text-align: center;">
                                     <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">总数</div>
                                     <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">8</div>
@@ -631,21 +751,29 @@
                                     <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">今日放电量</div>
                                     <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">372.5 kWh</div>
                                 </div>
-                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-charge" style="text-align: center;">
-                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计充电量</div>
-                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">12847 kWh</div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-monthly-charge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">本月充电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">14293 kWh</div>
                                 </div>
-                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-discharge" style="text-align: center;">
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-monthly-discharge" style="text-align: center;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">本月放电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">11876 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-charge" style="text-align: center; display: none;">
+                                    <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计充电量</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">286549 kWh</div>
+                                </div>
+                                <div class="energy-metric-item-new" data-metric-item="cabinet-total-discharge" style="text-align: center; display: none;">
                                     <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">累计放电量</div>
-                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">10236 kWh</div>
+                                    <div class="energy-metric-value-new" style="font-size: 16px; font-weight: 600;">234782 kWh</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 收益数据 -->
-                        <div class="energy-section-new">
+                        <div class="energy-section-new" id="revenue-section">
                             <h3>收益</h3>
-                            <div class="energy-metrics-new" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
+                            <div class="energy-metrics-new" id="revenue-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1;">
                                 <div class="energy-metric-item-new" data-metric-item="revenue-yesterday" style="text-align: center;">
                                     <div class="energy-metric-label-new" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">昨日收益</div>
                                     <div class="energy-metric-value-new revenue" style="font-size: 16px; font-weight: 600; color: #10b981;">¥141.72</div>
@@ -691,6 +819,24 @@
             </div>
         </div>
 
+        <!-- 告警分布饼图 -->
+        <div class="card">
+            <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">告警分布</h3>
+                    <!-- Tab切换 -->
+                    <div style="display: flex; gap: 4px; background: #f5f5f5; border-radius: 6px; padding: 2px;">
+                        <button class="alarm-tab active" data-period="today" style="padding: 6px 12px; border: none; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">今日</button>
+                        <button class="alarm-tab" data-period="week" style="padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">本周</button>
+                        <button class="alarm-tab" data-period="month" style="padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s;">本月</button>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 24px; height: 300px; display: flex; align-items: center; justify-content: center;">
+                <canvas id="alarmDistributionChart" style="width: 100%; height: 100%;"></canvas>
+            </div>
+        </div>
+
     </main>
 
     <!-- 移动端遮罩 -->
@@ -715,6 +861,52 @@
             const panel = document.getElementById('energy-settings-panel');
             panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
+        
+        // 切换运行情况视图
+        function switchOperationView(view) {
+            // 隐藏所有视图
+            document.getElementById('op-today-view').style.display = 'none';
+            document.getElementById('op-month-view').style.display = 'none';
+            document.getElementById('op-total-view').style.display = 'none';
+            
+            // 重置所有按钮样式 - 包括所有三组按钮
+            const allButtons = [
+                'op-today-btn', 'op-month-btn', 'op-total-btn',
+                'op-today-btn-2', 'op-month-btn-2', 'op-total-btn-2',
+                'op-today-btn-3', 'op-month-btn-3', 'op-total-btn-3'
+            ];
+            allButtons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.style.color = '#64748b';
+                    btn.style.fontWeight = '500';
+                }
+            });
+            
+            // 显示选中的视图和高亮对应按钮
+            if (view === 'today') {
+                document.getElementById('op-today-view').style.display = 'block';
+                const btn = document.getElementById('op-today-btn');
+                if (btn) {
+                    btn.style.color = '#3b82f6';
+                    btn.style.fontWeight = '600';
+                }
+            } else if (view === 'month') {
+                document.getElementById('op-month-view').style.display = 'block';
+                const btn = document.getElementById('op-month-btn-2');
+                if (btn) {
+                    btn.style.color = '#3b82f6';
+                    btn.style.fontWeight = '600';
+                }
+            } else if (view === 'total') {
+                document.getElementById('op-total-view').style.display = 'block';
+                const btn = document.getElementById('op-total-btn-3');
+                if (btn) {
+                    btn.style.color = '#3b82f6';
+                    btn.style.fontWeight = '600';
+                }
+            }
+        }
 
         // 点击外部关闭设置面板
         document.addEventListener('click', function(event) {
@@ -726,15 +918,48 @@
             }
         });
 
+        // 动态调整面板布局
+        function adjustPanelLayout() {
+            const cabinetSection = document.getElementById('cabinet-section');
+            const revenueSection = document.getElementById('revenue-section');
+            const cabinetMetrics = document.getElementById('cabinet-metrics');
+            const revenueMetrics = document.getElementById('revenue-metrics');
+            
+            if (!cabinetSection || !revenueSection) return;
+            
+            // 计算显示的指标数量
+            const cabinetItems = cabinetMetrics.querySelectorAll('.energy-metric-item-new:not([style*="display: none"])');
+            const revenueItems = revenueMetrics.querySelectorAll('.energy-metric-item-new:not([style*="display: none"])');
+            
+            const cabinetCount = cabinetItems.length;
+            const revenueCount = revenueItems.length;
+            
+            // 重置类
+            cabinetSection.classList.remove('expanded', 'collapsed');
+            revenueSection.classList.remove('expanded', 'collapsed');
+            
+            // 应用布局逻辑
+            if (revenueCount < 2) {
+                // 收益少于2个，储能柜扩大
+                cabinetSection.classList.add('expanded');
+                revenueSection.classList.add('collapsed');
+            }
+        }
+
         // 处理指标显示/隐藏
         document.querySelectorAll('input[data-metric-item]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const metricId = this.getAttribute('data-metric-item');
-                const metricElement = document.querySelector(`[data-metric-item="${metricId}"]`);
+                const metricElements = document.querySelectorAll(`[data-metric-item="${metricId}"]`);
                 
-                if (metricElement && metricElement !== this) {
-                    metricElement.style.display = this.checked ? 'flex' : 'none';
-                }
+                metricElements.forEach(element => {
+                    if (element !== this) {
+                        element.style.display = this.checked ? 'block' : 'none';
+                    }
+                });
+                
+                // 调整布局
+                adjustPanelLayout();
             });
         });
 
@@ -838,6 +1063,21 @@
 
         // 初始化能量流图
         window.addEventListener('DOMContentLoaded', function() {
+            // 初始化指标显示状态
+            document.querySelectorAll('input[data-metric-item]').forEach(checkbox => {
+                const metricId = checkbox.getAttribute('data-metric-item');
+                const metricElements = document.querySelectorAll(`[data-metric-item="${metricId}"]`);
+                
+                metricElements.forEach(element => {
+                    if (element !== checkbox) {
+                        element.style.display = checkbox.checked ? 'block' : 'none';
+                    }
+                });
+            });
+            
+            // 初始化布局
+            adjustPanelLayout();
+            
             // 创建能量流向连线
             setTimeout(function() {
                 createEnergyFlowLines();
@@ -1246,6 +1486,7 @@
             });
         }
         
+        
         // 更新排行榜数据
         function updateRankingData(timeType, dataType) {
             const rankingContent = document.getElementById('rankingContent');
@@ -1389,6 +1630,9 @@
             initAlarmDistributionChart();
             initAlarmDistributionTabs();
             initStationRanking();
+            
+            // 初始化时更新科技园区站的数据
+            updateTotalEnergyStatus('station1');
         });
     </script>
 </body>

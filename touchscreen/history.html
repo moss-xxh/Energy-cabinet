@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common-header-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e1a;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 科技风背景网格 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 150, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 150, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 动态光效背景 */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-effects::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+            top: -50%;
+            left: -50%;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 头部导航 */
+        .header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.3);
+            position: relative;
+            z-index: 100;
+            gap: 40px;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+
+        /* Logo区域 */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: none;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #0096ff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+
+        .nav-item {
+            padding: 12px 28px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 17px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 8px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-item:hover {
+            color: #00d4ff;
+            background: rgba(0, 150, 255, 0.1);
+        }
+
+        .nav-item:hover::before {
+            width: 80%;
+        }
+
+        .nav-item.active {
+            color: #00d4ff;
+            background: rgba(0, 150, 255, 0.15);
+        }
+
+        .nav-item.active::before {
+            width: 80%;
+            background: #00d4ff;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        /* 头部右侧 */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* 时间显示 */
+        .header-time {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            font-family: 'SF Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* 语言切换和退出按钮样式已在common-header-styles.css中定义 */
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .main-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 150, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 150, 255, 0.5);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #00d4ff, #0096ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .content-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .placeholder-icon {
+            font-size: 80px;
+            color: rgba(0, 150, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .placeholder-text {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .placeholder-subtext {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* 图表容器 */
+        .charts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .chart-container:first-child {
+            margin-top: 20px;
+        }
+        
+        .chart-container:last-child {
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .form-input {
+            background: rgba(15, 25, 42, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: #00d4ff;
+            background: rgba(15, 25, 42, 0.95);
+        }
+        /* 隐藏原生日期选择器 */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+        
+        /* 自定义日期输入框样式 */
+        .custom-date-input {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .custom-date-input input {
+            background: rgba(15, 25, 42, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 4px 32px 4px 8px;
+            font-size: 13px;
+            width: 140px;
+            height: 32px;
+            cursor: pointer;
+        }
+        
+        .custom-date-input .calendar-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .custom-date-input .calendar-icon:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* 自定义日期选择弹窗 */
+        .custom-calendar-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 25, 42, 0.98);
+            border: 2px solid rgba(0, 150, 255, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            min-width: 380px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .custom-calendar-popup.show {
+            display: block;
+        }
+        
+        /* 遮罩层 */
+        .calendar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+        
+        .calendar-overlay.show {
+            display: block;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        .calendar-nav-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .calendar-nav-btn:hover {
+            background: rgba(0, 150, 255, 0.3);
+            border-color: rgba(0, 150, 255, 0.5);
+        }
+        
+        .calendar-month-year {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .calendar-month-year select {
+            background: rgba(15, 25, 42, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            font-size: 16px;
+            height: 45px;
+            cursor: pointer;
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-weekday {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 0;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(0, 150, 255, 0.2);
+            border-color: rgba(0, 150, 255, 0.4);
+            color: white;
+        }
+        
+        .calendar-day.other-month {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #0096ff, #00d4ff);
+            border-color: #00d4ff;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.today {
+            border-color: #00d4ff;
+            position: relative;
+        }
+        
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #00d4ff;
+            border-radius: 50%;
+        }
+        
+        .calendar-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        .calendar-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            min-width: 100px;
+        }
+        
+        .calendar-btn.primary {
+            background: linear-gradient(135deg, #0096ff, #00d4ff);
+            color: white;
+        }
+        
+        .calendar-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 150, 255, 0.4);
+        }
+        
+        .calendar-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .calendar-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 悬浮滚动按钮 */
+        .floating-scroll-buttons {
+            position: fixed;
+            right: 15px;
+            bottom: 50%;
+            transform: translateY(50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .scroll-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 150, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 150, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(0, 150, 255, 1);
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(0, 150, 255, 0.6);
+        }
+
+        .scroll-btn:active {
+            transform: scale(0.95);
+        }
+
+        .scroll-btn.up {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+        }
+
+        .scroll-btn.down {
+            background: linear-gradient(135deg, #0096ff 0%, #00d4ff 100%);
+        }
+
+        .scroll-btn i {
+            pointer-events: none;
+        }
+
+        /* 自定义确认弹窗 - 深色背景样式（与告警页面一致） */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .confirm-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-content {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1823 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: scaleIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { 
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confirm-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.25) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #ef4444;
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .confirm-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-message {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 36px;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 14px 48px;
+            border: 1px solid;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-btn.primary {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .confirm-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, #f56565 0%, #ef4444 100%);
+        }
+
+        .confirm-btn.secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .confirm-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景效果 -->
+    <div class="bg-effects"></div>
+
+    <!-- 悬浮滚动按钮 -->
+    <div class="floating-scroll-buttons">
+        <button class="scroll-btn up" onclick="scrollPage('up')" title="向上滚动">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+        <button class="scroll-btn down" onclick="scrollPage('down')" title="向下滚动">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <div class="logo-text">储能柜管理系统</div>
+            </div>
+        </div>
+        
+        <!-- 导航菜单 -->
+        <nav class="nav-menu">
+            <a href="home.html" class="nav-item" onclick="switchPage('home')">首页</a>
+            <a href="data.html" class="nav-item" onclick="switchPage('data')">数据</a>
+            <a href="control.html" class="nav-item" onclick="switchPage('control')">控制</a>
+            <a href="alarm.html" class="nav-item" onclick="switchPage('alarm')">告警</a>
+            <a href="#" class="nav-item active" onclick="switchPage('history')">历史</a>
+            <a href="logs.html" class="nav-item" onclick="switchPage('log')">日志</a>
+            <a href="settings.html" class="nav-item" onclick="switchPage('settings')">设置</a>
+        </nav>
+        
+        <div class="header-right">
+            <div class="header-time" id="headerTime">2025-08-06 10:30:00</div>
+            
+            <!-- 语言切换按钮 -->
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleLanguageDropdown(event)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option" onclick="changeLanguage('zh', event)">
+                        <span class="flag">🇨🇳</span>
+                        <span>中文</span>
+                    </div>
+                    <div class="lang-option" onclick="changeLanguage('en', event)">
+                        <span class="flag">🇺🇸</span>
+                        <span>English</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退出按钮 -->
+            <div class="logout-wrapper">
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <div class="charts-container">
+            <!-- 功率与SOC综合分析 -->
+            <div class="chart-container">
+                <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="chart-title" style="font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 3px; height: 14px; background: linear-gradient(45deg, #0096ff, #00d4ff); border-radius: 2px;"></span>
+                        功率趋势分析
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <label style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">选择日期:</label>
+                        <div class="custom-date-input">
+                            <input type="text" id="historyEndDatePicker" readonly style="width: 140px; height: 32px; padding: 4px 32px 4px 8px; font-size: 13px; background: rgba(15, 25, 42, 0.8); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; color: rgba(255, 255, 255, 0.9); cursor: pointer;" onclick="showCustomCalendar('historyEndDatePicker')">
+                            <span class="calendar-icon" onclick="showCustomCalendar('historyEndDatePicker')">📅</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="powerSocChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 收益分析 -->
+            <div class="chart-container">
+                <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="chart-title" style="font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 3px; height: 14px; background: linear-gradient(45deg, #0096ff, #00d4ff); border-radius: 2px;"></span>
+                        收益分析
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select id="revenueTimeType" class="form-input" style="width: 120px; height: 32px; padding: 4px 8px; background: rgba(15, 25, 42, 0.8); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; color: rgba(255, 255, 255, 0.9);" onchange="updateRevenueAnalysisChart()">
+                            <option value="day" selected>日</option>
+                            <option value="month">月</option>
+                            <option value="year">年</option>
+                            <option value="total">合计</option>
+                        </select>
+                        <div class="custom-date-input" id="revenueDatePickerWrapper" style="display: inline-block;">
+                            <input type="text" id="revenueDatePicker" readonly style="width: 140px; height: 32px; padding: 4px 32px 4px 8px; font-size: 13px; background: rgba(15, 25, 42, 0.8); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; color: rgba(255, 255, 255, 0.9); cursor: pointer;" onclick="showCustomCalendar('revenueDatePicker')">
+                            <span class="calendar-icon" onclick="showCustomCalendar('revenueDatePicker')">📅</span>
+                        </div>
+                        <input type="month" id="revenueMonthPicker" class="form-input" style="width: 140px; height: 32px; padding: 4px 8px; display: none; background: rgba(15, 25, 42, 0.8); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; color: rgba(255, 255, 255, 0.9);" onchange="updateRevenueAnalysisChart()">
+                        <select id="revenueYearPicker" class="form-input" style="width: 140px; height: 32px; padding: 4px 8px; display: none; background: rgba(15, 25, 42, 0.8); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; color: rgba(255, 255, 255, 0.9);" onchange="updateRevenueAnalysisChart()">
+                            <option value="2023">2023年</option>
+                            <option value="2024">2024年</option>
+                            <option value="2025" selected>2025年</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueAnalysisChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logoutModal" class="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <div class="confirm-title">退出登录</div>
+            <div class="confirm-message">您确定要退出当前账户吗？</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn secondary" onclick="closeLogoutModal()">
+                    取消
+                </button>
+                <button class="confirm-btn primary" onclick="confirmLogout()">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 滚动页面函数
+        function scrollPage(direction) {
+            const mainContent = document.querySelector('.main-content');
+            
+            if (mainContent) {
+                // 获取视口高度减去头部高度
+                const scrollAmount = window.innerHeight - 60;
+                
+                if (direction === 'up') {
+                    mainContent.scrollBy({
+                        top: -scrollAmount,
+                        behavior: 'smooth'
+                    });
+                } else if (direction === 'down') {
+                    mainContent.scrollBy({
+                        top: scrollAmount,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+
+        // 切换语言下拉菜单
+        function toggleLanguageDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 选择语言
+        function changeLanguage(lang, event) {
+            event.stopPropagation();
+            
+            // 更新选中状态
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.closest('.lang-option').classList.add('active');
+            
+            // 保存语言设置
+            localStorage.setItem('touchscreen_lang', lang);
+            
+            // 关闭下拉菜单
+            document.getElementById('langDropdown').classList.remove('show');
+            
+            console.log('切换语言到:', lang);
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            const langSwitcher = document.querySelector('.lang-switcher');
+            if (langSwitcher && !langSwitcher.contains(e.target)) {
+                document.getElementById('langDropdown').classList.remove('show');
+            }
+        });
+
+        // 登出功能 - 显示弹窗
+        function logout() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('show');
+        }
+
+        // 关闭退出弹窗
+        function closeLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('show');
+        }
+
+        // 确认退出
+        function confirmLogout() {
+            localStorage.removeItem('touchscreen_user');
+            sessionStorage.removeItem('touchscreen_user');
+            window.location.href = 'login.html';
+        }
+
+        // 切换页面
+        function switchPage(page) {
+            if (page === 'home') {
+                window.location.href = 'home.html';
+            } else if (page === 'data') {
+                window.location.href = 'data.html';
+            } else if (page === 'control') {
+                window.location.href = 'control.html';
+            } else if (page === 'alarm') {
+                window.location.href = 'alarm.html';
+            } else if (page === 'history') {
+                // 当前页面，不跳转
+                return;
+            } else if (page === 'log') {
+                window.location.href = 'logs.html';
+            } else if (page === 'settings') {
+                window.location.href = 'settings.html';
+            }
+        }
+
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('headerTime').textContent = timeString;
+        }
+
+        // 禁用Chart.js动画
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.animation = false;
+            Chart.defaults.animations.active = false;
+            Chart.defaults.animations.resize = false;
+            Chart.defaults.transitions.active.animation.duration = 0;
+            Chart.defaults.transitions.resize.animation.duration = 0;
+            Chart.defaults.transitions.show.animations = false;
+            Chart.defaults.transitions.hide.animations = false;
+            
+            // 覆盖Chart构造函数以强制禁用动画
+            const RealChart = Chart;
+            window.Chart = function(ctx, config) {
+                if (!config.options) config.options = {};
+                if (!config.options.animation) config.options.animation = {};
+                if (!config.options.animations) config.options.animations = {};
+                
+                config.options.animation = false;
+                config.options.animations = false;
+                config.options.responsive = true;
+                config.options.maintainAspectRatio = false;
+                
+                // 确保所有数据集都没有动画
+                if (config.data && config.data.datasets) {
+                    config.data.datasets.forEach(dataset => {
+                        dataset.animation = false;
+                    });
+                }
+                
+                const chart = new RealChart(ctx, config);
+                
+                // 覆盖update方法以禁用动画
+                const originalUpdate = chart.update.bind(chart);
+                chart.update = function(mode) {
+                    return originalUpdate('none');
+                };
+                
+                return chart;
+            };
+            
+            // 保留其他Chart属性
+            Object.keys(RealChart).forEach(key => {
+                if (!window.Chart[key]) {
+                    window.Chart[key] = RealChart[key];
+                }
+            });
+        }
+
+        // 生成历史数据
+        function generateHistoryDailyData(timeRange, endDate) {
+            const labels = [];
+            const powerData = [];
+            const socData = [];
+            
+            // 生成24小时的时间点数据
+            for (let hour = 0; hour < 24; hour++) {
+                labels.push(`${hour.toString().padStart(2, '0')}:00`);
+                
+                // 模拟功率数据 (-50 到 50 kW)，根据时间段调整
+                let basePower = 0;
+                if (hour >= 8 && hour <= 18) {
+                    // 白天放电
+                    basePower = -20 - Math.random() * 30;
+                } else if (hour >= 23 || hour <= 6) {
+                    // 夜间充电
+                    basePower = 15 + Math.random() * 25;
+                } else {
+                    // 过渡时段
+                    basePower = (Math.random() - 0.5) * 20;
+                }
+                powerData.push(basePower);
+                
+                // 模拟SOC数据，根据充放电调整
+                let socValue;
+                if (hour === 0) {
+                    socValue = 45;
+                } else {
+                    const prevSoc = socData[hour - 1] || 45;
+                    const powerImpact = powerData[hour - 1] / 10; // 功率对SOC的影响
+                    socValue = Math.max(10, Math.min(95, prevSoc + powerImpact + (Math.random() - 0.5) * 2));
+                }
+                socData.push(socValue);
+            }
+            
+            return { labels, powerData, socData };
+        }
+
+        // 初始化功率SOC图表
+        function initPowerSocChart() {
+            const powerSocCtx = document.getElementById('powerSocChart');
+            if (powerSocCtx) {
+                const { labels, powerData, socData } = generateHistoryDailyData('30d', new Date().toISOString().split('T')[0]);
+                
+                // 销毁旧图表（如果存在）
+                if (window.powerSocChartInstance) {
+                    window.powerSocChartInstance.destroy();
+                }
+                
+                const chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '功率 (kW)',
+                            data: powerData,
+                            borderColor: '#00d4ff',
+                            backgroundColor: 'rgba(0, 212, 255, 0.3)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'y',
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }, {
+                            label: 'SOC (%)',
+                            data: socData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false,
+                            yAxisID: 'y1',
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 0
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(0, 150, 255, 0.3)',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: '功率 (kW)',
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'SOC (%)',
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                },
+                                grid: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                // 创建图表实例（动画已在构造函数中禁用）
+                window.powerSocChartInstance = new Chart(powerSocCtx.getContext('2d'), chartConfig);
+            }
+        }
+
+        // 更新历史图表
+        function updateHistoryChart() {
+            const endDate = document.getElementById('historyEndDatePicker').value;
+            initPowerSocChart();
+        }
+
+        // 生成收益数据
+        function generateRevenueData(timeType) {
+            const labels = [];
+            const chargingData = [];
+            const dischargingData = [];
+            const revenueData = [];
+            
+            if (timeType === 'day') {
+                // 生成24小时数据
+                for (let hour = 0; hour < 24; hour++) {
+                    labels.push(`${hour.toString().padStart(2, '0')}:00`);
+                    
+                    // 模拟充电量 (夜间充电多)
+                    const charging = hour >= 23 || hour <= 6 ? 20 + Math.random() * 15 : Math.random() * 10;
+                    chargingData.push(charging.toFixed(1));
+                    
+                    // 模拟放电量 (白天放电多)
+                    const discharging = hour >= 8 && hour <= 18 ? 15 + Math.random() * 20 : Math.random() * 8;
+                    dischargingData.push(discharging.toFixed(1));
+                    
+                    // 计算收益 (峰谷电价差)
+                    const revenue = discharging * 1.2 - charging * 0.5;
+                    revenueData.push(revenue.toFixed(2));
+                }
+            } else if (timeType === 'month') {
+                // 生成30天数据
+                for (let day = 1; day <= 30; day++) {
+                    labels.push(`${day}日`);
+                    
+                    const charging = 200 + Math.random() * 100;
+                    chargingData.push(charging.toFixed(1));
+                    
+                    const discharging = 180 + Math.random() * 120;
+                    dischargingData.push(discharging.toFixed(1));
+                    
+                    const revenue = discharging * 1.2 - charging * 0.5;
+                    revenueData.push(revenue.toFixed(2));
+                }
+            } else if (timeType === 'year') {
+                // 生成12个月数据
+                const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                months.forEach(month => {
+                    labels.push(month);
+                    
+                    const charging = 6000 + Math.random() * 2000;
+                    chargingData.push(charging.toFixed(1));
+                    
+                    const discharging = 5500 + Math.random() * 2500;
+                    dischargingData.push(discharging.toFixed(1));
+                    
+                    const revenue = discharging * 1.2 - charging * 0.5;
+                    revenueData.push(revenue.toFixed(2));
+                });
+            } else {
+                // 合计数据
+                labels.push('合计');
+                chargingData.push(85000);
+                dischargingData.push(80000);
+                revenueData.push(75000);
+            }
+            
+            return { labels, chargingData, dischargingData, revenueData };
+        }
+
+        // 初始化收益分析
+        function initRevenueAnalysisChart() {
+            const ctx = document.getElementById('revenueAnalysisChart');
+            if (!ctx) return;
+            
+            const timeType = document.getElementById('revenueTimeType')?.value || 'day';
+            const { labels, chargingData, dischargingData, revenueData } = generateRevenueData(timeType);
+            
+            // 销毁旧图表（如果存在）
+            if (window.revenueChartInstance) {
+                window.revenueChartInstance.destroy();
+            }
+            
+            // 创建新图表，完全禁用动画
+            const revenueConfig = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '充电量 (kWh)',
+                        data: chargingData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: '放电量 (kWh)',
+                        data: dischargingData,
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: '净收益 (¥)',
+                        data: revenueData,
+                        type: 'line',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderColor: '#f59e0b',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: false,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(0, 150, 255, 0.3)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                drawOnChartArea: false,
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '电量 (kWh)',
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '收益 (¥)',
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // 创建图表实例（动画已在构造函数中禁用）
+            window.revenueChartInstance = new Chart(ctx.getContext('2d'), revenueConfig);
+        }
+
+        // 更新收益分析图表
+        function updateRevenueAnalysisChart() {
+            const timeType = document.getElementById('revenueTimeType').value;
+            const datePickerWrapper = document.getElementById('revenueDatePickerWrapper');
+            const datePicker = document.getElementById('revenueDatePicker');
+            const monthPicker = document.getElementById('revenueMonthPicker');
+            const yearPicker = document.getElementById('revenueYearPicker');
+            
+            // 隐藏所有选择器
+            datePickerWrapper.style.display = 'none';
+            monthPicker.style.display = 'none';
+            yearPicker.style.display = 'none';
+            
+            // 根据时间类型显示对应的选择器并设置默认值
+            const today = new Date();
+            switch(timeType) {
+                case 'day':
+                    datePickerWrapper.style.display = 'inline-block';
+                    // 设置默认为今日
+                    if (!datePicker.value) {
+                        datePicker.value = today.toISOString().split('T')[0];
+                    }
+                    break;
+                case 'month':
+                    monthPicker.style.display = 'block';
+                    // 设置默认为本月
+                    if (!monthPicker.value) {
+                        const year = today.getFullYear();
+                        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                        monthPicker.value = `${year}-${month}`;
+                    }
+                    break;
+                case 'year':
+                    yearPicker.style.display = 'block';
+                    break;
+                case 'total':
+                    // 合计不需要额外选择器
+                    break;
+            }
+            
+            initRevenueAnalysisChart();
+        }
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // 设置默认日期为今天
+            const today = new Date();
+            const datePicker = document.getElementById('historyEndDatePicker');
+            const revenueDatePicker = document.getElementById('revenueDatePicker');
+            const revenueMonthPicker = document.getElementById('revenueMonthPicker');
+            
+            if (datePicker) {
+                datePicker.value = today.toISOString().split('T')[0];
+            }
+            
+            if (revenueDatePicker) {
+                revenueDatePicker.value = today.toISOString().split('T')[0];
+            }
+            
+            if (revenueMonthPicker) {
+                const year = today.getFullYear();
+                const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                revenueMonthPicker.value = `${year}-${month}`;
+            }
+            
+            // 初始化图表
+            initPowerSocChart();
+            initRevenueAnalysisChart();
+        });
+    </script>
+    
+    <!-- 自定义日期选择弹窗 -->
+    <div id="customCalendarPopup" class="custom-calendar-popup">
+        <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="calendar-month-year">
+                <select id="calendarMonth" onchange="updateCalendar()">
+                    <option value="0">一月</option>
+                    <option value="1">二月</option>
+                    <option value="2">三月</option>
+                    <option value="3">四月</option>
+                    <option value="4">五月</option>
+                    <option value="5">六月</option>
+                    <option value="6">七月</option>
+                    <option value="7">八月</option>
+                    <option value="8">九月</option>
+                    <option value="9">十月</option>
+                    <option value="10">十一月</option>
+                    <option value="11">十二月</option>
+                </select>
+                <select id="calendarYear" onchange="updateCalendar()">
+                    <!-- 年份选项将由JS动态生成 -->
+                </select>
+            </div>
+            <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="calendar-weekdays">
+            <div class="calendar-weekday">日</div>
+            <div class="calendar-weekday">一</div>
+            <div class="calendar-weekday">二</div>
+            <div class="calendar-weekday">三</div>
+            <div class="calendar-weekday">四</div>
+            <div class="calendar-weekday">五</div>
+            <div class="calendar-weekday">六</div>
+        </div>
+        <div class="calendar-days" id="calendarDays">
+            <!-- 日期将由JS动态生成 -->
+        </div>
+        <div class="calendar-footer">
+            <button class="calendar-btn secondary" onclick="setToday()">今天</button>
+            <button class="calendar-btn secondary" onclick="closeCustomCalendar()">取消</button>
+        </div>
+    </div>
+    
+    <script>
+        // 自定义日历相关变量
+        let currentCalendarInput = null;
+        let selectedDate = new Date();
+        let displayMonth = new Date();
+        
+        // 显示自定义日历
+        function showCustomCalendar(inputId) {
+            currentCalendarInput = document.getElementById(inputId);
+            const popup = document.getElementById('customCalendarPopup');
+            const inputRect = currentCalendarInput.getBoundingClientRect();
+            
+            // 获取当前输入框的值，如果有的话
+            const currentValue = currentCalendarInput.value;
+            if (currentValue) {
+                selectedDate = new Date(currentValue);
+                displayMonth = new Date(currentValue);
+            } else {
+                selectedDate = new Date();
+                displayMonth = new Date();
+            }
+            
+            // 初始化年份选项
+            const yearSelect = document.getElementById('calendarYear');
+            yearSelect.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + '年';
+                if (year === displayMonth.getFullYear()) {
+                    option.selected = true;
+                }
+                yearSelect.appendChild(option);
+            }
+            
+            // 设置月份
+            document.getElementById('calendarMonth').value = displayMonth.getMonth();
+            
+            // 显示遮罩层
+            let overlay = document.getElementById('calendarOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'calendarOverlay';
+                overlay.className = 'calendar-overlay';
+                document.body.appendChild(overlay);
+                overlay.onclick = closeCustomCalendar;
+            }
+            overlay.classList.add('show');
+            
+            // 居中显示弹窗
+            popup.classList.add('show');
+            
+            updateCalendar();
+        }
+        
+        // 关闭自定义日历
+        function closeCustomCalendar() {
+            document.getElementById('customCalendarPopup').classList.remove('show');
+            const overlay = document.getElementById('calendarOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+        }
+        
+        // 更新日历显示
+        function updateCalendar() {
+            const month = parseInt(document.getElementById('calendarMonth').value);
+            const year = parseInt(document.getElementById('calendarYear').value);
+            displayMonth = new Date(year, month, 1);
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+            
+            const daysContainer = document.getElementById('calendarDays');
+            daysContainer.innerHTML = '';
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // 添加上月的日期
+            const firstDayOfWeek = firstDay.getDay();
+            for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+                const day = prevLastDay.getDate() - i;
+                const dayDiv = createDayElement(day, true, new Date(year, month - 1, day));
+                daysContainer.appendChild(dayDiv);
+            }
+            
+            // 添加本月的日期
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const currentDate = new Date(year, month, day);
+                const dayDiv = createDayElement(day, false, currentDate);
+                
+                // 标记今天
+                if (currentDate.getTime() === today.getTime()) {
+                    dayDiv.classList.add('today');
+                }
+                
+                // 标记选中的日期
+                if (selectedDate && 
+                    currentDate.getDate() === selectedDate.getDate() &&
+                    currentDate.getMonth() === selectedDate.getMonth() &&
+                    currentDate.getFullYear() === selectedDate.getFullYear()) {
+                    dayDiv.classList.add('selected');
+                }
+                
+                daysContainer.appendChild(dayDiv);
+            }
+            
+            // 添加下月的日期
+            const remainingDays = 42 - daysContainer.children.length;
+            for (let day = 1; day <= remainingDays; day++) {
+                const dayDiv = createDayElement(day, true, new Date(year, month + 1, day));
+                daysContainer.appendChild(dayDiv);
+            }
+        }
+        
+        // 创建日期元素
+        function createDayElement(day, isOtherMonth, date) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.textContent = day;
+            
+            if (isOtherMonth) {
+                dayDiv.classList.add('other-month');
+            }
+            
+            dayDiv.onclick = function() {
+                selectedDate = date;
+                confirmDate();
+            };
+            
+            return dayDiv;
+        }
+        
+        // 切换月份
+        function changeMonth(direction) {
+            const month = parseInt(document.getElementById('calendarMonth').value);
+            const year = parseInt(document.getElementById('calendarYear').value);
+            
+            let newMonth = month + direction;
+            let newYear = year;
+            
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            
+            document.getElementById('calendarMonth').value = newMonth;
+            document.getElementById('calendarYear').value = newYear;
+            
+            updateCalendar();
+        }
+        
+        // 设置为今天
+        function setToday() {
+            selectedDate = new Date();
+            displayMonth = new Date();
+            document.getElementById('calendarMonth').value = displayMonth.getMonth();
+            document.getElementById('calendarYear').value = displayMonth.getFullYear();
+            confirmDate();
+        }
+        
+        // 确认选择
+        function confirmDate() {
+            if (currentCalendarInput && selectedDate) {
+                const year = selectedDate.getFullYear();
+                const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = selectedDate.getDate().toString().padStart(2, '0');
+                currentCalendarInput.value = `${year}-${month}-${day}`;
+                
+                // 触发更新事件
+                if (currentCalendarInput.id === 'historyEndDatePicker') {
+                    updateHistoryChart();
+                } else if (currentCalendarInput.id === 'revenueDatePicker') {
+                    updateRevenueAnalysisChart();
+                }
+            }
+            closeCustomCalendar();
+        }
+        
+        // 点击外部关闭日历
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('customCalendarPopup');
+            const isClickInside = popup.contains(e.target) || 
+                                  e.target.classList.contains('calendar-icon') ||
+                                  (currentCalendarInput && currentCalendarInput.contains(e.target));
+            
+            if (!isClickInside && popup.classList.contains('show')) {
+                closeCustomCalendar();
+            }
+        });
+    </script>
+</body>
+</html>

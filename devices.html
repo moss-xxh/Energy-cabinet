@@ -808,6 +808,29 @@
             background: #0f172a;
         }
 
+        /* 动画效果 */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -894,7 +917,31 @@
     <main class="main-content" id="mainContent">
         <!-- 页面标题和视图切换 -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 class="page-title" style="font-size: 24px; font-weight: 600; color: var(--text-primary); margin: 0;">设备管理</h1>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <!-- 统一的站点选择器（两个视图共用） -->
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <label style="font-size: 14px; font-weight: 500; color: #333; white-space: nowrap;">选择站点：</label>
+                    <select id="unifiedSiteSelect" onchange="handleSiteChange()" style="padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; cursor: pointer; min-width: 200px;">
+                        <option value="">全部站点</option>
+                        <option value="site1">科技园区站</option>
+                        <option value="site2">工业园区站</option>
+                        <option value="site3">商业中心站</option>
+                        <option value="site4">物流园区站</option>
+                        <option value="site5">研发中心站</option>
+                        <option value="site6">数据中心站</option>
+                        <option value="sz">深圳储能站 (8台 • 2.5MWh)</option>
+                    <option value="gz">广州储能站 (12台 • 3.75MWh)</option>
+                    <option value="sh">上海储能站 (10台 • 3.1MWh)</option>
+                    <option value="bj">北京储能站 (15台 • 4.7MWh)</option>
+                    <option value="cd">成都储能站 (6台 • 1.9MWh)</option>
+                    <option value="hz">杭州储能站 (9台 • 2.8MWh)</option>
+                    <option value="wh">武汉储能站 (11台 • 3.4MWh)</option>
+                    <option value="xa">西安储能站 (8台 • 2.5MWh)</option>
+                    <option value="nj">南京储能站 (7台 • 2.2MWh)</option>
+                    <option value="cq">重庆储能站 (13台 • 4.1MWh)</option>
+                    </select>
+                </div>
+            </div>
             
             <!-- 视图切换按钮 -->
             <div class="tab-switcher" id="viewSwitcher">
@@ -908,25 +955,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- 站点选择区域（仅在3D视图显示） -->
-        <div id="siteSelector" style="display: none; margin-bottom: 20px; max-width: 300px;">
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <label style="font-size: 14px; font-weight: 500; color: #333; white-space: nowrap;">选择站点：</label>
-                <select id="siteSelect" onchange="changeSite()" style="flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; cursor: pointer;">
-                    <option value="sz">深圳储能站 (8台 • 2.5MWh)</option>
-                    <option value="gz">广州储能站 (12台 • 3.75MWh)</option>
-                    <option value="sh">上海储能站 (10台 • 3.1MWh)</option>
-                    <option value="bj">北京储能站 (15台 • 4.7MWh)</option>
-                    <option value="cd">成都储能站 (6台 • 1.9MWh)</option>
-                    <option value="hz">杭州储能站 (9台 • 2.8MWh)</option>
-                    <option value="wh">武汉储能站 (11台 • 3.4MWh)</option>
-                    <option value="xa">西安储能站 (8台 • 2.5MWh)</option>
-                    <option value="nj">南京储能站 (7台 • 2.2MWh)</option>
-                    <option value="cq">重庆储能站 (13台 • 4.1MWh)</option>
-                </select>
-            </div>
-        </div>
         
         <!-- 表格视图内容容器 -->
         <div id="content-container">
@@ -937,27 +965,6 @@
                     <div class="input-wrapper">
                         <i class="fas fa-search input-icon"></i>
                         <input type="text" id="searchInput" class="form-input" placeholder="搜索设备..." style="width: 250px; height: 40px; padding-left: 40px;">
-                    </div>
-                    <div style="position: relative; width: 180px;">
-                        <div class="custom-select-wrapper" style="position: relative;">
-                            <input type="text" id="siteFilterInput" class="form-input" placeholder="选择或搜索站点" style="width: 100%; height: 40px; padding-left: 12px; padding-right: 30px; cursor: pointer;" readonly>
-                            <input type="hidden" id="siteFilter" value="">
-                            <i class="fas fa-chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 12px;"></i>
-                            <div id="siteDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 4px; max-height: 240px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                                <div style="padding: 8px; border-bottom: 1px solid var(--border-color);">
-                                    <input type="text" id="siteSearchInput" class="form-input" placeholder="搜索站点..." style="width: 100%; height: 32px; font-size: 13px;" onclick="event.stopPropagation();">
-                                </div>
-                                <div id="siteOptionsList">
-                                    <div class="site-option" data-value="" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">全部站点</div>
-                                    <div class="site-option" data-value="site1" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">科技园区站</div>
-                                    <div class="site-option" data-value="site2" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">工业园区站</div>
-                                    <div class="site-option" data-value="site3" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">商业中心站</div>
-                                    <div class="site-option" data-value="site4" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">物流园区站</div>
-                                    <div class="site-option" data-value="site5" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">研发中心站</div>
-                                    <div class="site-option" data-value="site6" style="padding: 10px 12px; cursor: pointer; font-size: 14px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">数据中心站</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <select id="modeFilter" class="form-input" style="width: 150px; height: 40px; padding-left: 12px;">
                         <option value="">全部模式</option>
@@ -1002,6 +1009,9 @@
                 <table id="deviceTable" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--text-secondary); vertical-align: middle; width: 50px;">
+                                <input type="checkbox" id="selectAllDevices" onchange="toggleSelectAll()" style="width: 16px; height: 16px; cursor: pointer;">
+                            </th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">设备编码</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">名称</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">所属站点</th>
@@ -1478,6 +1488,9 @@
         // 渲染表格
         function renderTable() {
             const tbody = document.getElementById('deviceTableBody');
+            if (!tbody) {
+                return;
+            }
             tbody.innerHTML = '';
 
             const start = (currentPage - 1) * pageSize;
@@ -1487,8 +1500,16 @@
             pageDevices.forEach(device => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid var(--border-color)';
+                tr.style.cursor = 'pointer';
+                tr.style.transition = 'background-color 0.2s ease';
+                tr.setAttribute('onclick', `viewDetails(${device.id})`);
+                tr.setAttribute('onmouseover', 'this.style.backgroundColor = "var(--bg-secondary)"');
+                tr.setAttribute('onmouseout', 'this.style.backgroundColor = ""');
                 
                 tr.innerHTML = `
+                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${device.name}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: pointer;">
+                    </td>
                     <td style="padding: 12px;">${device.code}</td>
                     <td style="padding: 12px;">${device.name}</td>
                     <td style="padding: 12px;">${device.siteName || ''}</td>
@@ -1501,9 +1522,9 @@
                     <td style="padding: 12px; text-align: center;">
                         ${getStatusBadge(device.status)}
                     </td>
-                    <td style="padding: 12px; text-align: center;">
+                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
                         <button class="btn" onclick="viewDetails(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="查看详情">
-                            <i class="far fa-eye" style="font-size: 16px; color: var(--text-secondary);"></i>
+                            <i class="fas fa-arrow-right" style="font-size: 16px; color: var(--text-secondary);"></i>
                         </button>
                         <button class="btn" onclick="editDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="编辑">
                             <i class="far fa-edit" style="font-size: 16px; color: var(--text-secondary);"></i>
@@ -1773,53 +1794,125 @@
             }, 300);
         }
 
+        // 存储选中的设备
+        let selectedDevices = [];
+
+        // 切换全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllDevices');
+            const checkboxes = document.querySelectorAll('.device-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateSelectedDevices();
+        }
+
+        // 更新选中的设备列表
+        function updateSelectedDevices() {
+            const checkboxes = document.querySelectorAll('.device-checkbox:checked');
+            selectedDevices = Array.from(checkboxes).map(checkbox => ({
+                id: checkbox.dataset.deviceId,
+                code: checkbox.dataset.deviceCode,
+                name: checkbox.dataset.deviceName
+            }));
+            
+            // 更新全选框状态
+            const selectAll = document.getElementById('selectAllDevices');
+            const allCheckboxes = document.querySelectorAll('.device-checkbox');
+            selectAll.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+            selectAll.indeterminate = checkboxes.length > 0 && checkboxes.length < allCheckboxes.length;
+        }
+
         // 显示OTA升级弹窗
         function showOTAUpgrade() {
+            // 检查是否选择了设备
+            if (selectedDevices.length === 0) {
+                showNotification('请先选择要升级的设备', 'warning');
+                return;
+            }
+            
+            // 显示文件选择弹窗
             const modal = document.createElement('div');
             modal.className = 'modal show';
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
             
             modal.innerHTML = `
-                <div class="modal-content" style="background: white; border-radius: 12px; width: 500px; max-width: 90vw; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-                    <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级</h3>
-                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
-                            <span style="transform: rotate(45deg);">+</span>
+                <div class="modal-content" style="background: white; border-radius: 16px; width: 95vw; max-width: 1400px; height: 95vh; max-height: 95vh; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column;">
+                    <div class="modal-header" style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <h3 style="font-size: 24px; font-weight: 600; color: #1e293b; margin: 0;">OTA固件升级</h3>
+                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 20px;">
-                        <form id="otaUpgradeForm" onsubmit="handleOTAUpgrade(event)">
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
-                                    选择升级文件 <span style="color: #ef4444;">*</span>
-                                </label>
-                                <input type="file" name="otaFile" class="form-input" accept=".bin,.hex,.img" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                                <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">支持的文件格式：.bin, .hex, .img</p>
+                    <div class="modal-body" style="padding: 32px; flex: 1; overflow-y: auto;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                            <!-- 左侧：版本信息 -->
+                            <div>
+                                <div class="form-group" style="margin-bottom: 24px;">
+                                    <label class="form-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 12px; font-size: 16px;">
+                                        云端最新版本
+                                    </label>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 24px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <p style="font-size: 24px; font-weight: 600; color: #1e293b; margin: 0;">v2.5.0</p>
+                                                <p style="font-size: 14px; color: #64748b; margin: 4px 0 0 0;">发布时间：2024-01-15</p>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <span style="background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500;">最新版本</span>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e0e7ff;">
+                                            <p style="font-size: 15px; color: #374151; font-weight: 500; margin-bottom: 12px;">更新内容：</p>
+                                            <ul style="font-size: 14px; color: #6b7280; margin: 0; padding-left: 24px; line-height: 1.8;">
+                                                <li>优化充放电控制算法，提升效率5%</li>
+                                                <li>修复高温环境下的电池保护问题</li>
+                                                <li>新增远程诊断功能</li>
+                                                <li>改进通信稳定性</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; display: flex; gap: 12px;">
+                                    <i class="fas fa-info-circle" style="color: #f59e0b; margin-top: 2px; font-size: 16px;"></i>
+                                    <div style="flex: 1;">
+                                        <p style="font-size: 14px; color: #92400e; margin: 0;">升级过程中设备将自动重启，预计需要3-5分钟。请确保设备处于待机状态。</p>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
-                                    选择设备 <span style="color: #ef4444;">*</span>
-                                </label>
-                                <select name="deviceIds" class="form-select" multiple required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-height: 120px;">
-                                    ${devices.map(device => `
-                                        <option value="${device.id}">${device.code} - ${device.name}</option>
-                                    `).join('')}
-                                </select>
-                                <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">按住 Ctrl/Cmd 键可多选设备</p>
+                            <!-- 右侧：设备列表 -->
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 12px; font-size: 16px;">
+                                        已选择的设备 <span style="background: #e0e7ff; color: #3730a3; padding: 4px 12px; border-radius: 6px; font-size: 14px; margin-left: 8px;">${selectedDevices.length} 个</span>
+                                    </label>
+                                    <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                                            ${selectedDevices.map(device => `
+                                                <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'" onmouseout="this.style.boxShadow='none'">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="flex: 1;">
+                                                            <p style="font-size: 15px; color: #1e293b; font-weight: 500; margin: 0;">${device.code}</p>
+                                                            <p style="font-size: 14px; color: #6b7280; margin: 4px 0 0 0;">${device.name}</p>
+                                                            <p style="font-size: 13px; color: #9ca3af; margin: 2px 0 0 0;">当前版本：v2.4.8</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label class="form-label" style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px; font-size: 14px;">
-                                    版本说明
-                                </label>
-                                <textarea name="versionNote" class="form-input" rows="3" placeholder="请输入版本更新说明..." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
-                        <button type="button" class="btn" onclick="this.closest('.modal').remove()" style="padding: 8px 16px;">取消</button>
-                        <button type="submit" form="otaUpgradeForm" class="btn btn-primary" style="padding: 8px 16px; background: #10b981;">开始升级</button>
+                    <div class="modal-footer" style="padding: 24px 32px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-shrink: 0; background: #f8fafc;">
+                        <button type="button" class="btn" onclick="this.closest('.modal').remove()" style="padding: 8px 16px; height: 36px; font-size: 14px; width: auto !important; min-width: 80px; max-width: 120px;">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="startOTAUpgrade()" style="padding: 8px 16px; height: 36px; font-size: 14px; background: #10b981; width: auto !important; min-width: 100px; max-width: 150px;">
+                            <i class="fas fa-cloud-upload-alt" style="margin-right: 6px; font-size: 14px;"></i>
+                            开始升级
+                        </button>
                     </div>
                 </div>
             `;
@@ -1827,87 +1920,636 @@
             document.body.appendChild(modal);
         }
 
-        // 处理OTA升级
-        function handleOTAUpgrade(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const selectedDevices = Array.from(event.target.deviceIds.selectedOptions).map(opt => opt.text);
+        // 显示OTA确认弹窗
+        function showOTAConfirmModal() {
+            const confirmModal = document.createElement('div');
+            confirmModal.className = 'modal show';
+            confirmModal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
             
-            if (selectedDevices.length === 0) {
-                alert('请至少选择一个设备');
-                return;
-            }
-            
-            // 关闭OTA升级弹窗
-            event.target.closest('.modal').remove();
-            
-            // 显示升级进度弹窗
-            const progressModal = document.createElement('div');
-            progressModal.className = 'modal show';
-            progressModal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
-            
-            progressModal.innerHTML = `
+            confirmModal.innerHTML = `
                 <div class="modal-content" style="background: white; border-radius: 12px; width: 500px; max-width: 90vw; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-                    <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0;">
-                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级进度</h3>
+                    <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">确认升级</h3>
+                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                            <span style="transform: rotate(45deg);">+</span>
+                        </button>
                     </div>
                     <div class="modal-body" style="padding: 20px;">
-                        <div style="margin-bottom: 16px;">
-                            <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">正在升级 ${selectedDevices.length} 个设备...</p>
-                            <div style="background: #f3f4f6; border-radius: 8px; height: 8px; overflow: hidden;">
-                                <div id="otaProgress" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
-                            </div>
-                            <p id="otaProgressText" style="font-size: 12px; color: #64748b; margin-top: 8px; text-align: center;">0%</p>
-                        </div>
-                        <div id="otaDeviceList" style="max-height: 200px; overflow-y: auto;">
-                            ${selectedDevices.map(device => `
-                                <div class="device-upgrade-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; background: #f9fafb;">
-                                    <span style="font-size: 14px; color: #374151;">${device}</span>
-                                    <span class="upgrade-status" style="font-size: 12px; color: #6b7280;">等待中...</span>
+                        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                            <div style="display: flex; gap: 12px;">
+                                <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 20px; margin-top: 2px;"></i>
+                                <div>
+                                    <p style="font-size: 14px; color: #92400e; font-weight: 500; margin-bottom: 8px;">请确认以下信息：</p>
+                                    <ul style="font-size: 13px; color: #92400e; margin: 0; padding-left: 20px;">
+                                        <li>目标版本：v2.5.0</li>
+                                        <li>升级包大小：约 15.6 MB</li>
+                                        <li>设备数量：${selectedDevices.length} 个</li>
+                                        <li>升级过程中设备将重启，请确保设备处于安全状态</li>
+                                    </ul>
                                 </div>
-                            `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <p style="font-size: 14px; color: #374151; font-weight: 500; margin-bottom: 8px;">将升级以下设备：</p>
+                            <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; max-height: 150px; overflow-y: auto;">
+                                ${selectedDevices.map(device => `
+                                    <div style="padding: 6px 0; font-size: 13px; color: #6b7280;">
+                                        <i class="fas fa-check-circle" style="color: #10b981; margin-right: 8px;"></i>
+                                        ${device.code} - ${device.name}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p style="font-size: 14px; color: #374151; font-weight: 500; margin-bottom: 8px;">升级说明：</p>
+                            <div style="font-size: 13px; color: #6b7280; background: #f9fafb; padding: 12px; border-radius: 6px;">
+                                <p style="margin: 0 0 8px 0;">本次升级将从云端自动下载最新固件包，升级过程包括：</p>
+                                <ol style="margin: 0; padding-left: 20px;">
+                                    <li>连接云端服务器验证设备信息</li>
+                                    <li>下载适配的固件包</li>
+                                    <li>备份当前配置</li>
+                                    <li>执行固件升级</li>
+                                    <li>重启并验证升级结果</li>
+                                </ol>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
-                        <button type="button" class="btn btn-primary" onclick="this.closest('.modal').remove()" style="padding: 8px 16px; display: none;" id="otaCompleteBtn">完成</button>
+                    <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="button" class="btn" onclick="this.closest('.modal').remove()" style="padding: 8px 16px;">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="startOTAUpgrade()" style="padding: 8px 16px; background: #10b981;">确认升级</button>
                     </div>
                 </div>
             `;
             
-            document.body.appendChild(progressModal);
+            document.body.appendChild(confirmModal);
+        }
+
+        // 检查最新版本
+        function checkLatestVersion() {
+            // 显示加载提示
+            const checkBtn = event.target.closest('button');
+            const originalContent = checkBtn.innerHTML;
+            checkBtn.disabled = true;
+            checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>检查中...';
             
-            // 模拟升级进度
-            let progress = 0;
-            const progressBar = document.getElementById('otaProgress');
-            const progressText = document.getElementById('otaProgressText');
-            const statusElements = progressModal.querySelectorAll('.upgrade-status');
-            const completeBtn = document.getElementById('otaCompleteBtn');
+            // 模拟检查版本
+            setTimeout(() => {
+                checkBtn.disabled = false;
+                checkBtn.innerHTML = originalContent;
+                
+                // 显示成功提示
+                showNotification('已是最新版本 v2.5.0', 'success');
+            }, 2000);
+        }
+        
+        // 开始OTA升级
+        function startOTAUpgrade() {
+            // 关闭确认弹窗
+            document.querySelector('.modal').remove();
             
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 100) progress = 100;
-                
-                progressBar.style.width = progress + '%';
-                progressText.textContent = Math.floor(progress) + '%';
-                
-                // 更新设备状态
-                statusElements.forEach((el, index) => {
-                    const deviceProgress = progress - (index * 20);
-                    if (deviceProgress >= 100) {
-                        el.textContent = '升级完成';
-                        el.style.color = '#10b981';
-                    } else if (deviceProgress > 0) {
-                        el.textContent = '升级中...';
-                        el.style.color = '#3b82f6';
-                    }
-                });
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    progressText.textContent = '升级完成！';
-                    completeBtn.style.display = 'block';
+            // 显示右下角进度小弹窗
+            showOTAProgressToast();
+            
+            // 开始升级流程
+            startUpgradeProcess();
+        }
+
+        // 显示右下角进度小弹窗
+        function showOTAProgressToast() {
+            const toast = document.createElement('div');
+            toast.id = 'otaProgressToast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                padding: 16px;
+                width: 320px;
+                z-index: 1000;
+                transition: all 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级进度</h4>
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <p id="upgradePhase" style="font-size: 12px; color: #3b82f6; margin: 0 0 4px 0;">
+                        <i class="fas fa-cloud-download-alt" style="margin-right: 4px;"></i>
+                        正在从云端下载固件...
+                    </p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 12px; color: #6b7280;">升级进度 <span id="upgradingCount">0</span>/${selectedDevices.length} 个设备</span>
+                        <span id="progressPercent" style="font-size: 12px; color: #6b7280;">0%</span>
+                    </div>
+                    <div style="background: #f3f4f6; border-radius: 4px; height: 6px; overflow: hidden;">
+                        <div id="toastProgress" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; font-size: 12px; color: #6b7280;">
+                    <span>成功: <span id="successCount" style="color: #10b981; font-weight: 500;">0</span></span>
+                    <span>失败: <span id="failCount" style="color: #ef4444; font-weight: 500;">0</span></span>
+                    <span>剩余时间: <span id="remainingTime">计算中...</span></span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+        }
+
+        // OTA升级详情状态
+        let otaUpgradeDetails = [];
+
+        // 开始升级流程
+        function startUpgradeProcess() {
+            // 初始化升级详情
+            otaUpgradeDetails = selectedDevices.map(device => ({
+                ...device,
+                status: 'waiting',
+                progress: 0,
+                message: '等待升级',
+                startTime: null,
+                endTime: null
+            }));
+            
+            let currentIndex = 0;
+            let successCount = 0;
+            let failCount = 0;
+            let downloadComplete = false;
+            
+            // 先模拟云端下载
+            const phaseElement = document.getElementById('upgradePhase');
+            let downloadProgress = 0;
+            const downloadInterval = setInterval(() => {
+                downloadProgress += Math.random() * 15;
+                if (downloadProgress >= 100) {
+                    downloadProgress = 100;
+                    clearInterval(downloadInterval);
+                    downloadComplete = true;
+                    
+                    // 更新阶段显示
+                    phaseElement.innerHTML = '<i class="fas fa-upload" style="margin-right: 4px;"></i>正在升级设备...';
+                    
+                    // 开始设备升级
+                    startDeviceUpgrade();
+                } else {
+                    document.getElementById('toastProgress').style.width = (downloadProgress * 0.3) + '%';
+                    document.getElementById('progressPercent').textContent = Math.floor(downloadProgress * 0.3) + '%';
                 }
-            }, 500);
+            }, 300);
+            
+            // 设备升级函数
+            function startDeviceUpgrade() {
+                // 模拟逐个设备升级
+                const upgradeInterval = setInterval(() => {
+                    if (currentIndex >= otaUpgradeDetails.length) {
+                        clearInterval(upgradeInterval);
+                        onUpgradeComplete();
+                        return;
+                    }
+                    
+                    const device = otaUpgradeDetails[currentIndex];
+                    device.status = 'upgrading';
+                    device.startTime = new Date();
+                    device.message = '正在升级...';
+                    
+                    // 模拟升级过程
+                    let deviceProgress = 0;
+                    const deviceInterval = setInterval(() => {
+                        deviceProgress += Math.random() * 20;
+                        if (deviceProgress >= 100) {
+                            deviceProgress = 100;
+                            clearInterval(deviceInterval);
+                            
+                            // 随机成功或失败
+                            const isSuccess = Math.random() > 0.1;
+                            device.status = isSuccess ? 'success' : 'failed';
+                            device.progress = 100;
+                            device.endTime = new Date();
+                            device.message = isSuccess ? '升级成功' : '升级失败：设备无响应';
+                            
+                            if (isSuccess) {
+                                successCount++;
+                            } else {
+                                failCount++;
+                            }
+                            
+                            currentIndex++;
+                            updateProgressDisplay(currentIndex, successCount, failCount);
+                        } else {
+                            device.progress = Math.floor(deviceProgress);
+                            updateProgressDisplay(currentIndex, successCount, failCount);
+                        }
+                    }, 500);
+                }, 2000);
+            }
+        }
+
+        // 更新进度显示
+        function updateProgressDisplay(current, success, fail) {
+            // 调用统一的更新函数
+            updateUpgradeStats();
+            
+            // 计算剩余时间
+            const total = selectedDevices.length;
+            const remaining = total - current;
+            const remainingTime = remaining * 2; // 假设每个设备2秒
+            document.getElementById('remainingTime').textContent = remaining > 0 ? `${remainingTime}秒` : '完成';
+        }
+
+        // 升级完成
+        function onUpgradeComplete() {
+            const toast = document.getElementById('otaProgressToast');
+            if (toast) {
+                // 检查是否已经添加了完成提示
+                if (!toast.querySelector('.upgrade-complete-section')) {
+                    const successCount = otaUpgradeDetails.filter(d => d.status === 'success').length;
+                    const failCount = otaUpgradeDetails.filter(d => d.status === 'failed').length;
+                    
+                    toast.innerHTML += `
+                        <div class="upgrade-complete-section" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                            <p style="font-size: 13px; color: #374151; font-weight: 500; margin-bottom: 8px;">升级完成！</p>
+                            <div style="display: flex; gap: 12px;">
+                                <button onclick="showOTADetails()" class="btn btn-primary" style="flex: 1; height: 32px; font-size: 13px;">查看详情</button>
+                                <button onclick="this.closest('#otaProgressToast').remove()" class="btn" style="flex: 1; height: 32px; font-size: 13px;">关闭</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // 显示OTA详情抽屉
+        function showOTADetails() {
+            // 创建蒙版
+            const overlay = document.createElement('div');
+            overlay.id = 'otaDetailsOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            overlay.onclick = closeOTADetails;
+            document.body.appendChild(overlay);
+            
+            // 创建右侧抽屉
+            const drawer = document.createElement('div');
+            drawer.id = 'otaDetailsDrawer';
+            drawer.style.cssText = `
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 500px;
+                background: white;
+                box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            const successDevices = otaUpgradeDetails.filter(d => d.status === 'success');
+            const failedDevices = otaUpgradeDetails.filter(d => d.status === 'failed');
+            
+            drawer.innerHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column;">
+                    <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">OTA升级详情</h3>
+                        <button onclick="closeOTADetails()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Tab切换按钮 -->
+                    <div style="display: flex; background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                        <button id="successTab" onclick="switchOTATab('success')" style="flex: 1; padding: 16px; background: none; border: none; border-bottom: 3px solid #10b981; cursor: pointer; transition: all 0.2s;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 18px;"></i>
+                                <span style="font-size: 15px; font-weight: 600; color: #1e293b;">成功 (${successDevices.length})</span>
+                            </div>
+                        </button>
+                        <button id="failedTab" onclick="switchOTATab('failed')" style="flex: 1; padding: 16px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                                <i class="fas fa-times-circle" style="color: #ef4444; font-size: 18px;"></i>
+                                <span style="font-size: 15px; font-weight: 600; color: #6b7280;">失败 (${failedDevices.length})</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <!-- Tab内容区域 -->
+                    <div style="flex: 1; overflow-y: auto;">
+                        <!-- 成功Tab内容 -->
+                        <div id="successContent" style="padding: 20px; display: block;">
+                            ${successDevices.length > 0 ? `
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    ${successDevices.map(device => `
+                                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);" onmouseover="this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div style="flex: 1;">
+                                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                                        <h4 style="font-size: 16px; font-weight: 600; color: #1e293b; margin: 0;">${device.code}</h4>
+                                                        <span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">升级成功</span>
+                                                    </div>
+                                                    <p style="font-size: 14px; color: #6b7280; margin: 0 0 12px 0;">${device.name}</p>
+                                                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                                        <div>
+                                                            <p style="font-size: 12px; color: #9ca3af; margin: 0 0 4px 0;">版本更新</p>
+                                                            <p style="font-size: 14px; color: #374151; margin: 0;">v2.4.8 → v2.5.0</p>
+                                                        </div>
+                                                        <div>
+                                                            <p style="font-size: 12px; color: #9ca3af; margin: 0 0 4px 0;">升级时间</p>
+                                                            <p style="font-size: 14px; color: #374151; margin: 0;">${new Date().toLocaleTimeString()}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div style="text-align: center; padding: 60px 20px;">
+                                    <i class="fas fa-inbox" style="font-size: 48px; color: #e5e7eb; margin-bottom: 16px;"></i>
+                                    <p style="font-size: 16px; color: #9ca3af; margin: 0;">暂无成功的设备</p>
+                                </div>
+                            `}
+                        </div>
+                        
+                        <!-- 失败Tab内容 -->
+                        <div id="failedContent" style="padding: 20px; display: none;">
+                            ${failedDevices.length > 0 ? `
+                                <button onclick="retryAllFailed()" class="btn" style="height: 36px; padding: 0 16px; font-size: 14px; background: white; border: 1px solid #ef4444; color: #ef4444; margin-bottom: 16px; display: inline-flex; align-items: center; width: auto;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">
+                                    <i class="fas fa-redo" style="margin-right: 6px; font-size: 12px;"></i>
+                                    重试所有失败的设备 (${failedDevices.length})
+                                </button>
+                                
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    ${failedDevices.map(device => `
+                                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);" onmouseover="this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <div style="flex: 1;">
+                                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                                        <h4 style="font-size: 16px; font-weight: 600; color: #1e293b; margin: 0;">${device.code}</h4>
+                                                        <span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">升级失败</span>
+                                                    </div>
+                                                    <p style="font-size: 14px; color: #6b7280; margin: 0 0 8px 0;">${device.name}</p>
+                                                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px;">
+                                                        <p style="font-size: 13px; color: #dc2626; margin: 0;">
+                                                            ${device.message}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button onclick="retryOTAUpgrade('${device.id}')" class="btn" style="padding: 8px 16px; height: 36px; font-size: 13px; background: white; border: 1px solid #ef4444; color: #ef4444; transition: all 0.2s; margin-left: 16px; white-space: nowrap;" onmouseover="this.style.background='#ef4444'; this.style.color='white'" onmouseout="this.style.background='white'; this.style.color='#ef4444'">
+                                                    <i class="fas fa-redo" style="margin-right: 6px;"></i>
+                                                    重新升级
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div style="text-align: center; padding: 60px 20px;">
+                                    <i class="fas fa-check-circle" style="font-size: 48px; color: #10b981; margin-bottom: 16px;"></i>
+                                    <p style="font-size: 16px; color: #6b7280; margin: 0;">太好了！没有失败的设备</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(drawer);
+            
+            // 触发动画
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                drawer.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // 添加全局函数
+            window.switchOTATab = switchOTATab;
+        }
+        
+        // 切换OTA详情Tab
+        function switchOTATab(tab) {
+            const successTab = document.getElementById('successTab');
+            const failedTab = document.getElementById('failedTab');
+            const successContent = document.getElementById('successContent');
+            const failedContent = document.getElementById('failedContent');
+            
+            if (tab === 'success') {
+                successTab.style.borderBottomColor = '#10b981';
+                successTab.querySelector('span').style.color = '#1e293b';
+                failedTab.style.borderBottomColor = 'transparent';
+                failedTab.querySelector('span').style.color = '#6b7280';
+                
+                successContent.style.display = 'block';
+                failedContent.style.display = 'none';
+            } else {
+                successTab.style.borderBottomColor = 'transparent';
+                successTab.querySelector('span').style.color = '#6b7280';
+                failedTab.style.borderBottomColor = '#ef4444';
+                failedTab.querySelector('span').style.color = '#1e293b';
+                
+                successContent.style.display = 'none';
+                failedContent.style.display = 'block';
+            }
+        }
+
+        // 关闭OTA详情抽屉
+        function closeOTADetails() {
+            const drawer = document.getElementById('otaDetailsDrawer');
+            const overlay = document.getElementById('otaDetailsOverlay');
+            if (drawer) {
+                drawer.style.transform = 'translateX(100%)';
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                }
+                setTimeout(() => {
+                    drawer.remove();
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                }, 300);
+            }
+        }
+
+        // 重试OTA升级
+        function retryOTAUpgrade(deviceId) {
+            const device = otaUpgradeDetails.find(d => d.id === deviceId);
+            if (device) {
+                device.status = 'upgrading';
+                device.progress = 0;
+                device.message = '正在重新升级...';
+                
+                // 刷新详情抽屉
+                closeOTADetails();
+                setTimeout(() => {
+                    showOTADetails();
+                }, 100);
+                
+                // 模拟重新升级
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        
+                        // 这次假设成功
+                        device.status = 'success';
+                        device.progress = 100;
+                        device.message = '升级成功';
+                        
+                        // 刷新显示
+                        closeOTADetails();
+                        setTimeout(() => {
+                            showOTADetails();
+                        }, 100);
+                    } else {
+                        device.progress = Math.floor(progress);
+                    }
+                }, 500);
+            }
+        }
+        
+        // 重试所有失败的设备
+        function retryAllFailed() {
+            const failedDevices = otaUpgradeDetails.filter(d => d.status === 'failed');
+            
+            if (failedDevices.length === 0) {
+                showNotification('没有需要重试的设备', 'info');
+                return;
+            }
+            
+            // 将所有失败的设备设置为正在升级状态
+            failedDevices.forEach(device => {
+                device.status = 'upgrading';
+                device.progress = 0;
+                device.message = '正在重新升级...';
+            });
+            
+            // 刷新详情抽屉
+            closeOTADetails();
+            setTimeout(() => {
+                showOTADetails();
+            }, 100);
+            
+            // 依次升级每个设备
+            let currentIndex = 0;
+            
+            function upgradeNextDevice() {
+                if (currentIndex >= failedDevices.length) {
+                    return;
+                }
+                
+                const device = failedDevices[currentIndex];
+                let progress = 0;
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        
+                        // 随机成功或失败（80%成功率）
+                        if (Math.random() > 0.2) {
+                            device.status = 'success';
+                            device.message = '升级成功';
+                        } else {
+                            device.status = 'failed';
+                            device.message = '升级失败：设备响应超时';
+                        }
+                        device.progress = 100;
+                        
+                        // 更新统计数据
+                        updateUpgradeStats();
+                        
+                        // 刷新显示
+                        closeOTADetails();
+                        setTimeout(() => {
+                            showOTADetails();
+                        }, 100);
+                        
+                        // 继续下一个设备
+                        currentIndex++;
+                        setTimeout(upgradeNextDevice, 500);
+                    } else {
+                        device.progress = Math.floor(progress);
+                    }
+                }, 500);
+            }
+            
+            // 开始升级第一个设备
+            upgradeNextDevice();
+        }
+        
+        // 更新升级统计数据
+        function updateUpgradeStats() {
+            const successCount = otaUpgradeDetails.filter(d => d.status === 'success').length;
+            const failCount = otaUpgradeDetails.filter(d => d.status === 'failed').length;
+            const progressCount = otaUpgradeDetails.filter(d => d.status === 'upgrading').length;
+            
+            // 更新进度弹窗中的统计
+            const successElement = document.getElementById('successCount');
+            const failElement = document.getElementById('failCount');
+            const upgradingElement = document.getElementById('upgradingCount');
+            
+            if (successElement) successElement.textContent = successCount;
+            if (failElement) failElement.textContent = failCount;
+            if (upgradingElement) upgradingElement.textContent = successCount + failCount;
+            
+            // 更新进度条
+            const totalDevices = otaUpgradeDetails.length;
+            const completedDevices = successCount + failCount;
+            const progressPercent = totalDevices > 0 ? Math.floor((completedDevices / totalDevices) * 100) : 0;
+            
+            const progressBar = document.getElementById('toastProgress');
+            const percentText = document.getElementById('progressPercent');
+            
+            if (progressBar) progressBar.style.width = progressPercent + '%';
+            if (percentText) percentText.textContent = progressPercent + '%';
+            
+            // 如果所有设备都完成了升级
+            if (completedDevices === totalDevices && progressCount === 0) {
+                onUpgradeComplete();
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
         }
 
         // 处理添加/编辑设备表单提交
@@ -1977,66 +2619,89 @@
             }, 3000);
         }
 
-        // 初始化站点选择下拉
-        function initSiteDropdown() {
-            const siteFilterInput = document.getElementById('siteFilterInput');
-            const siteDropdown = document.getElementById('siteDropdown');
-            const siteSearchInput = document.getElementById('siteSearchInput');
-            const siteOptions = document.querySelectorAll('.site-option');
-            const siteFilter = document.getElementById('siteFilter');
-            
-            // 点击输入框显示下拉
-            siteFilterInput.addEventListener('click', function(e) {
-                e.stopPropagation();
-                siteDropdown.style.display = 'block';
-                siteSearchInput.focus();
-            });
-            
-            // 搜索功能
-            siteSearchInput.addEventListener('input', function() {
-                const searchValue = this.value.toLowerCase();
-                siteOptions.forEach(option => {
-                    const text = option.textContent.toLowerCase();
-                    if (text.includes(searchValue)) {
-                        option.style.display = 'block';
-                    } else {
-                        option.style.display = 'none';
+        // 添加隐藏的siteFilter input
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'siteFilter';
+        hiddenInput.value = '';
+        document.body.appendChild(hiddenInput);
+        
+        // 确保DOM加载完成后再渲染表格
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                // 确保表格视图可见
+                const tableView = document.getElementById('table-view');
+                if (tableView) {
+                    tableView.style.display = 'block';
+                }
+                // 确保查询区域可见
+                const queryArea = document.getElementById('query-area');
+                if (queryArea) {
+                    queryArea.style.display = 'block';
+                }
+                
+                // 检查URL参数，如果有站点参数则自动选择
+                const urlParams = new URLSearchParams(window.location.search);
+                const siteParam = urlParams.get('site');
+                const siteNameParam = urlParams.get('siteName');
+                
+                if (siteParam) {
+                    const unifiedSelect = document.getElementById('unifiedSiteSelect');
+                    if (unifiedSelect) {
+                        // 设置选中的站点
+                        unifiedSelect.value = siteParam;
+                        
+                        // 触发站点变更事件
+                        handleSiteChange();
+                        
+                        console.log(`从站点管理跳转，已选择站点: ${siteNameParam || siteParam}`);
                     }
-                });
+                }
+                
+                renderTable();
             });
+        } else {
+            // 确保表格视图可见
+            const tableView = document.getElementById('table-view');
+            if (tableView) {
+                tableView.style.display = 'block';
+            }
+            // 确保查询区域可见
+            const queryArea = document.getElementById('query-area');
+            if (queryArea) {
+                queryArea.style.display = 'block';
+            }
             
-            // 选择站点
-            siteOptions.forEach(option => {
-                option.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const value = this.getAttribute('data-value');
-                    const text = this.textContent;
-                    siteFilter.value = value;
-                    siteFilterInput.value = text;
-                    siteDropdown.style.display = 'none';
-                    siteSearchInput.value = '';
-                    // 触发搜索
-                    searchDevices();
-                });
-            });
+            // 检查URL参数，如果有站点参数则自动选择
+            const urlParams = new URLSearchParams(window.location.search);
+            const siteParam = urlParams.get('site');
+            const siteNameParam = urlParams.get('siteName');
             
-            // 点击外部关闭下拉
-            document.addEventListener('click', function() {
-                siteDropdown.style.display = 'none';
-                siteSearchInput.value = '';
-                // 重置搜索结果
-                siteOptions.forEach(option => {
-                    option.style.display = 'block';
-                });
-            });
+            if (siteParam) {
+                const unifiedSelect = document.getElementById('unifiedSiteSelect');
+                if (unifiedSelect) {
+                    // 设置选中的站点
+                    unifiedSelect.value = siteParam;
+                    
+                    // 触发站点变更事件
+                    handleSiteChange();
+                    
+                    console.log(`从站点管理跳转，已选择站点: ${siteNameParam || siteParam}`);
+                }
+            }
             
-            // 设置初始值
-            siteFilterInput.value = '全部站点';
+            renderTable();
         }
         
-        // 初始化
-        initSiteDropdown();
-        renderTable();
+        // 隐藏3D视图相关元素
+        const sceneContainer = document.getElementById('scene-container');
+        if (sceneContainer) {
+            sceneContainer.style.display = 'none';
+        }
+        const dataPanel = document.getElementById('dataPanel');
+        if (dataPanel) {
+            dataPanel.style.display = 'none';
+        }
         
         // 初始化浮动弹窗
         setTimeout(() => {
@@ -2141,7 +2806,6 @@
             const dataPanel = document.getElementById('dataPanel');
             const mainContent = document.getElementById('mainContent');
             
-            const siteSelector = document.getElementById('siteSelector');
             const tablePlaceholder = document.getElementById('tablePlaceholder');
             
             if (tabName === 'table') {
@@ -2150,7 +2814,6 @@
                 if (sceneContainer) sceneContainer.style.display = 'none';
                 if (queryArea) queryArea.style.display = 'block'; // 表格模式显示查询区域
                 if (dataPanel) dataPanel.style.display = 'none'; // 表格模式隐藏储能柜监控面板
-                if (siteSelector) siteSelector.style.display = 'none'; // 隐藏站点选择器
                 if (tablePlaceholder) tablePlaceholder.style.display = 'block'; // 显示占位元素
                 // 保持视图切换按钮的padding
                 if (mainContent) {
@@ -2173,7 +2836,6 @@
                 }
                 if (queryArea) queryArea.style.display = 'none'; // 视图模式隐藏查询区域
                 if (dataPanel) dataPanel.style.display = 'block'; // 视图模式显示储能柜监控面板
-                if (siteSelector) siteSelector.style.display = 'flex'; // 显示站点选择器
                 if (tablePlaceholder) tablePlaceholder.style.display = 'none'; // 隐藏占位元素
                 // 3D视图模式下也保持padding，确保视图切换按钮正常显示
                 if (mainContent) {
@@ -2729,15 +3391,37 @@
 
         // 不需要鼠标事件，因为没有模型
 
-        // 切换站点
-        function changeSite() {
-            const siteSelect = document.getElementById('siteSelect');
-            const selectedSite = siteSelect.value;
+        // 处理站点选择变化
+        function handleSiteChange() {
+            const unifiedSelect = document.getElementById('unifiedSiteSelect');
+            const selectedValue = unifiedSelect.value;
             
-            console.log('切换到站点:', selectedSite);
+            // 获取当前视图
+            const tableView = document.getElementById('table-view');
+            const isTableView = tableView && tableView.style.display !== 'none';
+            
+            if (isTableView) {
+                // 表格视图：更新筛选
+                document.getElementById('siteFilter').value = selectedValue;
+                searchDevices();
+            } else {
+                // 3D视图：更新场景
+                changeSite(selectedValue);
+            }
+        }
+        
+        // 切换站点（3D视图）
+        function changeSite(siteId) {
+            if (!siteId) {
+                // 获取选择的值
+                const siteSelect = document.getElementById('unifiedSiteSelect');
+                siteId = siteSelect.value;
+            }
+            
+            console.log('切换到站点:', siteId);
             
             // 根据站点更新储能柜数量和布局
-            updateCabinetDisplay(selectedSite);
+            updateCabinetDisplay(siteId);
             
             // 更新统计数据
             updateStatsPanel();
@@ -2766,17 +3450,6 @@
             // 这里可以动态更新储能柜的显示
             // 例如：隐藏多余的储能柜图片，或者重新排列等
         }
-        
-        // Toggle submenu
-        function toggleSubmenu(element) {
-            element.classList.toggle('expanded');
-            const submenu = element.nextElementSibling;
-            if (submenu && submenu.classList.contains('submenu')) {
-                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
-            }
-        }
-
-
     </script>
 </body>
 </html>

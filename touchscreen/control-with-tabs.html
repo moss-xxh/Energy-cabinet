@@ -916,11 +916,6 @@
         <div class="header-right">
             <div class="current-time" id="currentTime"></div>
             <div class="user-menu">
-                <button class="user-btn" onclick="logout()">
-                    <i class="fas fa-user"></i>
-                    <span>管理员</span>
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
             </div>
         </div>
     </div>
@@ -1030,12 +1025,6 @@
             document.getElementById('currentTime').textContent = timeString;
         }
 
-        // 登出功能
-        function logout() {
-            localStorage.removeItem('touchscreen_user');
-            sessionStorage.removeItem('touchscreen_user');
-            window.location.href = 'login.html';
-        }
 
         // 切换组件
         function switchComponent(component) {

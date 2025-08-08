@@ -492,7 +492,6 @@
             <div class="header-buttons">
                 <button class="header-btn" onclick="switchTheme()">🎨 <span data-lang="theme">主题</span></button>
                 <button class="header-btn" onclick="switchLanguage()">🌐 <span data-lang="language">语言</span></button>
-                <button class="header-btn" onclick="logout()">🚪 <span data-lang="logout">退出</span></button>
             </div>
         </div>
     </header>
@@ -675,7 +674,6 @@
                 status: '运行正常',
                 theme: '主题',
                 language: '语言',
-                logout: '退出',
                 navHome: '首页',
                 navParams: '设备参数',
                 navControl: '设备控制',
@@ -715,7 +713,6 @@
                 status: 'Running Normal',
                 theme: 'Theme',
                 language: 'Language',
-                logout: 'Logout',
                 navHome: 'Home',
                 navParams: 'Parameters',
                 navControl: 'Control',
@@ -805,12 +802,6 @@
             }
         }
 
-        // 退出登录
-        function logout() {
-            localStorage.removeItem('touchscreen_user');
-            sessionStorage.removeItem('touchscreen_user');
-            window.location.href = 'login.html';
-        }
 
         // 切换标签页
         function switchTab(tab) {

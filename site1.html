@@ -2239,6 +2239,24 @@
             }
         }
         
+        // 导航到设备管理页面并预选站点
+        function navigateToDeviceManagement(siteName) {
+            // 将站点名称映射到对应的值
+            const siteMapping = {
+                '科技园区站': 'site1',
+                '工业园区站': 'site2', 
+                '商业中心站': 'site3',
+                '物流园区站': 'site4',
+                '研发中心站': 'site5',
+                '数据中心站': 'site6'
+            };
+            
+            const siteValue = siteMapping[siteName] || '';
+            
+            // 跳转到设备管理页面，并通过URL参数传递选中的站点
+            window.location.href = `devices.html?site=${encodeURIComponent(siteValue)}&siteName=${encodeURIComponent(siteName)}`;
+        }
+        
         // 检查登录状态
         checkAuth();
         
@@ -2275,6 +2293,11 @@
             pageDevices.forEach(device => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid var(--border-color)';
+                tr.style.cursor = 'pointer';
+                tr.style.transition = 'background-color 0.2s ease';
+                tr.setAttribute('onclick', `navigateToDeviceManagement('${device.siteName}')`);
+                tr.setAttribute('onmouseover', 'this.style.backgroundColor = "var(--bg-secondary)"');
+                tr.setAttribute('onmouseout', 'this.style.backgroundColor = ""');
                 
                 tr.innerHTML = `
                     <td style="padding: 12px;">${device.siteName}</td>
@@ -2284,7 +2307,10 @@
                     <td style="padding: 12px; text-align: center;">${device.remainingEnergy} kWh</td>
                     <td style="padding: 12px; text-align: center;">${device.soc}%</td>
                     <td style="padding: 12px;">${device.address}</td>
-                    <td style="padding: 12px; text-align: center;">
+                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
+                        <button class="btn" onclick="navigateToDeviceManagement('${device.siteName}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="进入站点">
+                            <i class="fas fa-arrow-right" style="font-size: 16px; color: var(--text-secondary);"></i>
+                        </button>
                         <button class="btn" onclick="editDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="编辑">
                             <i class="far fa-edit" style="font-size: 16px; color: var(--text-secondary);"></i>
                         </button>

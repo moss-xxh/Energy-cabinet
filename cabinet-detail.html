@@ -15,7 +15,7 @@
         }
         
         .cabinet-3d-container {
-            flex: 1;
+            flex: 0 0 35%;
             position: relative;
             background: #e5e5e5;
         }
@@ -59,7 +59,7 @@
         }
         
         .data-panel {
-            width: 600px;
+            flex: 1;
             background: white;
             overflow-y: auto;
             box-shadow: -4px 0 20px rgba(0,0,0,0.08);
@@ -215,38 +215,89 @@
             display: flex;
             overflow-x: auto;
             scrollbar-width: thin;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
+            padding: 8px 16px;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
         }
         
         .component-tab {
-            padding: 12px 20px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            background: none;
-            border: none;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            background: transparent;
+            border: 2px solid #e2e8f0;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
-            border-bottom: 2px solid transparent;
+            border-radius: 8px;
+            position: relative;
+            letter-spacing: 0.3px;
         }
         
         .component-tab:hover {
-            color: #2196F3;
-            background: rgba(33, 150, 243, 0.05);
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.08);
+            border-color: #3b82f6;
+            transform: translateY(-1px);
         }
         
         .component-tab.active {
-            color: #2196F3;
-            background: white;
-            border-bottom-color: #2196F3;
+            color: white;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .component-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #2563eb;
         }
         
         [data-theme="dark"] .component-tabs {
-            background: #0f172a;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+        
+        [data-theme="dark"] .component-tab {
+            color: #94a3b8;
+            border-color: #334155;
+        }
+        
+        [data-theme="dark"] .component-tab:hover {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-color: #60a5fa;
         }
         
         [data-theme="dark"] .component-tab.active {
+            color: white;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: transparent;
+        }
+        
+        .data-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 0 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        
+        [data-theme="dark"] .data-tabs {
             background: #1e293b;
+            border-bottom-color: rgba(255,255,255,0.06);
         }
         
         .data-tab {
@@ -255,7 +306,7 @@
             text-align: center;
             font-size: 14px;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: #64748b;
             background: none;
             border: none;
             cursor: pointer;
@@ -264,21 +315,37 @@
         }
         
         .data-tab:hover {
-            color: var(--text-primary);
+            color: #334155;
         }
         
         .data-tab.active {
-            color: var(--primary-color);
+            color: #3b82f6;
+            font-weight: 600;
         }
         
         .data-tab.active::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary-color);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        [data-theme="dark"] .data-tab {
+            color: #94a3b8;
+        }
+        
+        [data-theme="dark"] .data-tab:hover {
+            color: #cbd5e1;
+        }
+        
+        [data-theme="dark"] .data-tab.active {
+            color: #60a5fa;
         }
         
         .data-content {
@@ -499,11 +566,37 @@
     <main class="main-content" id="mainContent" style="padding: 0;">
         <div class="detail-container">
             <!-- 3D模型容器 -->
-            <div class="cabinet-3d-container">
+            <div class="cabinet-3d-container" style="position: relative;">
+                <!-- 设备控制按钮 - 已隐藏 -->
+                <div style="position: absolute; top: 80px; right: 0; z-index: 100; display: none;">
+                    <button onclick="openDeviceControlPanel()" style="
+                        writing-mode: vertical-rl;
+                        text-orientation: upright;
+                        padding: 15px 8px;
+                        background: linear-gradient(135deg, #3562E3 0%, #4f46e5 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 8px 0 0 8px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        font-size: 14px;
+                        font-weight: 500;
+                        box-shadow: -4px 0 12px rgba(53, 98, 227, 0.2);
+                        letter-spacing: 3px;
+                        height: auto;
+                        min-height: 90px;
+                        width: 32px;
+                        line-height: 1;
+                        white-space: nowrap;
+                    " onmouseover="this.style.transform='translateX(-3px)'; this.style.boxShadow='-6px 0 16px rgba(53, 98, 227, 0.3)'" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='-4px 0 12px rgba(53, 98, 227, 0.2)'">
+                        设备控制
+                    </button>
+                </div>
+                
                 <!-- 储能柜图片展示 -->
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;">
                     <div style="position: relative; display: inline-block;">
-                        <img src="柜子打开.png" alt="储能柜内部结构" style="max-width: 80%; max-height: 80vh; object-fit: contain;">
+                        <img src="柜子打开.png" alt="储能柜内部结构" style="max-width: 90%; max-height: 70vh; object-fit: contain;">
                         
                         <!-- 组件标记点 -->
                         <!-- EMS控制器 (顶部白色控制盒) -->
@@ -551,14 +644,14 @@
                 </div>
                 
                 <!-- 当前告警 -->
-                <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 100;">
-                    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h4 style="font-size: 14px; color: #92400e; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; margin: 0 0 12px 0;">
-                            <i class="fas fa-exclamation-triangle"></i>
+                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 320px; z-index: 100;">
+                    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 12px rgba(252, 211, 77, 0.2);">
+                        <h4 style="font-size: 12px; color: #92400e; margin: 0 0 6px 0; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 11px;"></i>
                             当前告警
                         </h4>
-                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #78350f;">
-                            <li style="margin-bottom: 6px;">电池模组3温度偏高 (32.5°C)</li>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #78350f; line-height: 1.4;">
+                            <li style="margin-bottom: 3px;">电池模组3温度偏高 (32.5°C)</li>
                             <li>BMS通信延迟 (150ms)</li>
                         </ul>
                     </div>
@@ -566,10 +659,10 @@
             </div>
             
             <!-- 数据面板 -->
-            <div class="data-panel">
+            <div class="data-panel" style="position: relative;">
                 
                 <!-- 组件选择标签页 -->
-                <div class="component-tabs" style="border-top: 1px solid var(--border-color); display: flex; background: #f8f9fa;">
+                <div class="component-tabs">
                     <button class="component-tab active" onclick="switchComponent('overall')">整机</button>
                     <button class="component-tab" onclick="switchComponent('ems')">EMS</button>
                     <button class="component-tab" onclick="switchComponent('pcs')">逆变器</button>
@@ -1062,6 +1155,398 @@
             }
         }
         
+        // 打开设备控制面板
+        function openDeviceControlPanel() {
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.id = 'deviceControlOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // 创建控制面板
+            const panel = document.createElement('div');
+            panel.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                padding: 32px;
+                width: 95%;
+                max-width: 700px;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+                transform: scale(0.9);
+                transition: transform 0.3s ease;
+            `;
+            
+            panel.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; font-size: 18px; color: var(--text-primary); font-weight: 600;">设备控制</h3>
+                    <button onclick="closeDeviceControlPanel()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='none'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+                    <!-- 启动按钮 -->
+                    <button onclick="deviceControl('start')" style="padding: 12px 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.2)'">
+                        <i class="fas fa-play" style="font-size: 16px;"></i>
+                        <span>启动</span>
+                    </button>
+                    
+                    <!-- 停止按钮 -->
+                    <button onclick="deviceControl('stop')" style="padding: 12px 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.2)'">
+                        <i class="fas fa-stop" style="font-size: 16px;"></i>
+                        <span>停止</span>
+                    </button>
+                    
+                    <!-- 待机按钮 -->
+                    <button onclick="deviceControl('standby')" style="padding: 12px 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(245, 158, 11, 0.2)'">
+                        <i class="fas fa-pause" style="font-size: 16px;"></i>
+                        <span>待机</span>
+                    </button>
+                    
+                    <!-- 重启按钮 -->
+                    <button onclick="deviceControl('restart')" style="padding: 12px 16px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(59, 130, 246, 0.2)'">
+                        <i class="fas fa-redo" style="font-size: 16px;"></i>
+                        <span>重启</span>
+                    </button>
+                    
+                    <!-- 紧急停机按钮 -->
+                    <button onclick="deviceControl('emergency')" style="padding: 12px 16px; background: linear-gradient(135deg, #7c2d12 0%, #991b1b 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(124, 45, 18, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(124, 45, 18, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(124, 45, 18, 0.2)'">
+                        <i class="fas fa-power-off" style="font-size: 16px;"></i>
+                        <span>紧急停机</span>
+                    </button>
+                    
+                    <!-- 复位按钮 -->
+                    <button onclick="deviceControl('reset')" style="padding: 12px 16px; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(107, 114, 128, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(107, 114, 128, 0.2)'">
+                        <i class="fas fa-sync-alt" style="font-size: 16px;"></i>
+                        <span>复位</span>
+                    </button>
+                </div>
+                
+                <!-- OTA升级部分 -->
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                    <h4 style="margin: 0 0 16px 0; font-size: 16px; color: var(--text-primary); font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-cloud-download-alt" style="color: #3b82f6;"></i>
+                        OTA固件升级
+                    </h4>
+                    
+                    <div style="background: #f3f4f6; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+                            <div>
+                                <span style="color: #6b7280;">当前版本：</span>
+                                <span style="color: #1f2937; font-weight: 500;">V2.3.5</span>
+                            </div>
+                            <div>
+                                <span style="color: #6b7280;">最新版本：</span>
+                                <span style="color: #10b981; font-weight: 500;">V2.4.0</span>
+                                <span style="background: #10b981; color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">可更新</span>
+                            </div>
+                            <div>
+                                <span style="color: #6b7280;">设备型号：</span>
+                                <span style="color: #1f2937; font-weight: 500;">ESS-2500</span>
+                            </div>
+                            <div>
+                                <span style="color: #6b7280;">更新时间：</span>
+                                <span style="color: #1f2937; font-weight: 500;">2024-01-15</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: #92400e;">
+                        <i class="fas fa-info-circle" style="margin-right: 6px;"></i>
+                        更新说明：修复BMS通信延迟问题，优化充放电控制算法，提升系统稳定性
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="checkForUpdates()" style="flex: 1; padding: 12px 20px; background: #f3f4f6; color: #1f2937; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 14px; font-weight: 500;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                            <i class="fas fa-sync" style="margin-right: 6px;"></i>
+                            检查更新
+                        </button>
+                        <button onclick="startOTAUpgrade()" style="flex: 1; padding: 12px 20px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 14px; font-weight: 500; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(59, 130, 246, 0.2)'">
+                            <i class="fas fa-download" style="margin-right: 6px;"></i>
+                            开始升级
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            overlay.appendChild(panel);
+            document.body.appendChild(overlay);
+            
+            // 显示动画
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                panel.style.transform = 'scale(1)';
+            }, 10);
+            
+            // 点击遮罩关闭
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    closeDeviceControlPanel();
+                }
+            });
+        }
+        
+        // 关闭设备控制面板
+        function closeDeviceControlPanel() {
+            const overlay = document.getElementById('deviceControlOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                overlay.querySelector('div').style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            }
+        }
+        
+        // 检查更新
+        function checkForUpdates() {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #3b82f6;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <i class="fas fa-sync fa-spin"></i>
+                正在检查更新...
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.background = '#10b981';
+                toast.innerHTML = `
+                    <i class="fas fa-check"></i>
+                    发现新版本 V2.4.0 可用
+                `;
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentElement) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }, 2000);
+            }, 1500);
+        }
+        
+        // 开始OTA升级
+        function startOTAUpgrade() {
+            if (!confirm('确定要开始固件升级吗？\n升级过程中设备将暂停运行，请确保设备处于安全状态。')) {
+                return;
+            }
+            
+            // 关闭控制面板
+            closeDeviceControlPanel();
+            
+            // 创建升级进度弹窗
+            const progressOverlay = document.createElement('div');
+            progressOverlay.id = 'otaProgressOverlay';
+            progressOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const progressPanel = document.createElement('div');
+            progressPanel.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                padding: 32px;
+                width: 90%;
+                max-width: 500px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            `;
+            
+            progressPanel.innerHTML = `
+                <h3 style="margin: 0 0 24px 0; font-size: 18px; color: #1f2937; font-weight: 600; text-align: center;">
+                    <i class="fas fa-cloud-download-alt" style="color: #3b82f6; margin-right: 8px;"></i>
+                    固件升级中
+                </h3>
+                
+                <div style="background: #f3f4f6; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                        <span style="color: #6b7280;">升级进度</span>
+                        <span id="otaProgress" style="color: #3b82f6; font-weight: 600;">0%</span>
+                    </div>
+                    <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div id="otaProgressBar" style="background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                
+                <div id="otaStatus" style="text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 20px;">
+                    正在下载固件...
+                </div>
+                
+                <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 12px; font-size: 12px; color: #92400e;">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 6px;"></i>
+                    请勿断电或关闭设备，升级过程大约需要5-10分钟
+                </div>
+            `;
+            
+            progressOverlay.appendChild(progressPanel);
+            document.body.appendChild(progressOverlay);
+            
+            // 模拟升级进度
+            let progress = 0;
+            const updateInterval = setInterval(() => {
+                progress += Math.random() * 15 + 5;
+                if (progress > 100) progress = 100;
+                
+                document.getElementById('otaProgress').textContent = Math.round(progress) + '%';
+                document.getElementById('otaProgressBar').style.width = progress + '%';
+                
+                if (progress < 30) {
+                    document.getElementById('otaStatus').textContent = '正在下载固件...';
+                } else if (progress < 60) {
+                    document.getElementById('otaStatus').textContent = '正在验证固件...';
+                } else if (progress < 90) {
+                    document.getElementById('otaStatus').textContent = '正在安装固件...';
+                } else {
+                    document.getElementById('otaStatus').textContent = '正在重启设备...';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(updateInterval);
+                    setTimeout(() => {
+                        progressPanel.innerHTML = `
+                            <div style="text-align: center;">
+                                <i class="fas fa-check-circle" style="font-size: 48px; color: #10b981; margin-bottom: 16px;"></i>
+                                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2937; font-weight: 600;">升级成功</h3>
+                                <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px;">固件已成功升级至 V2.4.0</p>
+                                <button onclick="closeOTAProgress()" style="padding: 10px 24px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                    确定
+                                </button>
+                            </div>
+                        `;
+                    }, 1000);
+                }
+            }, 500);
+        }
+        
+        // 关闭OTA进度窗口
+        function closeOTAProgress() {
+            const overlay = document.getElementById('otaProgressOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+        
+        // 设备控制函数
+        function deviceControl(action) {
+            const actionNames = {
+                'start': '启动',
+                'stop': '停止',
+                'standby': '待机',
+                'restart': '重启', 
+                'emergency': '紧急停机',
+                'reset': '复位'
+            };
+            
+            const actionName = actionNames[action] || action;
+            
+            // 特殊处理紧急停机 - 需要确认
+            if (action === 'emergency') {
+                if (!confirm(`确定要执行${actionName}操作吗？\n此操作将立即停止设备运行，可能会影响正在进行的工作。`)) {
+                    return;
+                }
+            } else {
+                // 其他操作的确认
+                if (!confirm(`确定要执行${actionName}操作吗？`)) {
+                    return;
+                }
+            }
+            
+            // 关闭控制面板
+            closeDeviceControlPanel();
+            
+            // 显示操作进度提示
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #3b82f6;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i>
+                正在执行${actionName}操作...
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // 模拟操作延迟
+            setTimeout(() => {
+                // 更新提示为成功状态
+                toast.style.background = '#10b981';
+                toast.innerHTML = `
+                    <i class="fas fa-check"></i>
+                    ${actionName}操作执行成功
+                `;
+                
+                // 2秒后移除提示
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentElement) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }, 2000);
+                
+                // 这里可以添加实际的设备控制逻辑
+                console.log(`设备控制: ${action} - ${actionName}`);
+                
+            }, 1500); // 模拟1.5秒的操作时间
+        }
+        
         // 检查登录状态
         checkAuth();
         
@@ -1200,16 +1685,7 @@
             // 清空现有内容
             realtimeData.innerHTML = '';
             
-            // 如果是从3D模型点击的组件，更新顶部标签选中状态
-            if (componentName && componentName !== currentComponent) {
-                currentComponent = componentName;
-                document.querySelectorAll('.component-tab').forEach(t => {
-                    t.classList.remove('active');
-                    if (t.textContent.includes(getComponentTabName(componentName))) {
-                        t.classList.add('active');
-                    }
-                });
-            }
+            // 组件名称已在switchComponent中处理
             
             switch(componentName) {
                 case 'overall':
@@ -2605,8 +3081,18 @@
             // 更新组件标签样式
             document.querySelectorAll('.component-tab').forEach(t => {
                 t.classList.remove('active');
+                // 根据按钮文本内容匹配对应的组件
+                const tabText = t.textContent.trim().toLowerCase();
+                const componentText = getComponentTabName(component).toLowerCase();
+                if (tabText === componentText || 
+                    (component === 'pcs' && tabText === '逆变器') ||
+                    (component === 'thermal' && tabText === '温度') ||
+                    (component === 'fire' && tabText === '消防') ||
+                    (component === 'battery' && tabText === '电池') ||
+                    (component === 'overall' && tabText === '整机')) {
+                    t.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
             
             // 更新数据内容
             updateComponentData(component);
