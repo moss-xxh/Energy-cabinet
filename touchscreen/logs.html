@@ -746,81 +746,52 @@
             background: rgba(0, 150, 255, 0.5);
         }
 
-        /* 自定义确认弹窗 - 深蓝色主题 */
+                /* 退出确认弹窗 - 统一深蓝色主题 */
         .confirm-modal {
+            display: none;
             position: fixed;
-            top: 0;
+            z-index: 2000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
         }
 
         .confirm-modal.show {
             display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .confirm-content {
-            background: linear-gradient(145deg, rgba(30, 45, 65, 0.95) 0%, rgba(45, 60, 85, 0.95) 100%);
+            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
             backdrop-filter: blur(20px);
-            border: 2px solid rgba(100, 150, 200, 0.3);
-            border-radius: 24px;
+            border: 2px solid rgba(78, 145, 189, 0.3);
+            border-radius: 20px;
             padding: 40px;
-            text-align: center;
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.8),
-                0 10px 30px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             max-width: 480px;
             width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: scaleIn 0.3s ease;
             position: relative;
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        .confirm-content::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(45deg, transparent, rgba(100, 150, 200, 0.4), transparent);
-            border-radius: 24px;
-            z-index: -1;
-            animation: borderGlow 2s ease-in-out infinite alternate;
         }
 
         @keyframes fadeIn {
-            from { 
-                opacity: 0;
-            }
-            to { 
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes scaleIn {
             from { 
-                transform: scale(0.85) translateY(20px);
+                transform: scale(0.8);
                 opacity: 0;
             }
             to { 
-                transform: scale(1) translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes borderGlow {
-            from {
-                opacity: 0.5;
-            }
-            to {
+                transform: scale(1);
                 opacity: 1;
             }
         }
@@ -829,62 +800,34 @@
             width: 90px;
             height: 90px;
             margin: 0 auto 28px;
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.3) 100%);
-            border: 3px solid rgba(239, 68, 68, 0.5);
             border-radius: 50%;
+            background: rgba(239, 68, 68, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
-                0 10px 25px rgba(239, 68, 68, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .confirm-icon::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.7;
-            }
+            border: 3px solid rgba(239, 68, 68, 0.4);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .confirm-icon i {
             font-size: 36px;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: #ef4444;
         }
 
         .confirm-title {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 600;
             color: #ffffff;
-            margin-bottom: 18px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            letter-spacing: 1px;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
         }
 
         .confirm-message {
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 36px;
-            line-height: 1.6;
-            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 32px;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
         }
 
         .confirm-buttons {
@@ -894,68 +837,46 @@
         }
 
         .confirm-btn {
-            padding: 16px 40px;
-            border: 2px solid;
+            padding: 14px 48px;
+            border: 1px solid;
             border-radius: 12px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             min-width: 140px;
-            position: relative;
-            overflow: hidden;
-            text-transform: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             letter-spacing: 0.5px;
-        }
-
-        .confirm-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
-        }
-
-        .confirm-btn:hover::before {
-            width: 300px;
-            height: 300px;
         }
 
         .confirm-btn.primary {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: #ffffff;
-            border-color: rgba(239, 68, 68, 0.4);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            border-color: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
         }
 
         .confirm-btn.primary:hover {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
-            border-color: rgba(239, 68, 68, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
         }
 
         .confirm-btn.secondary {
             background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.95);
+            color: rgba(255, 255, 255, 0.9);
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .confirm-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
             color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
-
-        /* 退出按钮样式 - 与语言按钮一致 */
+/* 退出按钮样式 - 与语言按钮一致 */
         .logout-wrapper {
             margin-left: 15px;
         }
