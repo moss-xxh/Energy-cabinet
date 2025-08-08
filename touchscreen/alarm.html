@@ -277,6 +277,7 @@
             transform: translate(-50%, -50%);
         }
 
+
         /* 工具提示 */
         .tooltip {
             position: absolute;
@@ -299,6 +300,7 @@
             opacity: 1;
             visibility: visible;
         }
+
 
         /* 主内容区 */
         .main-content {
@@ -878,6 +880,41 @@
         }
 
         /* 自定义确认弹窗 - 深蓝色主题 */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .confirm-modal.show {
+            display: flex;
+        }
+
+        .confirm-content {
+            background: linear-gradient(145deg, rgba(30, 45, 65, 0.95) 0%, rgba(45, 60, 85, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(100, 150, 200, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.8),
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            animation: scaleIn 0.3s ease-out;
+        }
 
         .confirm-content::before {
             content: '';
@@ -892,11 +929,49 @@
             animation: borderGlow 2s ease-in-out infinite alternate;
         }
 
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+            }
+            to { 
+                opacity: 1;
+            }
         }
 
+        @keyframes scaleIn {
+            from { 
+                transform: scale(0.85) translateY(20px);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes borderGlow {
+            from {
+                opacity: 0.5;
+            }
             to {
                 opacity: 1;
             }
+        }
+
+        .confirm-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 28px;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.3) 100%);
+            border: 3px solid rgba(239, 68, 68, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 25px rgba(239, 68, 68, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
         .confirm-icon::before {
@@ -911,10 +986,59 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
             50% {
                 transform: scale(1.1);
                 opacity: 0.7;
             }
+        }
+
+        .confirm-icon i {
+            font-size: 36px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 18px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .confirm-message {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 36px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 16px 40px;
+            border: 2px solid;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            position: relative;
+            overflow: hidden;
+            text-transform: none;
+            letter-spacing: 0.5px;
         }
 
         .confirm-btn::before {
@@ -934,6 +1058,36 @@
             width: 300px;
             height: 300px;
         }
+
+        .confirm-btn.primary {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .confirm-btn.primary:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+            border-color: rgba(239, 68, 68, 0.6);
+        }
+
+        .confirm-btn.secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.95);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
 
         /* 响应式设计 */
         @media (max-width: 1024px) {
@@ -1059,137 +1213,6 @@
             width: 20px;
             height: 20px;
         }
-        /* 退出确认弹窗 - 统一样式 */
-        .confirm-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .confirm-modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .confirm-content {
-            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(78, 145, 189, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 480px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            animation: scaleIn 0.3s ease;
-            position: relative;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { 
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to { 
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .confirm-icon {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 28px;
-            border-radius: 50%;
-            background: rgba(239, 68, 68, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid rgba(239, 68, 68, 0.4);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .confirm-icon i {
-            font-size: 36px;
-            color: #ef4444;
-        }
-
-        .confirm-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        .confirm-message {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 32px;
-            line-height: 1.5;
-            letter-spacing: 0.3px;
-        }
-
-        .confirm-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .confirm-btn {
-            padding: 14px 48px;
-            border: 1px solid;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 140px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 0.5px;
-        }
-
-        .confirm-btn.primary {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: #ffffff;
-            border-color: rgba(239, 68, 68, 0.3);
-            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .confirm-btn.primary:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
-        }
-
-        .confirm-btn.secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.9);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .confirm-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
     </style>
 </head>
 <body>
@@ -1344,6 +1367,7 @@
         </div>
     </div>
 
+
     <script>
         // 全局变量
         let allAlarms = [];
@@ -1485,6 +1509,7 @@
             }
         });
 
+
         // 生成告警数据
         function generateAlarmData() {
             allAlarms = [];
@@ -1552,6 +1577,7 @@
             
             return valueMap[type] || 'N/A';
         }
+
 
         // 渲染告警表格
         function renderAlarmTable() {
