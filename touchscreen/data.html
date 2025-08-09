@@ -7,6 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="common-header-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -280,7 +281,6 @@
             transform: translate(-50%, -50%);
         }
 
-
         /* 新的语言切换器样式 */
         .lang-switcher {
             position: relative;
@@ -361,7 +361,6 @@
             line-height: 1;
         }
         
-
         /* 工具提示 */
         .tooltip {
             position: absolute;
@@ -403,7 +402,6 @@
             display: flex;
             flex-direction: column;
         }
-
 
         .component-list {
             display: flex;
@@ -448,7 +446,6 @@
         .ota-upgrade-btn i {
             font-size: 18px;
         }
-
 
         .component-item {
             display: flex;
@@ -497,7 +494,6 @@
         .component-item.active::before {
             opacity: 1;
         }
-
 
         .component-status {
             margin-left: auto;
@@ -825,7 +821,6 @@
             grid-column: 1 / -1;
         }
         
-
         /* 历史数据网格 */
         .history-grid {
             display: flex;
@@ -1105,73 +1100,34 @@
         }
 
         /* 响应式 - 小屏幕3列 */
+        /* 退出按钮样式 */
+        .logout-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 18px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: scale(1.05);
+            color: #ef4444;
+        }
+
         @media (max-width: 1200px) {
             .realtime-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
-        }
-
-                /* 退出确认弹窗 - 统一深蓝色主题 */
-        .confirm-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .confirm-modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .confirm-content {
-            background: linear-gradient(135deg, #1e3c50 0%, #2c4a62 100%);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(78, 145, 189, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 480px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            animation: scaleIn 0.3s ease;
-            position: relative;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { 
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to { 
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .confirm-icon {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 28px;
-            border-radius: 50%;
-            background: rgba(239, 68, 68, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid rgba(239, 68, 68, 0.4);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .confirm-icon i {
@@ -1179,68 +1135,9 @@
             color: #ef4444;
         }
 
-        .confirm-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
 
-        .confirm-message {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 32px;
-            line-height: 1.5;
-            letter-spacing: 0.3px;
-        }
 
-        .confirm-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
 
-        .confirm-btn {
-            padding: 14px 48px;
-            border: 1px solid;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 140px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 0.5px;
-        }
-
-        .confirm-btn.primary {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: #ffffff;
-            border-color: rgba(239, 68, 68, 0.3);
-            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .confirm-btn.primary:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
-        }
-
-        .confirm-btn.secondary {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.9);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .confirm-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
 /* 响应式 - 更小屏幕2列 */
         @media (max-width: 768px) {
             .data-container {
@@ -1549,35 +1446,7 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* 退出按钮样式 - 与语言按钮一致 */
-        .logout-wrapper {
-            margin-left: 15px;
-        }
 
-        .logout-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .logout-btn svg {
-            width: 20px;
-            height: 20px;
-        }
 
     </style>
 </head>
@@ -1642,16 +1511,9 @@
             </div>
             
             <!-- 退出按钮 -->
-            <div class="logout-wrapper">
-                <button class="logout-btn" onclick="logout()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-            
+            <button class="logout-btn" onclick="logout()" title="退出登录">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
         </div>
     </header>
 
@@ -1748,7 +1610,6 @@
                 <div class="realtime-grid" id="overall-其他参数">
                     <!-- 动态生成 -->
                 </div>
-
 
             </div>
             
@@ -2462,25 +2323,6 @@
             }
         }
         
-        // 登出功能 - 显示弹窗
-        function logout() {
-            const modal = document.getElementById('logoutModal');
-            modal.classList.add('show');
-        }
-
-        // 关闭退出弹窗
-        function closeLogoutModal() {
-            const modal = document.getElementById('logoutModal');
-            modal.classList.remove('show');
-        }
-
-        // 确认退出
-        function confirmLogout() {
-            localStorage.removeItem('touchscreen_user');
-            sessionStorage.removeItem('touchscreen_user');
-            window.location.href = 'login.html';
-        }
-        
         // 初始化字段设置
         function initFieldSettings() {
             let needsSave = false;
@@ -2705,7 +2547,6 @@
                     
                     container.innerHTML = '';
                     
-                    
                     for (const field in config[section]) {
                         const fieldConfig = config[section][field];
                         
@@ -2714,7 +2555,6 @@
                         if (userFieldSettings[component] && userFieldSettings[component].realtime && userFieldSettings[component].realtime[field] !== undefined) {
                             shouldShow = userFieldSettings[component].realtime[field];
                         }
-                        
                         
                         if (shouldShow) {
                             const card = createDataCard(field, fieldConfig);
@@ -4262,7 +4102,6 @@
                 // 其他参数
                 cycles: '🔄',
                 
-                
                 // 策略调度参数
                 strategy: '📋',
                 dispatch: '🎯',
@@ -4307,7 +4146,6 @@
                 pack: '📦',
                 cycles: '🔄',
                 
-                
                 // BMS系统 - 运行统计
                 dailyCharge: '🔋',
                 dailyDischarge: '⚡',
@@ -4333,7 +4171,6 @@
                 outletTemp: '🌡️',
                 humidity: '💧',
                 coolantTemp: '🌡️',
-                
                 
                 // 温控系统 - 运行状态
                 thermalManagementStatus: '🌡️',
@@ -4384,7 +4221,6 @@
                 // 整机概览 - 其他参数
                 cycles: Math.floor(1850 + Math.random() * 50),
                 maxPower: '250',
-                
                 
                 // EMS控制器 - CPU状态
                 cpuUsage: '35',
@@ -4499,7 +4335,6 @@
                 humidity: (45 + Math.random() * 10).toFixed(1),
                 coolantTemp: (22 + Math.random() * 3).toFixed(1),
                 
-                
                 // 温控系统 - 运行状态
                 thermalManagementStatus: (28 + Math.random() * 5).toFixed(1),
                 runningMode: Math.random() > 0.3 ? '制冷' : '制热',
@@ -4536,7 +4371,6 @@
                 // 整机概览 - 其他参数
                 cycles: '健康范围',
                 maxPower: '',
-                
                 
                 // EMS控制器
                 cpuUsage: '',
@@ -4625,7 +4459,6 @@
                 faultCode: '无故障',
                 hardwareVersion: '最新版本',
                 
-                
                 // 电池模组 - 电池性能参数
                 nominalCapacity: '设计容量',
                 batteryActualCapacity: '运行容量',
@@ -4645,7 +4478,6 @@
                 outletTemp: '出风温度正常',
                 humidity: '湿度正常',
                 coolantTemp: '冷却液温度正常',
-                
                 
                 // 温控系统 - 运行状态
                 thermalManagementStatus: '温度正常',
@@ -5156,7 +4988,6 @@
             // 应用新语言
             applyLanguage(lang);
         }
-
 
         // 切换数据标签页
         function switchDataTab(tab) {
@@ -7493,7 +7324,6 @@
         }
     </style>
 
-
     <script>
         // 滚动页面功能
         function scrollPage(direction) {
@@ -7550,7 +7380,6 @@
         }
     </script>
 
-    
     <!-- 自定义日期选择弹窗 -->
     <div id="customCalendarPopup" class="custom-calendar-popup">
         <div class="calendar-header">
@@ -7908,22 +7737,70 @@
     </script>
 
     <!-- 退出确认弹窗 -->
-    <div id="logoutModal" class="confirm-modal">
-        <div class="confirm-content">
-            <div class="confirm-icon">
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-content">
+            <div class="logout-icon">
                 <i class="fas fa-sign-out-alt"></i>
             </div>
-            <div class="confirm-title">退出登录</div>
-            <div class="confirm-message">您确定要退出当前账户吗？</div>
-            <div class="confirm-buttons">
-                <button class="confirm-btn secondary" onclick="closeLogoutModal()">
-                    取消
+            <div class="logout-title" id="logoutTitle">退出登录</div>
+            <div class="logout-message" id="logoutMessage">您确定要退出当前账户吗？退出后需要重新登录。</div>
+            <div class="logout-buttons">
+                <button class="logout-btn-action cancel" id="logoutCancelBtn" onclick="closeLogoutModal()">
+                    <i class="fas fa-times"></i> 取消
                 </button>
-                <button class="confirm-btn primary" onclick="confirmLogout()">
-                    确定
+                <button class="logout-btn-action confirm" id="logoutConfirmBtn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i> 退出
                 </button>
             </div>
         </div>
     </div>
+    <script src="common-header-scripts.js"></script>
+    <script>
+        // 退出功能 - 直接定义在页面中确保可用
+        if (typeof logout === 'undefined') {
+            window.logout = function() {
+                console.log('logout function called from inline script');
+                const modal = document.getElementById('logoutModal');
+                if (modal) {
+                    modal.classList.add('show');
+                    // 更新文本
+                    const titleEl = document.getElementById('logoutTitle');
+                    const messageEl = document.getElementById('logoutMessage');
+                    if (titleEl) titleEl.textContent = '退出登录';
+                    if (messageEl) messageEl.textContent = '您确定要退出当前账户吗？退出后需要重新登录。';
+                } else {
+                    console.error('logoutModal not found');
+                }
+            };
+        }
+        
+        if (typeof closeLogoutModal === 'undefined') {
+            window.closeLogoutModal = function() {
+                const modal = document.getElementById('logoutModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            };
+        }
+        
+        if (typeof confirmLogout === 'undefined') {
+            window.confirmLogout = function() {
+                // 清除登录信息
+                localStorage.removeItem('touchscreen_user');
+                sessionStorage.removeItem('touchscreen_user');
+                localStorage.removeItem('login_time');
+                // 跳转到登录页
+                window.location.href = 'login.html';
+            };
+        }
+        
+        // 确保页面加载完成后函数可用
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking functions:');
+            console.log('logout:', typeof window.logout);
+            console.log('closeLogoutModal:', typeof window.closeLogoutModal);
+            console.log('confirmLogout:', typeof window.confirmLogout);
+        });
+    </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 // 共享的头部脚本 - 语言切换和退出功能
+console.log('common-header-scripts.js loading...');
 
 // 当前语言设置
 let currentLang = localStorage.getItem('language') || 'zh';
@@ -6,16 +7,18 @@ let currentLang = localStorage.getItem('language') || 'zh';
 // 翻译文本
 const translations = {
     zh: {
-        confirmLogout: '退出登录',
-        confirmLogoutMessage: '您确定要退出当前账户吗？',
         cancel: '取消',
-        confirm: '确定'
+        confirm: '确定',
+        logoutTitle: '退出登录',
+        logoutMessage: '您确定要退出当前账户吗？退出后需要重新登录。',
+        logout: '退出'
     },
     en: {
-        confirmLogout: 'Confirm Logout',
-        confirmLogoutMessage: 'Are you sure you want to logout?',
         cancel: 'Cancel',
-        confirm: 'Confirm'
+        confirm: 'Confirm',
+        logoutTitle: 'Logout',
+        logoutMessage: 'Are you sure you want to logout? You will need to login again.',
+        logout: 'Logout'
     }
 };
 
@@ -49,56 +52,50 @@ function changeLanguage(lang, event) {
     }
 }
 
-// 退出登录
-function logout() {
-    const t = translations[currentLang];
-    
-    // 创建自定义确认对话框
-    const confirmDialog = document.createElement('div');
-    confirmDialog.className = 'confirm-dialog-overlay';
-    confirmDialog.innerHTML = `
-        <div class="confirm-dialog">
-            <div class="dialog-header">
-                <div class="dialog-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 7H6a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-5m-1 1V3m0 0h-4m4 0l-5 5" transform="rotate(-45 10 10)"/>
-                    </svg>
-                </div>
-                <div class="dialog-content">
-                    <h3 class="dialog-title">${t.confirmLogout}</h3>
-                    <p class="dialog-message">${t.confirmLogoutMessage}</p>
-                </div>
-            </div>
-            <div class="dialog-buttons">
-                <button class="dialog-btn dialog-btn-cancel" onclick="closeConfirmDialog()">${t.cancel}</button>
-                <button class="dialog-btn dialog-btn-confirm" onclick="confirmLogout()">${t.confirm}</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(confirmDialog);
-    
-    // 添加显示动画
-    setTimeout(() => {
-        confirmDialog.classList.add('show');
-    }, 10);
-}
 
-// 关闭确认对话框
-function closeConfirmDialog() {
-    const dialog = document.querySelector('.confirm-dialog-overlay');
-    if (dialog) {
-        dialog.classList.remove('show');
-        setTimeout(() => {
-            dialog.remove();
-        }, 300);
+// 退出登录相关函数
+function logout() {
+    console.log('logout function called');
+    // 显示退出确认弹窗
+    const modal = document.getElementById('logoutModal');
+    console.log('modal element:', modal);
+    if (modal) {
+        modal.classList.add('show');
+        // 更新弹窗文本
+        updateLogoutModalText();
+    } else {
+        console.error('logoutModal element not found!');
     }
 }
 
-// 确认退出
+function closeLogoutModal() {
+    const modal = document.getElementById('logoutModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
 function confirmLogout() {
+    // 清除登录信息
     localStorage.removeItem('touchscreen_user');
     sessionStorage.removeItem('touchscreen_user');
+    localStorage.removeItem('login_time');
+    
+    // 跳转到登录页
     window.location.href = 'login.html';
+}
+
+// 更新退出弹窗文本
+function updateLogoutModalText() {
+    const titleEl = document.getElementById('logoutTitle');
+    const messageEl = document.getElementById('logoutMessage');
+    const cancelBtn = document.getElementById('logoutCancelBtn');
+    const confirmBtn = document.getElementById('logoutConfirmBtn');
+    
+    if (titleEl) titleEl.textContent = translations[currentLang].logoutTitle;
+    if (messageEl) messageEl.textContent = translations[currentLang].logoutMessage;
+    if (cancelBtn) cancelBtn.innerHTML = `<i class="fas fa-times"></i> ${translations[currentLang].cancel}`;
+    if (confirmBtn) confirmBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> ${translations[currentLang].logout}`;
 }
 
 // 初始化头部功能
@@ -119,8 +116,28 @@ function initializeHeader() {
         if (langSwitcher && !langSwitcher.contains(e.target)) {
             document.getElementById('langDropdown').classList.remove('show');
         }
+        
+        // 点击模态框外部关闭
+        const logoutModal = document.getElementById('logoutModal');
+        if (e.target === logoutModal) {
+            closeLogoutModal();
+        }
     });
 }
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', initializeHeader);
+
+// 确保函数在全局作用域可用
+window.logout = logout;
+window.closeLogoutModal = closeLogoutModal;
+window.confirmLogout = confirmLogout;
+window.changeLanguage = changeLanguage;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+
+console.log('common-header-scripts.js loaded successfully');
+console.log('Available functions:', {
+    logout: typeof window.logout,
+    closeLogoutModal: typeof window.closeLogoutModal,
+    confirmLogout: typeof window.confirmLogout
+});
