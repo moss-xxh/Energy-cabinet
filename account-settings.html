@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号设置 - 储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .settings-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            height: 40px;
+            padding: 0 24px;
+            border: 1px solid #e5e5e5;
+            background: white;
+            color: #333;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 100px;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #d0d0d0;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 1px solid #e5e5e5;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+            border-color: #d0d0d0;
+        }
+
+        [data-theme="dark"] .btn {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+
+        [data-theme="dark"] .btn:hover {
+            background: #374151;
+            border-color: #6b7280;
+        }
+
+        [data-theme="dark"] .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        [data-theme="dark"] .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        [data-theme="dark"] .btn-secondary {
+            background: #374151;
+            color: #9ca3af;
+            border-color: #4b5563;
+        }
+
+        [data-theme="dark"] .btn-secondary:hover {
+            background: #4b5563;
+            border-color: #6b7280;
+        }
+
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .avatar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        .success-message, .error-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .password-strength {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .strength-bar.active.weak {
+            background: var(--error-color);
+        }
+
+        .strength-bar.active.medium {
+            background: var(--warning-color);
+        }
+
+        .strength-bar.active.strong {
+            background: var(--success-color);
+        }
+
+        .password-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-label {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-trigger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <img src="logo.png" alt="AlwaysControl Technology" />
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+                <i class="fas fa-moon" id="headerThemeIcon"></i>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
+                <i class="fas fa-globe"></i>
+            </button>
+            <a href="alarm-management.html" class="notification-badge" style="text-decoration: none;">
+                <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
+            </a>
+            <div class="user-menu" onclick="toggleUserDropdown(event)">
+                <div class="avatar">A</div>
+                <span class="user-name" id="userName">管理员</span>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="account-settings.html" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>账号设置</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="confirmLogout(event)">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>退出登录</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="menu">
+            <a href="dashboard.html" class="menu-item" data-menu="dashboard">
+                <span style="font-size: 18px; margin-right: 12px;">📊</span>
+                <span>仪表盘</span>
+            </a>
+            <a href="site1.html" class="menu-item" data-menu="site1">
+                <span style="font-size: 18px; margin-right: 12px;">🏢</span>
+                <span>站点管理</span>
+            </a>
+            <a href="devices.html" class="menu-item" data-menu="devices">
+                <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
+                <span>设备管理</span>
+            </a>
+            <a href="alarm-management.html" class="menu-item" data-menu="alarm-management">
+                <span style="font-size: 18px; margin-right: 12px;">🔔</span>
+                <span>告警管理</span>
+            </a>
+            <a href="rule-engine.html" class="menu-item" data-menu="rule-engine" style="display: none;">
+                <i class="fas fa-code-branch"></i>
+                <span>规则引擎</span>
+            </a>
+            <div class="menu-item-group">
+                <a href="javascript:void(0)" class="menu-item" data-menu="settings" onclick="toggleSubmenu(this)">
+                    <span style="font-size: 18px; margin-right: 12px;">⚙️</span>
+                    <span>系统管理</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
+                </a>
+                <div class="submenu" style="display: none;">
+                    <a href="menus.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
+                        <span>菜单管理</span>
+                    </a>
+                    <a href="roles.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👥</span>
+                        <span>角色管理</span>
+                    </a>
+                    <a href="personnel.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">👤</span>
+                        <span>人员管理</span>
+                    </a>
+                    <a href="logs.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">📝</span>
+                        <span>日志管理</span>
+                    </a>
+                    <a href="system-management.html" class="menu-item submenu-item">
+                        <span style="font-size: 16px; margin-right: 10px;">🔧</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="settings-container">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">账号设置</h1>
+                <p class="page-subtitle">管理您的个人信息和账号安全</p>
+            </div>
+
+            <!-- 成功/错误消息 -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                <span>保存成功！</span>
+            </div>
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>保存失败，请稍后重试</span>
+            </div>
+
+            <!-- 基本信息 -->
+            <div class="settings-card">
+                <div class="settings-header">
+                    <div class="settings-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="settings-title">基本信息</h2>
+                </div>
+
+                <!-- 头像 -->
+                <div class="avatar-section">
+                    <div class="avatar-large" id="avatarPreview">A</div>
+                    <div class="avatar-actions">
+                        <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">
+                            <i class="fas fa-upload"></i> 上传头像
+                        </button>
+                        <input type="file" id="avatarInput" style="display: none;" accept="image/*" onchange="handleAvatarChange(event)">
+                        <span style="font-size: 12px; color: var(--text-secondary);">支持 JPG、PNG 格式，最大 2MB</span>
+                    </div>
+                </div>
+
+                <!-- 表单 -->
+                <form id="basicInfoForm">
+                    <div class="form-row">
+                        <label class="form-label">用户名</label>
+                        <input type="text" class="form-control" value="admin" disabled style="background: var(--bg-secondary); cursor: not-allowed;">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">昵称</label>
+                        <input type="text" class="form-control" id="nickname" value="管理员" placeholder="请输入昵称">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">邮箱</label>
+                        <input type="email" class="form-control" id="email" value="admin@example.com" placeholder="请输入邮箱">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">手机号</label>
+                        <input type="tel" class="form-control" id="phone" value="138****1234" placeholder="请输入手机号">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetBasicInfo()">
+                            重置
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            保存修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 修改密码 -->
+            <div class="settings-card">
+                <div class="settings-header">
+                    <div class="settings-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2 class="settings-title">修改密码</h2>
+                </div>
+
+                <form id="passwordForm">
+                    <div class="form-row">
+                        <label class="form-label">当前密码</label>
+                        <input type="password" class="form-control" id="currentPassword" placeholder="请输入当前密码">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">新密码</label>
+                        <div style="width: 100%;">
+                            <input type="password" class="form-control" id="newPassword" placeholder="请输入新密码" oninput="checkPasswordStrength(this.value)">
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                            </div>
+                            <div class="password-hint">密码需包含字母、数字，长度8-20位</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">确认密码</label>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="请再次输入新密码">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetPasswordForm()">
+                            重置
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            修改密码
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- 退出确认弹窗 -->
+    <div id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-primary); border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <h3 style="margin: 0 0 16px 0; color: var(--text-primary); font-size: 1.25rem;">确认退出</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">您确定要退出登录吗？</p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="closeLogoutModal()" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; color: var(--text-secondary);">取消</button>
+                <button onclick="logout()" style="padding: 8px 16px; background: var(--error-color); color: white; border: none; border-radius: 6px; cursor: pointer;">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 用户下拉菜单样式 */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-divider {
+            border-top: 1px solid var(--border-color);
+            margin: 4px 0;
+        }
+
+        /* 设置当前菜单为不活跃状态 */
+        .menu-item.active {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+    </style>
+    <script>
+        // 用户下拉菜单和退出功能已在common.js中定义
+
+        // 处理头像上传
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('文件大小不能超过2MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 这里可以预览图片
+                    console.log('头像已选择:', file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 检查密码强度
+        function checkPasswordStrength(password) {
+            const bars = document.querySelectorAll('.strength-bar');
+            bars.forEach(bar => bar.className = 'strength-bar');
+            
+            if (password.length < 6) {
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            const strengthLevels = ['weak', 'medium', 'strong'];
+            const level = Math.min(Math.floor(strength * 3 / 4), 2);
+            
+            for (let i = 0; i <= level; i++) {
+                bars[i].classList.add('active', strengthLevels[level]);
+            }
+        }
+
+        // 重置基本信息表单
+        function resetBasicInfo() {
+            document.getElementById('nickname').value = '管理员';
+            document.getElementById('email').value = 'admin@example.com';
+            document.getElementById('phone').value = '138****1234';
+        }
+
+        // 重置密码表单
+        function resetPasswordForm() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.querySelectorAll('.strength-bar').forEach(bar => bar.className = 'strength-bar');
+        }
+
+        // 提交基本信息表单
+        document.getElementById('basicInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 模拟保存
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'flex';
+            
+            // 更新页面上的用户名显示
+            const nickname = document.getElementById('nickname').value;
+            document.getElementById('userName').textContent = nickname;
+            
+            // 更新头像首字母
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatar = document.querySelector('.avatar');
+            const firstLetter = nickname.charAt(0).toUpperCase();
+            avatarPreview.textContent = firstLetter;
+            if (avatar) avatar.textContent = firstLetter;
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        });
+
+        // 提交密码表单
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>两次输入的密码不一致</span>';
+                errorMsg.style.display = 'flex';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>密码长度不能少于8位</span>';
+                errorMsg.style.display = 'flex';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            // 模拟保存
+            const successMsg = document.getElementById('successMessage');
+            successMsg.innerHTML = '<i class="fas fa-check-circle"></i><span>密码修改成功！</span>';
+            successMsg.style.display = 'flex';
+            
+            // 清空表单
+            resetPasswordForm();
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置用户名
+            const username = localStorage.getItem('username') || '管理员';
+            document.getElementById('userName').textContent = username;
+            document.getElementById('nickname').value = username;
+            
+            // 设置头像首字母
+            const firstLetter = username.charAt(0).toUpperCase();
+            document.getElementById('avatarPreview').textContent = firstLetter;
+            const avatar = document.querySelector('.avatar');
+            if (avatar) avatar.textContent = firstLetter;
+        });
+    </script>
+</body>
+</html>

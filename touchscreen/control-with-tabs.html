@@ -858,6 +858,34 @@
             border: 1px solid rgba(255, 0, 0, 0.3);
         }
 
+        /* 状态指示器样式 */
+        .status-indicator {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            margin-left: 8px;
+            display: inline-block;
+        }
+        
+        .status-indicator.normal {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-indicator.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-indicator.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
         /* 历史数据样式 */
         .history-controls {
             margin-bottom: 20px;
@@ -962,6 +990,7 @@
                 <div class="component-tab" data-component="pcs" onclick="switchComponent('pcs')">逆变器</div>
                 <div class="component-tab" data-component="bms" onclick="switchComponent('bms')">BMS</div>
                 <div class="component-tab" data-component="battery" onclick="switchComponent('battery')">电池</div>
+                <div class="component-tab" data-component="meter" onclick="switchComponent('meter')">电表</div>
                 <div class="component-tab" data-component="thermal" onclick="switchComponent('thermal')">温度</div>
                 <div class="component-tab" data-component="fire" onclick="switchComponent('fire')">消防</div>
             </div>
@@ -1098,6 +1127,8 @@
                 html = generateBMSControlPanel();
             } else if (currentComponent === 'battery') {
                 html = generateBatteryControlPanel();
+            } else if (currentComponent === 'meter') {
+                html = generateMeterControlPanel();
             } else if (currentComponent === 'thermal' || currentComponent === 'hvac') {
                 html = generateThermalControlPanel();
             } else if (currentComponent === 'fire') {
@@ -1496,6 +1527,112 @@
         }
 
         // 生成温控控制面板
+        function generateMeterControlPanel() {
+            return `
+                <div class="control-panel">
+                    <div class="control-section-title">电表系统监控</div>
+                    <div class="control-group">
+                        <div class="control-group-title">电能计量</div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">总有功功率</label>
+                                <input type="text" class="control-input" value="125.6 kW" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                            <div class="control-item">
+                                <label class="control-label">总无功功率</label>
+                                <input type="text" class="control-input" value="18.2 kVar" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">频率</label>
+                                <input type="text" class="control-input" value="50.02 Hz" readonly>
+                                <span class="status-indicator normal">稳定</span>
+                            </div>
+                            <div class="control-item">
+                                <label class="control-label">功率因数</label>
+                                <input type="text" class="control-input" value="0.98" readonly>
+                                <span class="status-indicator normal">良好</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-group-title">三相电压</div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">A相电压</label>
+                                <input type="text" class="control-input" value="380.5 V" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                            <div class="control-item">
+                                <label class="control-label">B相电压</label>
+                                <input type="text" class="control-input" value="379.8 V" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">C相电压</label>
+                                <input type="text" class="control-input" value="380.2 V" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-group-title">三相电流</div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">A相电流</label>
+                                <input type="text" class="control-input" value="191.2 A" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                            <div class="control-item">
+                                <label class="control-label">B相电流</label>
+                                <input type="text" class="control-input" value="190.8 A" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">C相电流</label>
+                                <input type="text" class="control-input" value="191.5 A" readonly>
+                                <span class="status-indicator normal">正常</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-group-title">电能统计</div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">日有功电量</label>
+                                <input type="text" class="control-input" value="2856.4 kWh" readonly>
+                            </div>
+                            <div class="control-item">
+                                <label class="control-label">累计有功电量</label>
+                                <input type="text" class="control-input" value="15.6 MWh" readonly>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label class="control-label">电表状态</label>
+                                <select class="control-select" disabled>
+                                    <option value="normal">正常运行</option>
+                                    <option value="error">通信异常</option>
+                                    <option value="offline">离线</option>
+                                </select>
+                                <span class="status-indicator normal">在线</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function generateThermalControlPanel() {
             return `
                 <div class="control-panel">

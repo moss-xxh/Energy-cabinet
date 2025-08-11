@@ -827,6 +827,97 @@
             flex-direction: column;
             gap: 20px;
         }
+        
+        /* 电表详细数据网格 */
+        .meter-detail-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .meter-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .meter-section .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .meter-section .section-title::before {
+            content: '⚡';
+            font-size: 18px;
+        }
+        
+        .meter-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .meter-params-grid.energy-stats {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+        
+        .meter-param-card {
+            background: rgba(0, 150, 255, 0.08);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .meter-param-card:hover {
+            background: rgba(0, 150, 255, 0.12);
+            border-color: rgba(0, 150, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .meter-param-card .param-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+        
+        .meter-param-card .param-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+        
+        .meter-param-card .param-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: normal;
+        }
+        
+        .meter-param-card .param-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .meter-param-card .param-status.normal {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
 
         .data-card {
             background: rgba(15, 25, 42, 0.6);
@@ -1800,7 +1891,7 @@
                 realtime: {
                     '策略调度参数': {
                         strategy: { label: '当前策略', unit: '', default: true, value: '峰谷套利', status: '自动执行中', statusColor: '#00ff88' },
-                        dispatch: { label: '调度指令', unit: '', default: true, value: '充电', statusColor: '#00ff88' },
+                        dispatch: { label: '调度指令', unit: '', default: true, value: '充电', statusColor: '#00ff88', subValue: '最大功率：300kW' },
                         targetSOC: { label: '目标SOC', unit: '%', default: true, value: '90' },
                         maxPower: { label: '最大功率', unit: 'kW', default: true }
                     },
@@ -2899,10 +2990,17 @@
             
             // 电表历史数据
             if (component === 'meter') {
+                console.log('Rendering meter history data');
+                console.log('Meter config:', dataFieldsConfig.meter);
+                console.log('User settings:', userFieldSettings.meter);
+                
                 let historyHtml = ``;
                 
                 // 功率趋势分析
-                if (shouldShowField('meter', 'history', 'powerTrend')) {
+                const shouldShowPowerTrend = shouldShowField('meter', 'history', 'powerTrend');
+                console.log('shouldShowPowerTrend:', shouldShowPowerTrend);
+                
+                if (shouldShowPowerTrend) {
                     historyHtml += `
                         <div class="chart-container">
                             <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -2925,7 +3023,10 @@
                 }
                 
                 // 电量消耗统计
-                if (shouldShowField('meter', 'history', 'energyConsumption')) {
+                const shouldShowEnergyConsumption = shouldShowField('meter', 'history', 'energyConsumption');
+                console.log('shouldShowEnergyConsumption:', shouldShowEnergyConsumption);
+                
+                if (shouldShowEnergyConsumption) {
                     historyHtml += `
                         <div class="chart-container">
                             <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -2993,6 +3094,9 @@
                     `;
                 }
                 
+                console.log('Final meter historyHtml:', historyHtml);
+                console.log('Container element:', container);
+                
                 container.innerHTML = historyHtml;
                 
                 setTimeout(() => {
@@ -3009,6 +3113,14 @@
                     });
                     
                     initMeterHistoryCharts();
+                    
+                    // 初始化各个图表的默认数据
+                    setTimeout(() => {
+                        updateMeterPowerChart(dateString);
+                        updateMeterEnergyChart(dateString);
+                        updateMeterVoltageChart(dateString);
+                        updateMeterHarmonicChart(dateString);
+                    }, 200);
                 }, 100);
                 return;
             }
@@ -5926,7 +6038,7 @@
             // 功率趋势分析
             const powerCtx = document.getElementById('meterPowerChart');
             if (powerCtx) {
-                new Chart(powerCtx.getContext('2d'), {
+                meterChartInstances.meterPowerChart = new Chart(powerCtx.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: Array.from({length: 24}, (_, i) => `${i}时`),
@@ -5963,32 +6075,32 @@
             // 电量消耗统计
             const energyCtx = document.getElementById('meterEnergyChart');
             if (energyCtx) {
-                new Chart(energyCtx.getContext('2d'), {
+                meterChartInstances.meterEnergyChart = new Chart(energyCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: Array.from({length: 30}, (_, i) => `${i + 1}日`),
+                        labels: Array.from({length: 24}, (_, i) => `${i}时`),
                         datasets: [{
-                            label: '日有功电量',
-                            data: Array.from({length: 30}, () => Math.random() * 200 + 1250),
+                            label: '有功电量',
+                            data: Array.from({length: 24}, () => Math.random() * 25 + 45),
                             backgroundColor: 'rgba(59, 130, 246, 0.7)',
                             borderColor: '#3b82f6',
                             borderWidth: 1
                         }, {
-                            label: '日无功电量',
-                            data: Array.from({length: 30}, () => Math.random() * 40 + 180),
+                            label: '无功电量',
+                            data: Array.from({length: 24}, () => Math.random() * 8 + 4),
                             backgroundColor: 'rgba(245, 158, 11, 0.7)',
                             borderColor: '#f59e0b',
                             borderWidth: 1
                         }]
                     },
-                    options: getChartOptions('电量 (kWh/kVarh)', 0, 1500)
+                    options: getChartOptions('电量 (kWh/kVarh)', 0, 80)
                 });
             }
             
             // 电压质量监测
             const voltageCtx = document.getElementById('meterVoltageChart');
             if (voltageCtx) {
-                new Chart(voltageCtx.getContext('2d'), {
+                meterChartInstances.meterVoltageChart = new Chart(voltageCtx.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: Array.from({length: 24}, (_, i) => `${i}时`),
@@ -6022,13 +6134,13 @@
             // 谐波分析
             const harmonicCtx = document.getElementById('meterHarmonicChart');
             if (harmonicCtx) {
-                new Chart(harmonicCtx.getContext('2d'), {
+                meterChartInstances.meterHarmonicChart = new Chart(harmonicCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: ['基波', '2次谐波', '3次谐波', '5次谐波', '7次谐波', '11次谐波', '13次谐波'],
+                        labels: ['基波', '2次', '3次', '4次', '5次', '6次', '7次', '8次', '9次', '10次', '11次', '12次', '13次', '14次', '15次', '16次', '17次', '18次', '19次', '20次', '21次'],
                         datasets: [{
                             label: '谐波含量 (%)',
-                            data: [100, 2.1, 1.8, 1.2, 0.9, 0.6, 0.4],
+                            data: [2.8, 2.3, 1.9, 1.4, 1.1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
                             backgroundColor: [
                                 'rgba(59, 130, 246, 0.7)',
                                 'rgba(239, 68, 68, 0.7)',
@@ -6036,7 +6148,21 @@
                                 'rgba(16, 185, 129, 0.7)',
                                 'rgba(139, 92, 246, 0.7)',
                                 'rgba(236, 72, 153, 0.7)',
-                                'rgba(14, 165, 233, 0.7)'
+                                'rgba(14, 165, 233, 0.7)',
+                                'rgba(248, 113, 113, 0.7)',
+                                'rgba(34, 197, 94, 0.7)',
+                                'rgba(251, 191, 36, 0.7)',
+                                'rgba(168, 85, 247, 0.7)',
+                                'rgba(244, 63, 94, 0.7)',
+                                'rgba(6, 182, 212, 0.7)',
+                                'rgba(129, 140, 248, 0.7)',
+                                'rgba(45, 212, 191, 0.7)',
+                                'rgba(251, 146, 60, 0.7)',
+                                'rgba(196, 181, 253, 0.7)',
+                                'rgba(110, 231, 183, 0.7)',
+                                'rgba(254, 215, 170, 0.7)',
+                                'rgba(217, 70, 239, 0.7)',
+                                'rgba(125, 211, 252, 0.7)'
                             ],
                             borderColor: [
                                 '#3b82f6',
@@ -6045,13 +6171,118 @@
                                 '#10b981',
                                 '#8b5cf6',
                                 '#ec4899',
-                                '#0ea5e9'
+                                '#0ea5e9',
+                                '#f87171',
+                                '#22c55e',
+                                '#fbbf24',
+                                '#a855f7',
+                                '#f43f5e',
+                                '#06b6d4',
+                                '#818cf8',
+                                '#2dd4bf',
+                                '#fb923c',
+                                '#c4b5fd',
+                                '#6ee7b7',
+                                '#fed7aa',
+                                '#d946ef',
+                                '#7dd3fc'
                             ],
                             borderWidth: 1
                         }]
                     },
-                    options: getChartOptions('谐波含量 (%)', 0, 100)
+                    options: getChartOptions('谐波含量 (%)', 0, 3)
                 });
+            }
+        }
+
+        // 存储电表图表实例
+        let meterChartInstances = {};
+
+        // 更新电表功率趋势图表
+        function updateMeterPowerChart(selectedDate) {
+            const ctx = document.getElementById('meterPowerChart');
+            if (ctx && meterChartInstances.meterPowerChart) {
+                // 根据选择的日期生成对应的小时数据
+                const dateObj = new Date(selectedDate);
+                const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                
+                // 使用日期作为随机数种子，确保同一天的数据保持一致
+                const seed = dayOfYear;
+                const generateData = (base, variation) => {
+                    return Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = (seed + i * 37) % 100 / 100;
+                        return base + pseudoRandom * variation;
+                    });
+                };
+
+                meterChartInstances.meterPowerChart.data.datasets[0].data = generateData(184.4, 40);
+                meterChartInstances.meterPowerChart.data.datasets[1].data = generateData(31.9, 15);
+                meterChartInstances.meterPowerChart.data.datasets[2].data = generateData(255.4, 50);
+                meterChartInstances.meterPowerChart.update();
+            }
+        }
+
+        // 更新电表电量消耗图表
+        function updateMeterEnergyChart(selectedDate) {
+            const ctx = document.getElementById('meterEnergyChart');
+            if (ctx && meterChartInstances.meterEnergyChart) {
+                const dateObj = new Date(selectedDate);
+                const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                
+                const seed = dayOfYear;
+                const generateData = (base, variation) => {
+                    return Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = (seed + i * 43) % 100 / 100;
+                        return base + pseudoRandom * variation;
+                    });
+                };
+
+                meterChartInstances.meterEnergyChart.data.datasets[0].data = generateData(52.1, 25);
+                meterChartInstances.meterEnergyChart.data.datasets[1].data = generateData(7.8, 8);
+                meterChartInstances.meterEnergyChart.update();
+            }
+        }
+
+        // 更新电表电压质量图表
+        function updateMeterVoltageChart(selectedDate) {
+            const ctx = document.getElementById('meterVoltageChart');
+            if (ctx && meterChartInstances.meterVoltageChart) {
+                const dateObj = new Date(selectedDate);
+                const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                
+                const seed = dayOfYear;
+                const generateData = (base, variation) => {
+                    return Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = (seed + i * 47) % 100 / 100;
+                        return base + pseudoRandom * variation;
+                    });
+                };
+
+                meterChartInstances.meterVoltageChart.data.datasets[0].data = generateData(382.5, 6);
+                meterChartInstances.meterVoltageChart.data.datasets[1].data = generateData(383.1, 6);
+                meterChartInstances.meterVoltageChart.data.datasets[2].data = generateData(381.8, 6);
+                meterChartInstances.meterVoltageChart.update();
+            }
+        }
+
+        // 更新电表谐波分析图表
+        function updateMeterHarmonicChart(selectedDate) {
+            const ctx = document.getElementById('meterHarmonicChart');
+            if (ctx && meterChartInstances.meterHarmonicChart) {
+                const dateObj = new Date(selectedDate);
+                const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                
+                const seed = dayOfYear;
+                const generateData = (baseValues) => {
+                    return baseValues.map((base, i) => {
+                        const pseudoRandom = (seed + i * 53) % 100 / 100;
+                        return Math.max(0.1, base + (pseudoRandom - 0.5) * base * 0.3);
+                    });
+                };
+
+                const harmonicData = generateData([2.8, 2.3, 1.9, 1.4, 1.1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]);
+                meterChartInstances.meterHarmonicChart.data.datasets[0].data = harmonicData;
+                meterChartInstances.meterHarmonicChart.update();
             }
         }
         
@@ -7678,6 +7909,17 @@
                         } else if (inputId.startsWith('fire') && inputId.endsWith('DatePicker')) {
                             console.log('Triggering Fire chart update for:', inputId);
                             initFireHistoryCharts();
+                        } else if (inputId.startsWith('meter') && inputId.endsWith('DatePicker')) {
+                            console.log('Triggering Meter chart update for:', inputId, 'with date:', dateString);
+                            if (inputId === 'meterPowerDatePicker') {
+                                updateMeterPowerChart(dateString);
+                            } else if (inputId === 'meterEnergyDatePicker') {
+                                updateMeterEnergyChart(dateString);
+                            } else if (inputId === 'meterVoltageDatePicker') {
+                                updateMeterVoltageChart(dateString);
+                            } else if (inputId === 'meterHarmonicDatePicker') {
+                                updateMeterHarmonicChart(dateString);
+                            }
                         }
                     } catch (error) {
                         console.error('Error updating chart:', error);

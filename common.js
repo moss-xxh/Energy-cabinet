@@ -3,6 +3,45 @@ let currentTheme = localStorage.getItem('theme') || 'light';
 let currentLang = localStorage.getItem('language') || 'zh';
 let sidebarOpen = true;
 
+// 用户下拉菜单功能
+function toggleUserDropdown(event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// 点击其他地方关闭下拉菜单
+document.addEventListener('click', function() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// 确认退出
+function confirmLogout(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    const modal = document.getElementById('logoutModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// 关闭退出弹窗
+function closeLogoutModal() {
+    const modal = document.getElementById('logoutModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // 翻译对象
 const translations = {
     zh: {
@@ -252,8 +291,7 @@ function checkAuth() {
 
 // 登出功能
 function logout() {
-    // localStorage.removeItem('isLoggedIn');
-    // window.location.href = 'login.html';
-    // 改为显示提示信息
-    alert('退出登录功能已禁用，您可以继续使用系统');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    window.location.href = 'login.html';
 }

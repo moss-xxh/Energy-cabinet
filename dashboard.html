@@ -361,12 +361,23 @@
             <button class="lang-btn" onclick="toggleLanguage()" title="切换语言">
                 <i class="fas fa-globe"></i>
             </button>
-            <div class="notification-badge">
+            <a href="alarm-management.html" class="notification-badge" style="text-decoration: none;">
                 <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary);"></i>
-            </div>
-            <div class="user-menu" onclick="logout()">
+            </a>
+            <div class="user-menu" onclick="toggleUserDropdown(event)">
                 <div class="avatar">A</div>
                 <span class="user-name" id="userName">管理员</span>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="account-settings.html" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>账号设置</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="confirmLogout(event)">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>退出登录</span>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -820,7 +831,7 @@
         </div>
 
         <!-- 告警分布饼图 -->
-        <div class="card">
+        <div class="card" style="margin-top: 24px;">
             <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">告警分布</h3>
@@ -844,6 +855,70 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="common.js"></script>
+    
+    <!-- 用户下拉菜单样式 -->
+    <style>
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-divider {
+            border-top: 1px solid var(--border-color);
+            margin: 4px 0;
+        }
+    </style>
+    
+    <!-- 退出确认弹窗 -->
+    <div id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-primary); border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <h3 style="margin: 0 0 16px 0; color: var(--text-primary); font-size: 1.25rem;">确认退出</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">您确定要退出登录吗？</p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="closeLogoutModal()" style="padding: 8px 16px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; color: var(--text-secondary);">取消</button>
+                <button onclick="logout()" style="padding: 8px 16px; background: var(--error-color); color: white; border: none; border-radius: 6px; cursor: pointer;">确认退出</button>
+            </div>
+        </div>
+    </div>
     <script>
         // 检查登录状态
         checkAuth();
@@ -1634,6 +1709,39 @@
             // 初始化时更新科技园区站的数据
             updateTotalEnergyStatus('station1');
         });
+        // 用户下拉菜单
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 确认退出
+        function confirmLogout(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
+
+        // 关闭退出弹窗
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
     </script>
 </body>
 </html>
