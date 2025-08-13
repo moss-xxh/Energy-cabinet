@@ -2084,58 +2084,96 @@
                     <div class="form-section">
                         <h3 class="section-title">电价设置</h3>
                         
-                        <!-- 电价设置卡片 -->
-                        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 0;">
-                            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                                <!-- 第一排：货币单位 -->
-                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                                    <div class="form-group">
-                                        <label class="form-label">货币单位</label>
-                                        <select class="form-select" id="currency">
-                                            <option value="CNY">人民币 (CNY)</option>
-                                            <option value="USD">美元 (USD)</option>
-                                            <option value="EUR">欧元 (EUR)</option>
-                                            <option value="GBP">英镑 (GBP)</option>
-                                            <option value="JPY">日元 (JPY)</option>
-                                            <option value="KRW">韩元 (KRW)</option>
-                                            <option value="CAD">加拿大元 (CAD)</option>
-                                            <option value="AUD">澳大利亚元 (AUD)</option>
-                                            <option value="CHF">瑞士法郎 (CHF)</option>
-                                            <option value="SGD">新加坡元 (SGD)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <!-- 空白占位 -->
-                                    </div>
+                        <!-- 货币单位卡片 -->
+                        <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">货币单位</label>
+                                    <select class="form-select" id="currency">
+                                        <option value="CNY">人民币 (CNY)</option>
+                                        <option value="USD">美元 (USD)</option>
+                                        <option value="EUR">欧元 (EUR)</option>
+                                        <option value="GBP">英镑 (GBP)</option>
+                                        <option value="JPY">日元 (JPY)</option>
+                                        <option value="KRW">韩元 (KRW)</option>
+                                        <option value="CAD">加拿大元 (CAD)</option>
+                                        <option value="AUD">澳大利亚元 (AUD)</option>
+                                        <option value="CHF">瑞士法郎 (CHF)</option>
+                                        <option value="SGD">新加坡元 (SGD)</option>
+                                    </select>
                                 </div>
-                                
-                                <!-- 第二排：电价类型 -->
-                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                                    <div class="form-group">
-                                        <label class="form-label">上网电价类型</label>
-                                        <select class="form-select" id="feed-price-type">
-                                            <option value="fixed">固定电价</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">用电电价类型</label>
-                                        <select class="form-select" id="consume-price-type">
-                                            <option value="fixed">固定电价</option>
-                                        </select>
-                                    </div>
+                                <div class="form-group">
+                                    <!-- 空白占位 -->
                                 </div>
-                                
-                                <!-- 第三排：电价值 -->
-                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                                    <div class="form-group">
-                                        <label class="form-label">上网电价值</label>
-                                        <input type="number" class="form-input" id="feed-price" placeholder="请输入上网电价" step="0.01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">用电电价值</label>
-                                        <input type="number" class="form-input" id="consume-price" placeholder="请输入用电电价" step="0.01">
-                                    </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 上网电价设置卡片 -->
+                        <div style="background: #e6f4ff; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #91d5ff;">
+                            <h4 style="font-size: 15px; color: #1890ff; margin: 0 0 1rem 0; font-weight: 600;">
+                                <i class="fas fa-upload" style="margin-right: 8px;"></i>上网电价设置
+                            </h4>
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">上网电价类型</label>
+                                    <select class="form-select" id="feed-price-type" onchange="updatePriceFields('feed')">
+                                        <option value="fixed">固定电价</option>
+                                        <option value="tou">分时电价（峰谷平）</option>
+                                        <option value="tou-4">分时电价（尖峰谷平）</option>
+                                        <option value="seasonal">季节性电价</option>
+                                        <option value="ladder">阶梯电价</option>
+                                        <option value="realtime">实时电价</option>
+                                        <option value="critical-peak">尖峰电价</option>
+                                        <option value="demand-response">需求响应电价</option>
+                                        <option value="spot">现货市场电价</option>
+                                        <option value="green">绿电交易电价</option>
+                                    </select>
                                 </div>
+                                <div class="form-group" id="feed-price-container">
+                                    <label class="form-label">上网电价值</label>
+                                    <input type="number" class="form-input" id="feed-price" placeholder="请输入上网电价" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <!-- 上网电价动态详细设置区域 -->
+                            <div id="feed-price-details" style="display: none; margin-top: 1rem;">
+                                <!-- 动态内容将通过JavaScript添加 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 用电电价设置卡片 -->
+                        <div style="background: #fff0f6; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 0; border: 1px solid #ffadd2;">
+                            <h4 style="font-size: 15px; color: #eb2f96; margin: 0 0 1rem 0; font-weight: 600;">
+                                <i class="fas fa-download" style="margin-right: 8px;"></i>用电电价设置
+                            </h4>
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="form-group">
+                                    <label class="form-label">用电电价类型</label>
+                                    <select class="form-select" id="consume-price-type" onchange="updatePriceFields('consume')">
+                                        <option value="fixed">固定电价</option>
+                                        <option value="tou">分时电价（峰谷平）</option>
+                                        <option value="tou-4">分时电价（尖峰谷平）</option>
+                                        <option value="seasonal">季节性电价</option>
+                                        <option value="ladder">阶梯电价</option>
+                                        <option value="realtime">实时电价</option>
+                                        <option value="critical-peak">尖峰电价</option>
+                                        <option value="demand-response">需求响应电价</option>
+                                        <option value="two-part">两部制电价</option>
+                                        <option value="capacity">容量电价</option>
+                                        <option value="spot">现货市场电价</option>
+                                        <option value="dynamic">动态电价</option>
+                                        <option value="interruptible">可中断电价</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="consume-price-container">
+                                    <label class="form-label">用电电价值</label>
+                                    <input type="number" class="form-input" id="consume-price" placeholder="请输入用电电价" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <!-- 用电电价动态详细设置区域 -->
+                            <div id="consume-price-details" style="display: none; margin-top: 1rem;">
+                                <!-- 动态内容将通过JavaScript添加 -->
                             </div>
                         </div>
                         
@@ -3731,6 +3769,451 @@
             
             // 关闭弹窗
             closeMapModal();
+        }
+        
+        // 添加时段
+        let timeSlotCounter = {};
+        
+        function addTimeSlot(type, period) {
+            const key = `${type}-${period}`;
+            if (!timeSlotCounter[key]) {
+                timeSlotCounter[key] = 1;
+            }
+            timeSlotCounter[key]++;
+            
+            const slotId = `${key}-slot-${timeSlotCounter[key]}`;
+            const container = document.getElementById(`${key}-additional-slots`);
+            
+            const newSlot = document.createElement('div');
+            newSlot.id = slotId;
+            newSlot.style.cssText = 'display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;';
+            newSlot.innerHTML = `
+                <input type="time" class="form-input" id="${key}-start${timeSlotCounter[key]}" style="width: 120px;">
+                <span style="line-height: 36px;">至</span>
+                <input type="time" class="form-input" id="${key}-end${timeSlotCounter[key]}" style="width: 120px;">
+                <button onclick="removeTimeSlot('${slotId}')" style="padding: 0 12px; height: 36px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-minus"></i> 删除
+                </button>
+            `;
+            
+            container.appendChild(newSlot);
+        }
+        
+        function removeTimeSlot(slotId) {
+            const element = document.getElementById(slotId);
+            if (element) {
+                element.remove();
+            }
+        }
+        
+        // 更新电价字段显示
+        function updatePriceFields(type) {
+            const priceType = document.getElementById(type + '-price-type').value;
+            const priceContainer = document.getElementById(type + '-price-container');
+            const detailsContainer = document.getElementById(type + '-price-details');
+            
+            // 清空详细设置区域
+            detailsContainer.innerHTML = '';
+            detailsContainer.style.display = 'none';
+            
+            // 根据电价类型更新界面
+            switch(priceType) {
+                case 'fixed':
+                    // 固定电价，只显示一个输入框
+                    priceContainer.style.display = 'block';
+                    priceContainer.innerHTML = `
+                        <label class="form-label">${type === 'feed' ? '上网' : '用电'}电价值</label>
+                        <input type="number" class="form-input" id="${type}-price" placeholder="请输入${type === 'feed' ? '上网' : '用电'}电价" step="0.01">
+                    `;
+                    break;
+                    
+                case 'tou':
+                    // 分时电价（峰谷平）
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">分时电价设置（峰谷平）</h4>
+                            
+                            <!-- 峰时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #ef4444; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-chart-line" style="margin-right: 6px;"></i>峰时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">峰时电价</label>
+                                        <input type="number" class="form-input" id="${type}-peak-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">峰时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-peak-start1" value="08:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-peak-end1" value="12:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'peak')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-peak-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 平时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #f59e0b; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-minus" style="margin-right: 6px;"></i>平时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">平时电价</label>
+                                        <input type="number" class="form-input" id="${type}-flat-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">平时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-flat-start1" value="12:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-flat-end1" value="17:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'flat')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-flat-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 谷时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #10b981; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-chart-line" style="margin-right: 6px; transform: rotate(180deg); display: inline-block;"></i>谷时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">谷时电价</label>
+                                        <input type="number" class="form-input" id="${type}-valley-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">谷时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-valley-start1" value="23:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-valley-end1" value="08:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'valley')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-valley-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'tou-4':
+                    // 分时电价（尖峰谷平）
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">分时电价设置（尖峰谷平）</h4>
+                            
+                            <!-- 尖峰时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #dc2626; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-bolt" style="margin-right: 6px;"></i>尖峰设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">尖峰电价</label>
+                                        <input type="number" class="form-input" id="${type}-critical-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">尖峰时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-critical-start1" value="19:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-critical-end1" value="21:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'critical')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-critical-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 峰时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #ef4444; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-chart-line" style="margin-right: 6px;"></i>峰时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">峰时电价</label>
+                                        <input type="number" class="form-input" id="${type}-peak4-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">峰时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-peak4-start1" value="08:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-peak4-end1" value="12:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'peak4')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-peak4-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 平时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #f59e0b; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-minus" style="margin-right: 6px;"></i>平时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">平时电价</label>
+                                        <input type="number" class="form-input" id="${type}-flat4-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">平时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-flat4-start1" value="12:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-flat4-end1" value="17:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'flat4')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-flat4-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 谷时设置 -->
+                            <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                <h5 style="font-size: 13px; color: #10b981; margin-bottom: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-chart-line" style="margin-right: 6px; transform: rotate(180deg); display: inline-block;"></i>谷时设置
+                                </h5>
+                                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">谷时电价</label>
+                                        <input type="number" class="form-input" id="${type}-valley4-price" placeholder="输入电价" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">谷时时段</label>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <input type="time" class="form-input" id="${type}-valley4-start1" value="23:00" style="width: 120px;">
+                                            <span style="line-height: 36px;">至</span>
+                                            <input type="time" class="form-input" id="${type}-valley4-end1" value="08:00" style="width: 120px;">
+                                            <button onclick="addTimeSlot('${type}', 'valley4')" style="padding: 0 12px; height: 36px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                                <i class="fas fa-plus"></i> 添加时段
+                                            </button>
+                                        </div>
+                                        <div id="${type}-valley4-additional-slots" style="margin-top: 0.5rem;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'seasonal':
+                    // 季节性电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">季节性电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">春季电价</label>
+                                    <input type="number" class="form-input" id="${type}-spring-price" placeholder="3-5月" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">夏季电价</label>
+                                    <input type="number" class="form-input" id="${type}-summer-price" placeholder="6-9月" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">秋季电价</label>
+                                    <input type="number" class="form-input" id="${type}-autumn-price" placeholder="10-11月" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">冬季电价</label>
+                                    <input type="number" class="form-input" id="${type}-winter-price" placeholder="12-2月" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'ladder':
+                    // 阶梯电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">阶梯电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">第一阶梯</label>
+                                    <input type="number" class="form-input" id="${type}-ladder1-price" placeholder="0-200度" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">0-200度/月</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">第二阶梯</label>
+                                    <input type="number" class="form-input" id="${type}-ladder2-price" placeholder="201-400度" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">201-400度/月</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">第三阶梯</label>
+                                    <input type="number" class="form-input" id="${type}-ladder3-price" placeholder="400度以上" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">400度以上/月</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'two-part':
+                case 'capacity':
+                    // 两部制/容量电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">两部制电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">基本电价（容量）</label>
+                                    <input type="number" class="form-input" id="${type}-basic-price" placeholder="元/kW·月" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">按变压器容量计费</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">电度电价</label>
+                                    <input type="number" class="form-input" id="${type}-energy-price" placeholder="元/kWh" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">按实际用电量计费</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'realtime':
+                case 'spot':
+                    // 实时/现货市场电价
+                    priceContainer.style.display = 'block';
+                    priceContainer.innerHTML = `
+                        <label class="form-label">${type === 'feed' ? '上网' : '用电'}电价值</label>
+                        <input type="number" class="form-input" id="${type}-price" placeholder="基准电价" step="0.01">
+                        <small style="color: #f59e0b; font-size: 12px;">将根据市场实时价格自动更新</small>
+                    `;
+                    break;
+                    
+                case 'critical-peak':
+                    // 尖峰电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">尖峰电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">基础电价</label>
+                                    <input type="number" class="form-input" id="${type}-base-price" placeholder="基础电价" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">尖峰倍率</label>
+                                    <input type="number" class="form-input" id="${type}-peak-multiplier" placeholder="如：3（表示3倍）" step="0.1" min="2" max="5">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'demand-response':
+                    // 需求响应电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">需求响应电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">基础电价</label>
+                                    <input type="number" class="form-input" id="${type}-dr-base-price" placeholder="基础电价" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">响应补贴</label>
+                                    <input type="number" class="form-input" id="${type}-dr-subsidy" placeholder="元/kWh" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">惩罚电价</label>
+                                    <input type="number" class="form-input" id="${type}-dr-penalty" placeholder="未响应惩罚" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'green':
+                    // 绿电交易电价
+                    priceContainer.style.display = 'block';
+                    priceContainer.innerHTML = `
+                        <label class="form-label">绿电交易电价</label>
+                        <input type="number" class="form-input" id="${type}-price" placeholder="绿电价格" step="0.01">
+                        <small style="color: #10b981; font-size: 12px;">含绿证价值</small>
+                    `;
+                    break;
+                    
+                case 'dynamic':
+                    // 动态电价
+                    priceContainer.style.display = 'block';
+                    priceContainer.innerHTML = `
+                        <label class="form-label">动态电价范围</label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="number" class="form-input" id="${type}-min-price" placeholder="最低价" step="0.01" style="flex: 1;">
+                            <span style="color: #6b7280;">至</span>
+                            <input type="number" class="form-input" id="${type}-max-price" placeholder="最高价" step="0.01" style="flex: 1;">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'interruptible':
+                    // 可中断电价
+                    priceContainer.style.display = 'none';
+                    detailsContainer.style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h4 style="font-size: 14px; color: #374151; margin-bottom: 1rem;">可中断电价设置</h4>
+                            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label">正常电价</label>
+                                    <input type="number" class="form-input" id="${type}-normal-price" placeholder="正常供电电价" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">中断补偿</label>
+                                    <input type="number" class="form-input" id="${type}-interrupt-comp" placeholder="元/kWh" step="0.01">
+                                    <small style="color: #6b7280; font-size: 12px;">中断供电时的补偿</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    priceContainer.style.display = 'block';
+                    priceContainer.innerHTML = `
+                        <label class="form-label">${type === 'feed' ? '上网' : '用电'}电价值</label>
+                        <input type="number" class="form-input" id="${type}-price" placeholder="请输入${type === 'feed' ? '上网' : '用电'}电价" step="0.01">
+                    `;
+            }
         }
 
 

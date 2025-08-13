@@ -1474,25 +1474,12 @@
             closePasswordModal();
         }
 
-        // 确认退出
-        function confirmLogout() {
-            document.getElementById('userDropdownMenu').classList.remove('show');
-            document.querySelector('.user-menu-btn').classList.remove('active');
-            document.getElementById('logoutConfirmModal').classList.add('show');
-        }
-
-        // 关闭退出确认模态框
-        function closeLogoutModal() {
-            document.getElementById('logoutConfirmModal').classList.remove('show');
-        }
-
-        // 执行退出
+        // 退出相关函数已在 common.js 中定义
+        
+        // 执行退出（保留这个函数因为它有特殊的逻辑）
         function performLogout() {
-            // 这里应该调用后端API退出登录
-            showMessage('正在退出...', 'info');
-            setTimeout(() => {
-                window.location.href = '../../index.html';
-            }, 1000);
+            // 调用 common.js 中的 logout 函数
+            logout();
         }
 
         // 点击外部关闭下拉菜单

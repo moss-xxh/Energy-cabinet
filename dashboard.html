@@ -714,7 +714,7 @@
                         </div>
 
                         <!-- 储能柜（左下） -->
-                        <div class="flow-component storage" onclick="window.location.href='devices-3d.html'" style="cursor: pointer;">
+                        <div class="flow-component storage" onclick="window.location.href='devices.html'" style="cursor: pointer;">
                             <img src="储能柜.png" alt="储能系统">
                             <div class="battery-indicator">
                                 <div class="battery-icon">
@@ -843,7 +843,7 @@
                     </div>
                 </div>
             </div>
-            <div style="padding: 24px; height: 300px; display: flex; align-items: center; justify-content: center;">
+            <div style="padding: 24px; height: 350px; display: flex; align-items: center; justify-content: center;">
                 <canvas id="alarmDistributionChart" style="width: 100%; height: 100%;"></canvas>
             </div>
         </div>
@@ -858,6 +858,27 @@
     
     <!-- 用户下拉菜单样式 -->
     <style>
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
         .user-menu {
             position: relative;
             cursor: pointer;
@@ -1525,6 +1546,137 @@
             alarmDistributionChart.update();
         }
         
+        // 刷新设备统计数据
+        function refreshDeviceStats() {
+            // 显示加载动画
+            const refreshBtn = event.target.closest('button');
+            const icon = refreshBtn.querySelector('i');
+            icon.style.animation = 'spin 1s linear';
+            
+            // 模拟数据刷新
+            setTimeout(() => {
+                // 更新设备数量（随机生成一些变化）
+                const total = 168;
+                const online = 145 + Math.floor(Math.random() * 10) - 5;
+                const charging = 42 + Math.floor(Math.random() * 10) - 5;
+                const discharging = 38 + Math.floor(Math.random() * 10) - 5;
+                const fault = 8 + Math.floor(Math.random() * 4) - 2;
+                
+                // 更新显示
+                document.getElementById('totalDevices').textContent = total;
+                document.getElementById('onlineDevices').textContent = online;
+                document.getElementById('chargingDevices').textContent = charging;
+                document.getElementById('dischargingDevices').textContent = discharging;
+                document.getElementById('faultDevices').textContent = Math.max(0, fault);
+                
+                // 更新百分比进度条
+                const onlinePercent = (online / total * 100).toFixed(1);
+                const chargingPercent = (charging / total * 100).toFixed(1);
+                const dischargingPercent = (discharging / total * 100).toFixed(1);
+                const faultPercent = (Math.max(0, fault) / total * 100).toFixed(1);
+                
+                // 更新进度条宽度
+                const onlineBar = document.querySelector('#onlineDevices').closest('.position-relative').querySelector('.background');
+                if (onlineBar) {
+                    onlineBar.style.width = onlinePercent + '%';
+                }
+                
+                // 更新更新时间
+                document.getElementById('deviceUpdateTime').textContent = '刚刚';
+                
+                // 停止加载动画
+                icon.style.animation = '';
+                
+                // 5秒后更新为"x秒前"
+                setTimeout(() => {
+                    document.getElementById('deviceUpdateTime').textContent = '5秒前';
+                }, 5000);
+            }, 1000);
+        }
+        
+        // 添加旋转动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 初始化环保贡献数据
+        function initEnvironmentalData() {
+            const envPeriodSelect = document.getElementById('envPeriod');
+            if (envPeriodSelect) {
+                envPeriodSelect.addEventListener('change', function() {
+                    updateEnvironmentalData(this.value);
+                });
+                // 初始化显示累计数据
+                updateEnvironmentalData('total');
+            }
+        }
+        
+        // 更新环保贡献数据
+        function updateEnvironmentalData(period) {
+            const data = {
+                today: {
+                    co2: '3.2',
+                    trees: '176',
+                    coal: '1.2',
+                    cleanEnergy: '82.3'
+                },
+                month: {
+                    co2: '96.8',
+                    trees: '5,324',
+                    coal: '35.7',
+                    cleanEnergy: '79.6'
+                },
+                year: {
+                    co2: '1,156.4',
+                    trees: '63,602',
+                    coal: '426.8',
+                    cleanEnergy: '78.9'
+                },
+                total: {
+                    co2: '1,234.5',
+                    trees: '67,890',
+                    coal: '456.7',
+                    cleanEnergy: '78.5'
+                }
+            };
+            
+            const selectedData = data[period];
+            
+            // 更新数值并添加动画效果
+            const co2Element = document.getElementById('co2Value');
+            const treeElement = document.getElementById('treeValue');
+            const coalElement = document.getElementById('coalValue');
+            const cleanEnergyElement = document.getElementById('cleanEnergyValue');
+            
+            if (co2Element) {
+                animateValue(co2Element, co2Element.textContent, selectedData.co2);
+            }
+            if (treeElement) {
+                animateValue(treeElement, treeElement.textContent, selectedData.trees);
+            }
+            if (coalElement) {
+                animateValue(coalElement, coalElement.textContent, selectedData.coal);
+            }
+            if (cleanEnergyElement) {
+                animateValue(cleanEnergyElement, cleanEnergyElement.textContent, selectedData.cleanEnergy);
+            }
+        }
+        
+        // 数值动画效果
+        function animateValue(element, start, end) {
+            element.style.transition = 'all 0.5s ease';
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.textContent = end;
+                element.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
         // 初始化电站排行榜
         let currentRankingTime = 'today';
         let currentRankingType = 'charge';
@@ -1705,6 +1857,7 @@
             initAlarmDistributionChart();
             initAlarmDistributionTabs();
             initStationRanking();
+            initEnvironmentalData();
             
             // 初始化时更新科技园区站的数据
             updateTotalEnergyStatus('station1');
@@ -1724,24 +1877,7 @@
             }
         });
 
-        // 确认退出
-        function confirmLogout(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('logoutModal').style.display = 'flex';
-        }
-
-        // 关闭退出弹窗
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').style.display = 'none';
-        }
-
-        // 退出登录
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            window.location.href = 'login.html';
-        }
+        // 退出相关函数已在 common.js 中定义
     </script>
 </body>
 </html>

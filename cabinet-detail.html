@@ -612,7 +612,7 @@
                         <!-- 组件标记点 -->
                         <!-- EMS控制器 (顶部白色控制盒) -->
                         <div class="blinking-marker" style="top: 15%; left: 48%;" onclick="switchComponent('ems')"></div>
-                        <div class="marker-label" style="top: 13%; left: 56%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981;" id="emsMarkerLabel">
+                        <div class="marker-label" style="top: 13%; left: 56%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="emsMarkerLabel" onclick="switchComponent('ems')">
                             <span style="font-weight: 500; color: #333333;">EMS</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot online" id="emsMarkerStatusDot"></span>
@@ -622,7 +622,7 @@
                         
                         <!-- PCS逆变器 (中间黑色大模块) -->
                         <div class="blinking-marker" style="top: 35%; left: 20%;" onclick="switchComponent('pcs')"></div>
-                        <div class="marker-label" style="top: 33%; left: -22%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #ef4444;" id="pcsMarkerLabel">
+                        <div class="marker-label" style="top: 33%; left: -22%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #ef4444; cursor: pointer;" id="pcsMarkerLabel" onclick="switchComponent('pcs')">
                             <span style="font-weight: 500; color: #333333;">逆变器</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot fault" id="pcsMarkerStatusDot"></span>
@@ -632,7 +632,7 @@
                         
                         <!-- BMS系统 (PCS下方的黑色模块) -->
                         <div class="blinking-marker" style="top: 45%; left: 45%;" onclick="switchComponent('bms')"></div>
-                        <div class="marker-label" style="top: 43%; left: 3%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981;" id="bmsMarkerLabel">
+                        <div class="marker-label" style="top: 43%; left: 3%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="bmsMarkerLabel" onclick="switchComponent('bms')">
                             <span style="font-weight: 500; color: #333333;">BMS</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot online" id="bmsMarkerStatusDot"></span>
@@ -642,7 +642,7 @@
                         
                         <!-- 电表 (新增，放在合适位置) -->
                         <div class="blinking-marker" style="top: 21%; left: 25%;" onclick="switchComponent('meter')"></div>
-                        <div class="marker-label" style="top: 17%; left: -17%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #f59e0b;" id="meterMarkerLabel">
+                        <div class="marker-label" style="top: 17%; left: -17%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #f59e0b; cursor: pointer;" id="meterMarkerLabel" onclick="switchComponent('meter')">
                             <span style="font-weight: 500; color: #333333;">电表</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot offline" id="meterMarkerStatusDot"></span>
@@ -652,7 +652,7 @@
                         
                         <!-- 温度监测 (橙色线缆区域) -->
                         <div class="blinking-marker" style="top: 38%; left: 71%;" onclick="switchComponent('thermal')"></div>
-                        <div class="marker-label" style="top: 36%; left: 79%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981;" id="thermalMarkerLabel">
+                        <div class="marker-label" style="top: 36%; left: 79%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="thermalMarkerLabel" onclick="switchComponent('thermal')">
                             <span style="font-weight: 500; color: #333333;">温度</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot online" id="thermalMarkerStatusDot"></span>
@@ -662,7 +662,7 @@
                         
                         <!-- 消防系统 (底部红色管道) -->
                         <div class="blinking-marker" style="top: 85%; left: 50%;" onclick="switchComponent('fire')"></div>
-                        <div class="marker-label" style="top: 83%; left: 58%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981;" id="fireMarkerLabel">
+                        <div class="marker-label" style="top: 83%; left: 58%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="fireMarkerLabel" onclick="switchComponent('fire')">
                             <span style="font-weight: 500; color: #333333;">消防</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot online" id="fireMarkerStatusDot"></span>

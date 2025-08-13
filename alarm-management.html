@@ -1119,7 +1119,7 @@
                         </td>
                         <td>${alarm.time}</td>
                         <td>
-                            <div class="alarm-actions" style="display: flex; gap: 8px; justify-content: center;">
+                            <div class="alarm-actions" style="display: flex; gap: 8px; justify-content: flex-start;">
                                 <button class="alarm-action-btn" onclick="viewAlarmDetail('${alarm.id}')" title="查看详情">
                                     <i class="far fa-eye"></i>
                                 </button>
@@ -1127,7 +1127,7 @@
                                     <button class="alarm-action-btn" onclick="resolveAlarm('${alarm.id}')" title="解决告警">
                                         <i class="far fa-check-circle"></i>
                                     </button>
-                                ` : ''}
+                                ` : '<div style="width: 32px;"></div>'}
                             </div>
                         </td>
                     </tr>
