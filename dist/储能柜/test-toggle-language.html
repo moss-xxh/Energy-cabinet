@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>测试toggleLanguage函数</title>
+    <script src="../ueh/components/i18n.js"></script>
+</head>
+<body>
+    <h1>toggleLanguage函数诊断</h1>
+
+    <div id="test-results"></div>
+
+    <button onclick="testToggleLanguage()">运行诊断</button>
+    <button onclick="toggleLanguage()">测试toggleLanguage()</button>
+
+    <script>
+        // 定义toggleLanguage（模拟dashboard的定义）
+        function toggleLanguage() {
+            console.log('toggleLanguage被调用');
+            if (window.i18n) {
+                console.log('window.i18n存在');
+                console.log('当前语言:', window.i18n.currentLanguage);
+                const newLang = window.i18n.currentLanguage === 'zh' ? 'en' : 'zh';
+                console.log('将切换到:', newLang);
+                window.i18n.setLanguage(newLang);
+                console.log('切换后语言:', window.i18n.currentLanguage);
+            } else {
+                console.error('window.i18n不存在！');
+            }
+        }
+
+        function testToggleLanguage() {
+            const results = document.getElementById('test-results');
+            let html = '<h2>诊断结果：</h2><ul>';
+
+            // 测试1：window.i18n是否存在
+            html += '<li><strong>window.i18n存在?</strong> ' + (window.i18n ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试2：window.i18n.currentLanguage
+            if (window.i18n) {
+                html += '<li><strong>当前语言:</strong> ' + (window.i18n.currentLanguage || '未设置') + '</li>';
+            }
+
+            // 测试3：toggleLanguage是否是全局函数
+            html += '<li><strong>toggleLanguage是全局函数?</strong> ' + (typeof window.toggleLanguage === 'function' ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试4：toggleLanguage在window上
+            html += '<li><strong>window.toggleLanguage:</strong> ' + typeof window.toggleLanguage + '</li>';
+
+            // 测试5：直接调用toggleLanguage
+            html += '<li><strong>测试调用toggleLanguage():</strong> ';
+            try {
+                toggleLanguage();
+                html += '✅ 成功</li>';
+            } catch (e) {
+                html += '❌ 失败: ' + e.message + '</li>';
+            }
+
+            // 测试6：检查localStorage
+            html += '<li><strong>localStorage.app_language:</strong> ' + (localStorage.getItem('app_language') || '未设置') + '</li>';
+            html += '<li><strong>localStorage.language:</strong> ' + (localStorage.getItem('language') || '未设置') + '</li>';
+
+            html += '</ul>';
+            results.innerHTML = html;
+        }
+
+        // 页面加载后自动运行一次
+        setTimeout(testToggleLanguage, 500);
+    </script>
+</body>
+</html>

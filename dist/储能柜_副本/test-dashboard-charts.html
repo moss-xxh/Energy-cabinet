@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard图表诊断</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .warning { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Dashboard图表诊断工具</h1>
+
+    <div class="test-section">
+        <h2>步骤1：检查脚本加载</h2>
+        <div id="scriptTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>步骤2：检查Chart.js</h2>
+        <div id="chartJsTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>步骤3：检查i18n</h2>
+        <div id="i18nTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>步骤4：检查DOM元素</h2>
+        <div id="domTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>步骤5：尝试创建测试图表</h2>
+        <canvas id="testChart" width="400" height="200"></canvas>
+        <div id="chartTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>步骤6：检查localStorage</h2>
+        <div id="storageTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>控制台日志</h2>
+        <div id="console" style="background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- 加载必要的脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../ueh/components/i18n.js"></script>
+
+    <script>
+        // 重定向console.log到页面
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(type, ...args) {
+            const message = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+            const color = type === 'error' ? '#ef4444' : type === 'warn' ? '#f59e0b' : '#e2e8f0';
+            consoleDiv.innerHTML += `<div style="color: ${color};">[${type}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+
+        // 开始测试
+        console.log('=== 诊断开始 ===');
+
+        // 测试1：检查脚本加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOMContentLoaded事件触发');
+
+            let html = '';
+            html += `<p>✅ DOMContentLoaded事件: <span class="status success">正常触发</span></p>`;
+            html += `<p>脚本标签数量: ${document.scripts.length}</p>`;
+            document.getElementById('scriptTest').innerHTML = html;
+        });
+
+        // 测试2：检查Chart.js
+        setTimeout(function() {
+            const chartJsTestDiv = document.getElementById('chartJsTest');
+            let html = '';
+
+            if (typeof Chart !== 'undefined') {
+                html += `<p>✅ Chart.js加载: <span class="status success">成功</span></p>`;
+                html += `<p>Chart版本: ${Chart.version || '未知'}</p>`;
+                console.log('✅ Chart.js加载成功，版本:', Chart.version);
+            } else {
+                html += `<p>❌ Chart.js加载: <span class="status error">失败</span></p>`;
+                console.error('❌ Chart.js未加载');
+            }
+
+            chartJsTestDiv.innerHTML = html;
+        }, 500);
+
+        // 测试3：检查i18n
+        setTimeout(function() {
+            const i18nTestDiv = document.getElementById('i18nTest');
+            let html = '';
+
+            if (typeof window.i18n !== 'undefined') {
+                html += `<p>✅ i18n加载: <span class="status success">成功</span></p>`;
+                html += `<p>当前语言: ${window.i18n.currentLanguage || '未设置'}</p>`;
+                console.log('✅ i18n加载成功，当前语言:', window.i18n.currentLanguage);
+            } else {
+                html += `<p>❌ i18n加载: <span class="status error">失败</span></p>`;
+                console.error('❌ i18n未加载');
+            }
+
+            i18nTestDiv.innerHTML = html;
+        }, 1000);
+
+        // 测试4：检查DOM元素
+        window.addEventListener('load', function() {
+            console.log('✅ window.load事件触发');
+
+            const domTestDiv = document.getElementById('domTest');
+            let html = '';
+
+            html += `<p>✅ window.load事件: <span class="status success">正常触发</span></p>`;
+            html += `<p>页面总元素数: ${document.querySelectorAll('*').length}</p>`;
+            html += `<p>Canvas元素: testChart存在? ${document.getElementById('testChart') ? '✅ 是' : '❌ 否'}</p>`;
+
+            domTestDiv.innerHTML = html;
+        });
+
+        // 测试5：尝试创建图表
+        window.addEventListener('load', function() {
+            const chartTestDiv = document.getElementById('chartTest');
+            const canvas = document.getElementById('testChart');
+
+            if (!canvas) {
+                chartTestDiv.innerHTML = '<p>❌ Canvas元素不存在</p>';
+                console.error('❌ Canvas元素不存在');
+                return;
+            }
+
+            if (typeof Chart === 'undefined') {
+                chartTestDiv.innerHTML = '<p>❌ Chart.js未加载，无法创建图表</p>';
+                console.error('❌ Chart.js未加载');
+                return;
+            }
+
+            try {
+                const ctx = canvas.getContext('2d');
+                const testChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['测试1', '测试2', '测试3'],
+                        datasets: [{
+                            label: '测试数据',
+                            data: [12, 19, 3],
+                            backgroundColor: '#3b82f6'
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        plugins: {
+                            legend: { display: true }
+                        }
+                    }
+                });
+
+                chartTestDiv.innerHTML = '<p>✅ 测试图表创建: <span class="status success">成功</span></p>';
+                console.log('✅ 测试图表创建成功');
+            } catch (error) {
+                chartTestDiv.innerHTML = `<p>❌ 测试图表创建失败: <span class="status error">${error.message}</span></p>`;
+                console.error('❌ 创建图表失败:', error);
+            }
+        });
+
+        // 测试6：检查localStorage
+        setTimeout(function() {
+            const storageTestDiv = document.getElementById('storageTest');
+            let html = '<ul>';
+
+            try {
+                const appLanguage = localStorage.getItem('app_language');
+                const language = localStorage.getItem('language');
+
+                html += `<li>app_language: ${appLanguage || '未设置'}</li>`;
+                html += `<li>language: ${language || '未设置'}</li>`;
+
+                if (appLanguage || language) {
+                    html += `<li><span class="status success">语言设置存在</span></li>`;
+                    console.log('✅ localStorage语言设置:', { appLanguage, language });
+                } else {
+                    html += `<li><span class="status warning">语言设置未初始化</span></li>`;
+                    console.warn('⚠️ localStorage中没有语言设置');
+                }
+            } catch (error) {
+                html += `<li><span class="status error">localStorage访问失败: ${error.message}</span></li>`;
+                console.error('❌ localStorage访问失败:', error);
+            }
+
+            html += '</ul>';
+            storageTestDiv.innerHTML = html;
+        }, 1500);
+    </script>
+</body>
+</html>

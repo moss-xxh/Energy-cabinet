@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>测试localStorage</title>
+</head>
+<body>
+    <h1>localStorage检查</h1>
+    <div id="result"></div>
+
+    <script>
+        const result = document.getElementById('result');
+
+        // 读取两个key
+        const appLang = localStorage.getItem('app_language');
+        const lang = localStorage.getItem('language');
+
+        result.innerHTML = `
+            <h2>当前localStorage值：</h2>
+            <p><strong>app_language:</strong> ${appLang || '(未设置)'}</p>
+            <p><strong>language:</strong> ${lang || '(未设置)'}</p>
+
+            <h2>当前读取逻辑会得到：</h2>
+            <p><strong>优先app_language:</strong> ${appLang || lang || 'zh'}</p>
+            <p><strong>优先language:</strong> ${lang || appLang || 'zh'}</p>
+
+            <h2>操作：</h2>
+            <button onclick="localStorage.setItem('app_language', 'zh'); localStorage.setItem('language', 'zh'); location.reload();">设置为中文</button>
+            <button onclick="localStorage.setItem('app_language', 'en'); localStorage.setItem('language', 'en'); location.reload();">设置为英文</button>
+            <button onclick="localStorage.clear(); location.reload();">清除所有</button>
+        `;
+    </script>
+</body>
+</html>

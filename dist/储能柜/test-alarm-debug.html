@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>告警数据调试</title>
+    <script src="common.js"></script>
+</head>
+<body>
+    <h1>告警数据调试</h1>
+    <div id="debug-output" style="white-space: pre-wrap; font-family: monospace; background: #f5f5f5; padding: 20px; margin: 20px;"></div>
+
+    <script>
+        const debugOutput = document.getElementById('debug-output');
+
+        function log(message) {
+            debugOutput.textContent += message + '\n';
+            console.log(message);
+        }
+
+        // 测试 getTranslation 函数
+        log('=== 测试 getTranslation 函数 ===');
+
+        function getTranslation(key) {
+            const lang = localStorage.getItem('language') || 'zh';
+            if (typeof translations !== 'undefined' && translations[lang]) {
+                return translations[lang][key] || key;
+            }
+            return key;
+        }
+
+        log('translations 对象存在: ' + (typeof translations !== 'undefined'));
+        log('当前语言: ' + (localStorage.getItem('language') || 'zh'));
+
+        if (typeof translations !== 'undefined') {
+            log('translations.zh 存在: ' + (!!translations.zh));
+            log('translations.en 存在: ' + (!!translations.en));
+        }
+
+        // 测试站点翻译
+        log('\n=== 测试站点翻译 ===');
+        log('siteNameTech: ' + getTranslation('siteNameTech'));
+        log('siteNameIndustrial: ' + getTranslation('siteNameIndustrial'));
+
+        // 初始化站点数组
+        log('\n=== 初始化站点数组 ===');
+        const sites = [
+            { id: 'site1', name: getTranslation('siteNameTech') },
+            { id: 'site2', name: getTranslation('siteNameIndustrial') },
+            { id: 'site3', name: getTranslation('siteNameCommerce') },
+            { id: 'site4', name: getTranslation('siteNameLogistics') },
+            { id: 'site5', name: getTranslation('siteNameRD') },
+            { id: 'site6', name: getTranslation('siteNameDataCenter') }
+        ];
+
+        log('sites 数组长度: ' + sites.length);
+        sites.forEach(site => {
+            log(`  - ${site.id}: ${site.name}`);
+        });
+
+        // 测试告警类型数组
+        log('\n=== 测试告警类型数组 ===');
+        const alarmTypes = [
+            { type: '电池过温', description: '电池温度超过安全阈值', level: 'critical' },
+            { type: '电流过大', description: '充放电电流超过限定值', level: 'critical' },
+        ];
+        log('alarmTypes 数组长度: ' + alarmTypes.length);
+
+        // 测试数据生成
+        log('\n=== 测试数据生成 ===');
+
+        function formatDateTime(date) {
+            return date.getFullYear() + '-' +
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(date.getDate()).padStart(2, '0') + ' ' +
+                   String(date.getHours()).padStart(2, '0') + ':' +
+                   String(date.getMinutes()).padStart(2, '0') + ':' +
+                   String(date.getSeconds()).padStart(2, '0');
+        }
+
+        function generateCurrentValue(type) {
+            switch(type) {
+                case '电池过温': return Math.floor(Math.random() * 10 + 55) + '°C';
+                default: return '-';
+            }
+        }
+
+        function generateThreshold(type) {
+            switch(type) {
+                case '电池过温': return '55°C';
+                default: return '-';
+            }
+        }
+
+        function generateAlarmData() {
+            const alarms = [];
+            let alarmId = 1;
+
+            sites.forEach(site => {
+                for (let i = 1; i <= 2; i++) {  // 只生成2个设备用于测试
+                    const alarmType = alarmTypes[0];
+                    const statusRandom = Math.random();
+                    const status = statusRandom < 0.4 ? 'active' :
+                                 statusRandom < 0.7 ? 'acknowledged' : 'resolved';
+
+                    const date = new Date();
+                    const lang = localStorage.getItem('language') || 'zh';
+                    const deviceName = lang === 'zh' ? `储能柜#${i}` : `Cabinet#${i}`;
+
+                    alarms.push({
+                        id: `ALM${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}${String(alarmId).padStart(4, '0')}`,
+                        time: formatDateTime(date),
+                        site: site.name,
+                        device: deviceName,
+                        type: alarmType.type,
+                        description: alarmType.description,
+                        level: alarmType.level,
+                        status: status,
+                        currentValue: generateCurrentValue(alarmType.type),
+                        threshold: generateThreshold(alarmType.type)
+                    });
+                    alarmId++;
+                }
+            });
+
+            return alarms.sort((a, b) => new Date(b.time) - new Date(a.time));
+        }
+
+        try {
+            const alarmData = generateAlarmData();
+            log('成功生成告警数据!');
+            log('告警数据数量: ' + alarmData.length);
+
+            if (alarmData.length > 0) {
+                log('\n第一条告警数据:');
+                log(JSON.stringify(alarmData[0], null, 2));
+            }
+        } catch (error) {
+            log('❌ 生成告警数据时出错:');
+            log(error.message);
+            log(error.stack);
+        }
+    </script>
+</body>
+</html>

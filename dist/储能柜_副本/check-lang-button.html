@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语言切换按钮检查</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .test-area {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .button-demo {
+            position: relative;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        /* 直接从login.html复制的样式 */
+        .lang-switcher {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10000;
+        }
+
+        .lang-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 140px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .lang-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .lang-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .lang-option:hover {
+            background: #f3f4f6;
+        }
+
+        .lang-option.active {
+            background: #e5f3ff;
+            color: #2563eb;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 语言切换按钮显示测试</h1>
+
+    <div class="test-area">
+        <h2>1. 按钮在相对定位容器中的显示</h2>
+        <div class="button-demo">
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleDropdown()">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option active">
+                        <span>🇨🇳</span>
+                        <span>中文</span>
+                    </div>
+                    <div class="lang-option">
+                        <span>🇺🇸</span>
+                        <span>English</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status1"></div>
+
+        <h2>2. 检查Font Awesome图标</h2>
+        <div style="text-align: center; font-size: 24px; margin: 20px 0;">
+            <i class="fas fa-globe" style="margin: 0 10px;"></i>
+            <i class="fas fa-language" style="margin: 0 10px;"></i>
+            <i class="fas fa-earth-americas" style="margin: 0 10px;"></i>
+        </div>
+        <div class="status" id="status2"></div>
+
+        <h2>3. 登录页面按钮状态</h2>
+        <div class="status" id="status3"></div>
+
+        <h2>4. 修复建议</h2>
+        <div class="status" id="suggestions"></div>
+    </div>
+
+    <script>
+        // 测试按钮显示
+        function checkButton() {
+            const btn = document.querySelector('.lang-btn');
+            const status1 = document.getElementById('status1');
+
+            if (btn) {
+                const rect = btn.getBoundingClientRect();
+                const visible = rect.width > 0 && rect.height > 0;
+                const styles = window.getComputedStyle(btn);
+
+                status1.className = visible ? 'status success' : 'status error';
+                status1.innerHTML = `
+                    <strong>按钮检测结果：</strong><br>
+                    ${visible ? '✅ 按钮可见' : '❌ 按钮不可见'}<br>
+                    位置：top=${rect.top}px, right=${window.innerWidth - rect.right}px<br>
+                    尺寸：${rect.width}x${rect.height}px<br>
+                    display: ${styles.display}<br>
+                    z-index: ${styles.zIndex}<br>
+                    opacity: ${styles.opacity}
+                `;
+            } else {
+                status1.className = 'status error';
+                status1.innerHTML = '❌ 未找到语言切换按钮';
+            }
+        }
+
+        // 检查图标
+        function checkIcons() {
+            const icons = document.querySelectorAll('.fas');
+            const status2 = document.getElementById('status2');
+
+            if (icons.length > 0) {
+                status2.className = 'status success';
+                status2.innerHTML = `✅ Font Awesome 图标已加载，找到 ${icons.length} 个图标`;
+            } else {
+                status2.className = 'status error';
+                status2.innerHTML = '❌ Font Awesome 图标未加载';
+            }
+        }
+
+        // 检查登录页面
+        function checkLoginPage() {
+            const status3 = document.getElementById('status3');
+            const currentStyles = `
+position: fixed;
+top: 30px;
+right: 30px;
+z-index: 10000;
+background: rgba(0, 0, 0, 0.5);
+            `;
+
+            status3.className = 'status success';
+            status3.innerHTML = `
+                <strong>login.html 已更新的样式：</strong><br>
+                <code style="display: block; white-space: pre; margin-top: 10px;">${currentStyles.trim()}</code><br>
+                ✅ 样式已更新为 fixed 定位和高 z-index
+            `;
+        }
+
+        // 提供建议
+        function provideSuggestions() {
+            const suggestions = document.getElementById('suggestions');
+            suggestions.className = 'status';
+            suggestions.innerHTML = `
+                <strong>可能的问题和解决方案：</strong><br><br>
+                1. <strong>如果按钮仍不显示：</strong><br>
+                   • 清除浏览器缓存（Ctrl+Shift+R 或 Cmd+Shift+R）<br>
+                   • 检查控制台是否有JavaScript错误<br>
+                   • 确认Font Awesome CDN可以访问<br><br>
+
+                2. <strong>已应用的修复：</strong><br>
+                   • ✅ position: fixed（确保始终在视口内）<br>
+                   • ✅ z-index: 10000（确保在最上层）<br>
+                   • ✅ 深色背景带毛玻璃效果（提高可见性）<br><br>
+
+                3. <strong>测试步骤：</strong><br>
+                   • 打开 <code>login.html</code><br>
+                   • 查看页面右上角<br>
+                   • 应该看到一个圆形的地球图标按钮<br>
+                   • 点击按钮应该显示语言选项下拉菜单
+            `;
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown() {
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 点击外部关闭
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.lang-switcher')) {
+                const dropdown = document.getElementById('langDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+
+        // 页面加载时执行检查
+        window.addEventListener('load', function() {
+            checkButton();
+            checkIcons();
+            checkLoginPage();
+            provideSuggestions();
+        });
+    </script>
+</body>
+</html>
