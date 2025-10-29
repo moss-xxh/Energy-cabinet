@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>储能柜管理系统</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -292,30 +293,127 @@
             }
         }
 
+        /* 语言切换图标 */
+        .lang-switcher {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 10000;
+        }
+
+        .lang-icon {
+            font-size: 24px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            opacity: 0.9;
+        }
+
+        .lang-icon:hover {
+            color: #00d4ff;
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .lang-icon:active {
+            transform: scale(0.95);
+        }
+
+        /* 语言下拉菜单 */
+        .lang-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 140px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0, 150, 255, 0.3);
+        }
+
+        .lang-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .lang-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .lang-option:hover {
+            background: #f3f4f6;
+        }
+
+        .lang-option.active {
+            background: #e5f3ff;
+            color: #2563eb;
+        }
+
+        .lang-option .flag {
+            font-size: 18px;
+            line-height: 1;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .title-zh {
                 font-size: 32px;
             }
-            
+
             .title-en {
                 font-size: 16px;
             }
-            
+
             .options-container {
                 gap: 20px;
             }
-            
+
             .option-card {
                 width: 240px;
                 padding: 30px 20px;
+            }
+
+            .lang-switcher {
+                top: 20px;
+                right: 20px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 语言切换器 -->
+    <div class="lang-switcher">
+        <i class="fas fa-globe lang-icon" onclick="toggleLangDropdown()" title="切换语言"></i>
+        <div class="lang-dropdown" id="langDropdown">
+            <div class="lang-option active" onclick="selectLang('zh')">
+                <span class="flag">🇨🇳</span>
+                <span>中文</span>
+            </div>
+            <div class="lang-option" onclick="selectLang('en')">
+                <span class="flag">🇺🇸</span>
+                <span>English</span>
+            </div>
+        </div>
+    </div>
+
     <div class="bg-effects"></div>
-    
+
     <!-- 主容器 -->
     <div class="main-container">
         <!-- Logo -->
@@ -325,12 +423,12 @@
 
         <!-- 标题 -->
         <div class="title">
-            <h1 class="title-zh">储能柜管理系统</h1>
-            <p class="title-en">Energy Storage Management System</p>
+            <h1 class="title-zh" id="mainTitle">储能柜管理系统</h1>
+            <p class="title-en" id="mainSubtitle">Energy Storage Management System</p>
         </div>
 
         <!-- 介绍文字 -->
-        <p class="intro">
+        <p class="intro" id="introText">
             智能化储能管理解决方案，提供全方位的能源监控、管理和优化服务。
             支持Web云平台远程管理和HMI触摸屏本地控制两种操作方式。
         </p>
@@ -346,8 +444,8 @@
                         <line x1="12" y1="17" x2="12" y2="21"/>
                     </svg>
                 </div>
-                <h3 class="option-title">Web云平台</h3>
-                <p class="option-desc">
+                <h3 class="option-title" id="webTitle">Web云平台</h3>
+                <p class="option-desc" id="webDesc">
                     通过浏览器远程访问<br>
                     随时随地监控管理<br>
                     支持多设备同时访问
@@ -365,8 +463,8 @@
                         <line x1="9" y1="18" x2="15" y2="18"/>
                     </svg>
                 </div>
-                <h3 class="option-title">HMI触摸屏</h3>
-                <p class="option-desc">
+                <h3 class="option-title" id="hmiTitle">HMI触摸屏</h3>
+                <p class="option-desc" id="hmiDesc">
                     本地触摸屏操作<br>
                     直观便捷的控制界面<br>
                     实时响应快速操作
@@ -382,11 +480,120 @@
     <div class="particles" id="particles"></div>
 
     <script>
+        // 语言切换相关变量和翻译文本
+        let currentLang = localStorage.getItem('language') || 'zh';
+
+        const translations = {
+            zh: {
+                pageTitle: '储能柜管理系统',
+                mainTitle: '储能柜管理系统',
+                mainSubtitle: 'Energy Storage Management System',
+                introText: '智能化储能管理解决方案，提供全方位的能源监控、管理和优化服务。支持Web云平台远程管理和HMI触摸屏本地控制两种操作方式。',
+                webTitle: 'Web云平台',
+                webDesc: '通过浏览器远程访问<br>随时随地监控管理<br>支持多设备同时访问',
+                hmiTitle: 'HMI触摸屏',
+                hmiDesc: '本地触摸屏操作<br>直观便捷的控制界面<br>实时响应快速操作'
+            },
+            en: {
+                pageTitle: 'Energy Storage Management System',
+                mainTitle: 'Energy Storage Management System',
+                mainSubtitle: 'COMMERCIAL ENERGY STORAGE MANAGEMENT SYSTEM',
+                introText: 'Intelligent energy storage management solution, providing comprehensive energy monitoring, management and optimization services. Supports both Web cloud platform remote management and HMI touch screen local control.',
+                webTitle: 'Web Cloud Platform',
+                webDesc: 'Remote access via browser<br>Monitor and manage anytime, anywhere<br>Support multiple devices simultaneously',
+                hmiTitle: 'HMI Touch Screen',
+                hmiDesc: 'Local touch screen operation<br>Intuitive and convenient control interface<br>Real-time response and fast operation'
+            }
+        };
+
+        // 初始化语言
+        function initLanguage() {
+            setLanguage(currentLang);
+            updateLangDropdown();
+        }
+
+        // 切换语言下拉菜单
+        function toggleLangDropdown() {
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 选择语言
+        function selectLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            setLanguage(lang);
+            updateLangDropdown();
+
+            // 关闭下拉菜单
+            setTimeout(() => {
+                document.getElementById('langDropdown').classList.remove('show');
+            }, 200);
+        }
+
+        // 更新下拉菜单激活状态
+        function updateLangDropdown() {
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.onclick.toString().includes(currentLang)) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        // 设置语言
+        function setLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            // 更新所有文本元素
+            const elements = {
+                'mainTitle': t.mainTitle,
+                'mainSubtitle': t.mainSubtitle,
+                'introText': t.introText,
+                'webTitle': t.webTitle,
+                'hmiTitle': t.hmiTitle
+            };
+
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = elements[id];
+                }
+            });
+
+            // 更新HTML元素(包含<br>)
+            const htmlElements = {
+                'webDesc': t.webDesc,
+                'hmiDesc': t.hmiDesc
+            };
+
+            Object.keys(htmlElements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = htmlElements[id];
+                }
+            });
+
+            // 更新HTML语言属性
+            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en-US';
+
+            // 更新页面标题
+            document.title = t.pageTitle;
+        }
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.lang-switcher')) {
+                document.getElementById('langDropdown').classList.remove('show');
+            }
+        });
+
         // 创建粒子效果
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 20;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -398,7 +605,10 @@
         }
 
         // 初始化
-        createParticles();
+        window.addEventListener('DOMContentLoaded', function() {
+            initLanguage();
+            createParticles();
+        });
 
         // HMI跳转函数
         function goToHMI() {
