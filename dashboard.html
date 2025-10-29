@@ -730,7 +730,11 @@
                     </div>
                     <!-- 时间选择器 -->
                     <input type="date" id="datePicker" style="padding: 6px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">
-                    <input type="month" id="monthPicker" style="display: none; padding: 6px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">
+                    <!-- 月份选择器：隐藏原生输入框，使用自定义显示 -->
+                    <div id="monthPickerWrapper" style="display: none; position: relative;">
+                        <input type="text" id="monthDisplay" readonly style="padding: 6px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; cursor: pointer; background: white; width: 100px;" placeholder="2025/10">
+                        <input type="month" id="monthPicker" style="position: absolute; opacity: 0; pointer-events: none;">
+                    </div>
                     <input type="number" id="yearPicker" data-translate-placeholder="dashboardYearPlaceholder" placeholder="年份" min="2020" max="2030" style="display: none; padding: 6px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; width: 100px;">
                 </div>
             </div>
@@ -1274,14 +1278,42 @@
             const periodBtns = document.querySelectorAll('.period-btn');
             const datePicker = document.getElementById('datePicker');
             const monthPicker = document.getElementById('monthPicker');
+            const monthPickerWrapper = document.getElementById('monthPickerWrapper');
+            const monthDisplay = document.getElementById('monthDisplay');
             const yearPicker = document.getElementById('yearPicker');
-            
+
+            // 格式化月份显示为 YYYY/MM
+            function formatMonthDisplay(value) {
+                if (!value) return '';
+                return value.replace('-', '/');  // "2025-10" -> "2025/10"
+            }
+
             // 设置默认日期
             const today = new Date();
             datePicker.value = today.toISOString().split('T')[0];
             monthPicker.value = today.toISOString().slice(0, 7);
+            monthDisplay.value = formatMonthDisplay(monthPicker.value);
             yearPicker.value = today.getFullYear();
-            
+
+            // 月份显示框点击事件：触发原生月份选择器
+            monthDisplay.addEventListener('click', function() {
+                monthPicker.style.position = 'absolute';
+                monthPicker.style.opacity = '0';
+                monthPicker.style.pointerEvents = 'auto';
+                monthPicker.style.left = '0';
+                monthPicker.style.top = '0';
+                monthPicker.style.width = '100%';
+                monthPicker.style.height = '100%';
+                monthPicker.showPicker && monthPicker.showPicker();
+            });
+
+            // 原生月份选择器值改变时更新显示
+            monthPicker.addEventListener('change', function() {
+                monthDisplay.value = formatMonthDisplay(this.value);
+                const activePeriod = document.querySelector('.period-btn.active').dataset.period;
+                updateChartData(activePeriod);
+            });
+
             periodBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     // 更新按钮状态
@@ -1291,20 +1323,20 @@
                     });
                     this.classList.add('active');
                     this.style.background = 'white';
-                    
+
                     // 显示/隐藏对应的时间选择器
                     const period = this.dataset.period;
                     datePicker.style.display = period === 'day' ? 'block' : 'none';
-                    monthPicker.style.display = period === 'month' ? 'block' : 'none';
+                    monthPickerWrapper.style.display = period === 'month' ? 'block' : 'none';
                     yearPicker.style.display = period === 'year' ? 'block' : 'none';
-                    
+
                     // 更新图表数据
                     updateChartData(period);
                 });
             });
-            
+
             // 时间选择器变化事件
-            [datePicker, monthPicker, yearPicker].forEach(picker => {
+            [datePicker, yearPicker].forEach(picker => {
                 picker.addEventListener('change', function() {
                     const activePeriod = document.querySelector('.period-btn.active').dataset.period;
                     updateChartData(activePeriod);
@@ -1318,6 +1350,9 @@
             
             let labels, chargeData, dischargeData, revenueData;
             
+            // 获取当前语言设置
+            const currentLanguage = localStorage.getItem('language') || 'zh';
+
             switch(period) {
                 case 'day':
                     labels = ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
@@ -1326,13 +1361,27 @@
                     revenueData = [40, 50, 50, 60, 80, 80, 70, 50, 30, 20, 20, 30];
                     break;
                 case 'month':
-                    labels = Array.from({length: 30}, (_, i) => `${i + 1}日`);
+                    // 根据当前语言生成不同格式的标签
+                    if (currentLanguage === 'en') {
+                        // 英文：只显示数字
+                        labels = Array.from({length: 30}, (_, i) => `${i + 1}`);
+                    } else {
+                        // 中文：显示数字+日
+                        labels = Array.from({length: 30}, (_, i) => `${i + 1}日`);
+                    }
                     chargeData = Array.from({length: 30}, () => Math.floor(Math.random() * 500) + 200);
                     dischargeData = Array.from({length: 30}, () => Math.floor(Math.random() * 400) + 150);
                     revenueData = Array.from({length: 30}, () => Math.floor(Math.random() * 200) + 50);
                     break;
                 case 'year':
-                    labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                    // 根据当前语言生成不同格式的标签
+                    if (currentLanguage === 'en') {
+                        // 英文：显示英文月份简写
+                        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    } else {
+                        // 中文：显示数字+月
+                        labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                    }
                     chargeData = [8500, 7800, 9200, 10500, 11200, 12800, 13500, 13200, 11800, 10200, 9500, 8800];
                     dischargeData = [6500, 6200, 7800, 8500, 9200, 10500, 11200, 10800, 9500, 8200, 7500, 6800];
                     revenueData = [2000, 1600, 1400, 2000, 2000, 2300, 2300, 2400, 2300, 2000, 2000, 2000];
@@ -1410,7 +1459,9 @@
                                             
                                             // 使用特殊字符来创建间距
                                             const spaces = '\u00A0\u00A0\u00A0\u00A0'; // 不间断空格
-                                            const unit = translate('dashboardAlarmUnit');
+                                            // 根据语言设置决定是否显示单位
+                                            const lang = localStorage.getItem('language') || 'zh';
+                                            const unit = lang === 'en' ? '' : '个';
                                             const text = label.padEnd(8, '\u00A0') + spaces +
                                                         String(value + unit).padStart(6, '\u00A0') + spaces +
                                                         String(percentage + '%').padStart(6, '\u00A0');

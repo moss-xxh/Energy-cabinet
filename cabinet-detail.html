@@ -4759,7 +4759,11 @@
                     fireChartInstances['fire-system'] = new Chart(systemCtx.getContext('2d'), {
                         type: 'doughnut',
                         data: {
-                            labels: ['正常', '预警', '告警'],
+                            labels: [
+                                getTranslation('fireStatusNormal'),
+                                getTranslation('fireStatusWarning'),
+                                getTranslation('fireStatusAlarm')
+                            ],
                             datasets: [{
                                 data: [95, 4, 1],
                                 backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
@@ -4997,9 +5001,11 @@
             let chargingData = [];
             let dischargingData = [];
             let revenueData = [];
-            
+
             const today = new Date();
-            
+            // 获取当前语言设置
+            const currentLanguage = localStorage.getItem('language') || 'zh';
+
             switch(timeType) {
                 case 'day':
                     // 24小时数据
@@ -5013,7 +5019,11 @@
                 case 'month':
                     // 一个月31天的数据
                     for (let i = 1; i <= 31; i++) {
-                        labels.push(i + '日');
+                        if (currentLanguage === 'en') {
+                            labels.push(String(i));  // 英文：只显示数字
+                        } else {
+                            labels.push(i + '日');  // 中文：显示数字+日
+                        }
                         chargingData.push(Math.random() * 2000 + 1000);
                         dischargingData.push(Math.random() * 1800 + 900);
                         revenueData.push(Math.random() * 8000 + 4000);
@@ -5021,27 +5031,51 @@
                     break;
                 case 'year':
                     // 12个月数据
-                    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-                    months.forEach(month => {
-                        labels.push(month);
-                        chargingData.push(Math.random() * 50000 + 25000);
-                        dischargingData.push(Math.random() * 45000 + 22000);
-                        revenueData.push(Math.random() * 200000 + 100000);
-                    });
+                    if (currentLanguage === 'en') {
+                        // 英文：显示英文月份简写
+                        const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        monthsEn.forEach(month => {
+                            labels.push(month);
+                            chargingData.push(Math.random() * 50000 + 25000);
+                            dischargingData.push(Math.random() * 45000 + 22000);
+                            revenueData.push(Math.random() * 200000 + 100000);
+                        });
+                    } else {
+                        // 中文：显示数字+月
+                        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                        months.forEach(month => {
+                            labels.push(month);
+                            chargingData.push(Math.random() * 50000 + 25000);
+                            dischargingData.push(Math.random() * 45000 + 22000);
+                            revenueData.push(Math.random() * 200000 + 100000);
+                        });
+                    }
                     break;
                 case 'total':
                 default:
                     // 总览 - 按年显示
-                    const years = ['2021年', '2022年', '2023年', '2024年', '2025年'];
-                    years.forEach(year => {
-                        labels.push(year);
-                        chargingData.push(Math.random() * 600000 + 300000);
-                        dischargingData.push(Math.random() * 550000 + 280000);
-                        revenueData.push(Math.random() * 2500000 + 1200000);
-                    });
+                    if (currentLanguage === 'en') {
+                        // 英文：只显示年份数字
+                        const years = ['2021', '2022', '2023', '2024', '2025'];
+                        years.forEach(year => {
+                            labels.push(year);
+                            chargingData.push(Math.random() * 600000 + 300000);
+                            dischargingData.push(Math.random() * 550000 + 280000);
+                            revenueData.push(Math.random() * 2500000 + 1200000);
+                        });
+                    } else {
+                        // 中文：显示年份+年
+                        const years = ['2021年', '2022年', '2023年', '2024年', '2025年'];
+                        years.forEach(year => {
+                            labels.push(year);
+                            chargingData.push(Math.random() * 600000 + 300000);
+                            dischargingData.push(Math.random() * 550000 + 280000);
+                            revenueData.push(Math.random() * 2500000 + 1200000);
+                        });
+                    }
                     break;
             }
-            
+
             return { labels, chargingData, dischargingData, revenueData };
         }
         

@@ -936,6 +936,10 @@ const translations = {
         chartFireSystemStatus: '系统状态历史',
         chartFireGasConcentration: '气体浓度监测',
         chartFireAlarmHistory: '告警记录分析',
+        // Fire Chart Labels
+        fireStatusNormal: '正常',
+        fireStatusWarning: '预警',
+        fireStatusAlarm: '告警',
 
         // === Buttons & UI Elements ===
         btnSettings: '设置',
@@ -2911,6 +2915,10 @@ const translations = {
         chartFireSystemStatus: 'System Status History',
         chartFireGasConcentration: 'Gas Concentration Monitoring',
         chartFireAlarmRecords: 'Alarm Records Analysis',
+        // Fire Chart Labels
+        fireStatusNormal: 'Normal',
+        fireStatusWarning: 'Warning',
+        fireStatusAlarm: 'Alarm',
 
         // === Buttons & UI Elements ===
         btnSettings: 'Settings',
