@@ -2234,8 +2234,8 @@
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${formatPowerWithStatus(device.realTimePower, currentLang)}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.remainingEnergy} kWh</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.soc}%</td>
-                    <td style="padding: 16px 12px;">${getTranslatedAddress(device.address)}</td>
-                    <td style="padding: 16px 12px; text-align: center;" onclick="event.stopPropagation()">
+                    <td style="padding: 16px 12px; max-width: 200px; word-wrap: break-word;">${getTranslatedAddress(device.address)}</td>
+                    <td style="padding: 16px 12px; text-align: center; white-space: nowrap;" onclick="event.stopPropagation()">
                         <button class="btn" onclick="navigateToDeviceManagement('${device.siteName}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="${currentLang === 'zh' ? '进入站点' : 'Enter Station'}">
                             <i class="fas fa-arrow-right" style="font-size: 16px; color: var(--text-secondary);"></i>
                         </button>
