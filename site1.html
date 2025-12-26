@@ -2127,6 +2127,11 @@
         // 设置当前页面菜单项
         setActiveMenuItem('site1');
 
+        // 监听语言切换事件，重新渲染表格
+        window.addEventListener('languageChanged', function(e) {
+            renderTable();
+        });
+
         // 模拟设备数据
         // 实时功率: 正数=充电, 负数=放电, 0=待机
         let devices = [
