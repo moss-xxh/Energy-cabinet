@@ -3503,7 +3503,8 @@
             const t = translations[currentLang];
 
             deviceItem.innerHTML = `
-                <input type="text" class="form-input" placeholder="${t.deviceSnPlaceholder}" style="flex: 1;">
+                <input type="text" class="form-input device-sn" placeholder="${t.deviceSnPlaceholder}" style="flex: 1;">
+                <input type="text" class="form-input device-name" placeholder="${t.deviceNamePlaceholder}" style="flex: 1;">
                 <button type="button" onclick="removeDevice(this)" style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 0.5rem; font-size: 1rem;">
                     <span>${t.deviceRemoveBtn}</span>
                 </button>
@@ -3521,9 +3522,10 @@
             const devices = [];
             const deviceItems = document.querySelectorAll('#device-list .device-item');
             deviceItems.forEach(item => {
-                const sn = item.querySelector('input').value;
-                if (sn) {
-                    devices.push({ sn });
+                const sn = item.querySelector('.device-sn').value;
+                const name = item.querySelector('.device-name').value;
+                if (sn || name) {
+                    devices.push({ sn, name });
                 }
             });
             return devices;
