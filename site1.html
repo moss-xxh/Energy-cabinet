@@ -904,7 +904,7 @@
                             </th>
                             <th style="padding: 16px 12px; text-align: center; font-weight: 600; color: var(--text-secondary); cursor: pointer; vertical-align: middle;" onclick="sortTable('installedPower')" data-sort="installedPower">
                                 <div style="display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                    <span id="tableHeaderInstalledPower">装机功率</span>
+                                    <span id="tableHeaderInstalledPower">装机容量</span>
                                     <span class="sort-arrows" style="display: inline-flex; flex-direction: column; align-items: center; line-height: 1;">
                                         <i class="fas fa-caret-up" style="font-size: 8px; cursor: pointer; color: #94a3b8;" onclick="event.stopPropagation(); sortTable('installedPower', 'asc')"></i>
                                         <i class="fas fa-caret-down" style="font-size: 8px; cursor: pointer; color: #94a3b8; margin-top: -1px;" onclick="event.stopPropagation(); sortTable('installedPower', 'desc')"></i>
@@ -1951,8 +1951,8 @@
                             <!-- 第二排：地址选择 -->
                             <div class="form-group" style="margin-bottom: 1.5rem;">
                                 <label class="form-label required" id="addressLabel">地址</label>
-                                <!-- 地址显示框（点击展开） -->
-                                <div id="address-display-box" onclick="toggleAddressPanel()" style="
+                                <!-- 地址显示框（点击打开弹窗） -->
+                                <div id="address-display-box" onclick="openAddressModal()" style="
                                     padding: 0.75rem 1rem;
                                     border: 1px solid #d1d5db;
                                     border-radius: 0.375rem;
@@ -1965,126 +1965,19 @@
                                 ">
                                     <span id="address-display-text" style="color: #9ca3af;">点击选择地址</span>
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
-                                        <path d="M6 9l6 6 6-6"></path>
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
                                     </svg>
                                 </div>
                                 <!-- 隐藏的地址值 -->
                                 <input type="hidden" id="address" value="">
-
-                                <!-- 地址选择面板 -->
-                                <div id="address-panel" style="
-                                    display: none;
-                                    margin-top: 0.5rem;
-                                    padding: 1rem;
-                                    border: 1px solid #d1d5db;
-                                    border-radius: 0.5rem;
-                                    background: #f9fafb;
-                                ">
-                                    <!-- 获取定位按钮 -->
-                                    <div style="margin-bottom: 1rem;">
-                                        <button type="button" onclick="getLocation()" style="
-                                            width: 100%;
-                                            padding: 0.75rem;
-                                            background: #3562E3;
-                                            color: white;
-                                            border: none;
-                                            border-radius: 0.375rem;
-                                            cursor: pointer;
-                                            font-size: 0.875rem;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            gap: 0.5rem;
-                                        ">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                                <circle cx="12" cy="10" r="3"></circle>
-                                            </svg>
-                                            获取当前位置
-                                        </button>
-                                    </div>
-
-                                    <!-- 分隔线 -->
-                                    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                                        <div style="flex: 1; height: 1px; background: #d1d5db;"></div>
-                                        <span style="padding: 0 1rem; color: #6b7280; font-size: 0.875rem;">或手动选择</span>
-                                        <div style="flex: 1; height: 1px; background: #d1d5db;"></div>
-                                    </div>
-
-                                    <!-- 国家/省/市/区 选择 -->
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">国家</label>
-                                            <select id="address-country" class="form-select" onchange="updateProvinces()" style="width: 100%;">
-                                                <option value="">请选择国家</option>
-                                                <option value="中国" selected>中国</option>
-                                                <option value="澳大利亚">澳大利亚</option>
-                                                <option value="美国">美国</option>
-                                                <option value="日本">日本</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">省/州</label>
-                                            <select id="address-province" class="form-select" onchange="updateCities()" style="width: 100%;">
-                                                <option value="">请选择省份</option>
-                                                <option value="上海市">上海市</option>
-                                                <option value="北京市">北京市</option>
-                                                <option value="广东省">广东省</option>
-                                                <option value="江苏省">江苏省</option>
-                                                <option value="浙江省">浙江省</option>
-                                                <option value="四川省">四川省</option>
-                                                <option value="湖北省">湖北省</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">市</label>
-                                            <select id="address-city" class="form-select" onchange="updateDistricts()" style="width: 100%;">
-                                                <option value="">请选择城市</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">区/县</label>
-                                            <select id="address-district" class="form-select" style="width: 100%;">
-                                                <option value="">请选择区县</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- 街道地址输入 -->
-                                    <div style="margin-bottom: 1rem;">
-                                        <label style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">详细地址（街道、门牌号）</label>
-                                        <input type="text" id="address-street" class="form-input" placeholder="请输入街道、门牌号等详细地址" style="width: 100%;">
-                                    </div>
-
-                                    <!-- 确认按钮 -->
-                                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                        <button type="button" onclick="toggleAddressPanel()" style="
-                                            padding: 0.5rem 1rem;
-                                            background: white;
-                                            color: #374151;
-                                            border: 1px solid #d1d5db;
-                                            border-radius: 0.375rem;
-                                            cursor: pointer;
-                                            font-size: 0.875rem;
-                                        ">取消</button>
-                                        <button type="button" onclick="confirmAddressSelection()" style="
-                                            padding: 0.5rem 1rem;
-                                            background: #3562E3;
-                                            color: white;
-                                            border: none;
-                                            border-radius: 0.375rem;
-                                            cursor: pointer;
-                                            font-size: 0.875rem;
-                                        ">确认</button>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- 第三排 -->
                             <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                                 <div class="form-group">
-                                    <label class="form-label" id="installedPowerLabel">装机容量(kWp)</label>
-                                    <input type="number" class="form-input" id="installed-power" data-translate-placeholder="installedPowerPlaceholder" placeholder="请输入装机功率">
+                                    <label class="form-label" id="installedPowerLabel">装机容量(kW)</label>
+                                    <input type="number" class="form-input" id="installed-power" data-translate-placeholder="installedPowerPlaceholder" placeholder="请输入装机容量">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" id="gridDateLabel">并网时间</label>
@@ -3925,5 +3818,572 @@
 
         // 电价相关函数已删除
     </script>
+
+    <!-- 地址选择弹窗 - 参考 vppservice 样式 -->
+    <div id="address-modal" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+    ">
+        <div style="
+            background: white;
+            border-radius: 8px;
+            width: 520px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        ">
+            <!-- 弹窗头部 -->
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 24px;
+                border-bottom: 1px solid #f0f0f0;
+            ">
+                <h2 style="margin: 0; font-size: 18px; font-weight: 600; color: #1f2937;">选择地址</h2>
+                <button onclick="closeAddressModal()" style="
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #9ca3af;
+                    transition: color 0.2s;
+                " onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Tab 导航 -->
+            <div style="padding: 0 24px; border-bottom: 1px solid #f0f0f0;">
+                <div style="display: flex; gap: 32px;">
+                    <div id="tab-location-btn" onclick="switchMainTab('location')" style="
+                        padding: 16px 0;
+                        cursor: pointer;
+                        font-size: 15px;
+                        color: #3b82f6;
+                        border-bottom: 2px solid #3b82f6;
+                        margin-bottom: -1px;
+                        font-weight: 500;
+                    ">使用定位</div>
+                    <div id="tab-manual-btn" onclick="switchMainTab('manual')" style="
+                        padding: 16px 0;
+                        cursor: pointer;
+                        font-size: 15px;
+                        color: #6b7280;
+                        border-bottom: 2px solid transparent;
+                        margin-bottom: -1px;
+                    ">手动选择</div>
+                </div>
+            </div>
+
+            <!-- Tab 内容区域 -->
+            <div style="min-height: 280px;">
+                <!-- 使用定位 Tab -->
+                <div id="tab-location-content" style="padding: 24px;">
+                    <!-- 获取位置按钮 - 居中显示 -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px;">
+                        <button id="get-location-btn" onclick="getLocation()" style="
+                            padding: 12px 32px;
+                            background: #3b82f6;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            transition: background 0.2s;
+                        " onmouseover="if(!this.disabled)this.style.background='#2563eb'" onmouseout="if(!this.disabled)this.style.background='#3b82f6'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                            </svg>
+                            <span id="get-location-btn-text">获取当前位置</span>
+                        </button>
+                    </div>
+
+                    <!-- 定位结果/错误提示显示 -->
+                    <div id="location-result" style="display: none; margin-top: 16px;"></div>
+                </div>
+
+                <!-- 手动选择 Tab -->
+                <div id="tab-manual-content" style="padding: 24px; display: none;">
+                    <!-- 级联选择器 -->
+                    <div style="margin-bottom: 16px;">
+                        <div id="cascader-display" onclick="toggleCascaderDropdown()" style="
+                            width: 100%;
+                            padding: 12px 16px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 6px;
+                            background: white;
+                            cursor: pointer;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            box-sizing: border-box;
+                            transition: border-color 0.2s;
+                        " onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#d1d5db'">
+                            <span id="cascader-text" style="color: #9ca3af; font-size: 14px;">请选择地区</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+
+                        <!-- 级联下拉菜单 -->
+                        <div id="cascader-dropdown" style="
+                            display: none;
+                            position: relative;
+                            margin-top: 4px;
+                            background: white;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 6px;
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                            max-height: 240px;
+                            overflow: hidden;
+                        ">
+                            <div style="display: flex; height: 240px;">
+                                <!-- 第一列：国家/省 -->
+                                <div id="cascader-col-1" style="
+                                    width: 140px;
+                                    border-right: 1px solid #f0f0f0;
+                                    overflow-y: auto;
+                                "></div>
+                                <!-- 第二列：市 -->
+                                <div id="cascader-col-2" style="
+                                    width: 140px;
+                                    border-right: 1px solid #f0f0f0;
+                                    overflow-y: auto;
+                                    display: none;
+                                "></div>
+                                <!-- 第三列：区 -->
+                                <div id="cascader-col-3" style="
+                                    width: 140px;
+                                    overflow-y: auto;
+                                    display: none;
+                                "></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 详细地址输入 -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #374151;">详细地址</label>
+                        <input type="text" id="detail-address-input" placeholder="请输入详细地址（门牌号、楼栋等）" style="
+                            width: 100%;
+                            padding: 12px 16px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            box-sizing: border-box;
+                            transition: border-color 0.2s;
+                        " onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#d1d5db'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部按钮 -->
+            <div style="
+                padding: 16px 24px;
+                border-top: 1px solid #f0f0f0;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            ">
+                <button onclick="closeAddressModal()" style="
+                    padding: 10px 24px;
+                    background: white;
+                    color: #374151;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='#9ca3af'" onmouseout="this.style.borderColor='#d1d5db'">取消</button>
+                <button id="confirm-address-btn" onclick="confirmAddressFromModal()" style="
+                    padding: 10px 24px;
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background 0.2s;
+                " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 地址弹窗相关变量
+        let selectedAddressData = {
+            country: '',
+            province: '',
+            city: '',
+            district: '',
+            street: ''
+        };
+        let currentTab = 'location';
+        let locationAddress = '';
+
+        // 打开地址弹窗
+        function openAddressModal() {
+            document.getElementById('address-modal').style.display = 'flex';
+            // 重置状态
+            selectedAddressData = { country: '', province: '', city: '', district: '', street: '' };
+            locationAddress = '';
+            currentTab = 'location';
+
+            // 重置UI
+            switchMainTab('location');
+            resetLocationButton();
+            document.getElementById('location-result').style.display = 'none';
+            document.getElementById('location-result').innerHTML = '';
+            document.getElementById('cascader-text').textContent = '请选择地区';
+            document.getElementById('cascader-text').style.color = '#9ca3af';
+            document.getElementById('cascader-dropdown').style.display = 'none';
+            document.getElementById('detail-address-input').value = '';
+
+            // 初始化级联选择器
+            initCascader();
+        }
+
+        // 关闭地址弹窗
+        function closeAddressModal() {
+            document.getElementById('address-modal').style.display = 'none';
+            document.getElementById('cascader-dropdown').style.display = 'none';
+        }
+
+        // 切换主 Tab（使用定位 / 手动选择）
+        function switchMainTab(tab) {
+            currentTab = tab;
+            const locationBtn = document.getElementById('tab-location-btn');
+            const manualBtn = document.getElementById('tab-manual-btn');
+            const locationContent = document.getElementById('tab-location-content');
+            const manualContent = document.getElementById('tab-manual-content');
+
+            if (tab === 'location') {
+                locationBtn.style.color = '#3b82f6';
+                locationBtn.style.borderBottom = '2px solid #3b82f6';
+                locationBtn.style.fontWeight = '500';
+                manualBtn.style.color = '#6b7280';
+                manualBtn.style.borderBottom = '2px solid transparent';
+                manualBtn.style.fontWeight = 'normal';
+                locationContent.style.display = 'block';
+                manualContent.style.display = 'none';
+            } else {
+                manualBtn.style.color = '#3b82f6';
+                manualBtn.style.borderBottom = '2px solid #3b82f6';
+                manualBtn.style.fontWeight = '500';
+                locationBtn.style.color = '#6b7280';
+                locationBtn.style.borderBottom = '2px solid transparent';
+                locationBtn.style.fontWeight = 'normal';
+                manualContent.style.display = 'block';
+                locationContent.style.display = 'none';
+            }
+        }
+
+        // 重置定位按钮
+        function resetLocationButton() {
+            const btn = document.getElementById('get-location-btn');
+            const btnText = document.getElementById('get-location-btn-text');
+            btn.disabled = false;
+            btn.style.background = '#3b82f6';
+            btnText.textContent = '获取当前位置';
+        }
+
+        // 获取当前位置（简化版，参考 vppservice 样式）
+        function getLocation() {
+            const btn = document.getElementById('get-location-btn');
+            const btnText = document.getElementById('get-location-btn-text');
+            const resultDiv = document.getElementById('location-result');
+
+            // 设置按钮为加载状态
+            btn.disabled = true;
+            btn.style.background = '#93c5fd';
+            btnText.textContent = '定位中...';
+            resultDiv.style.display = 'none';
+
+            // 模拟定位延迟
+            setTimeout(() => {
+                const mockLocations = [
+                    '上海市浦东新区张江高科技园区',
+                    '北京市海淀区中关村科技园',
+                    '深圳市南山区科技园南路',
+                    '广州市天河区科韵路'
+                ];
+                locationAddress = mockLocations[Math.floor(Math.random() * mockLocations.length)];
+
+                // 显示成功结果
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div style="
+                        padding: 12px 16px;
+                        background: #f0fdf4;
+                        border: 1px solid #bbf7d0;
+                        border-radius: 6px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    ">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span style="font-size: 14px; color: #166534;">${locationAddress}</span>
+                    </div>
+                `;
+
+                // 恢复按钮
+                btn.disabled = false;
+                btn.style.background = '#3b82f6';
+                btnText.textContent = '获取当前位置';
+            }, 1500);
+        }
+
+        // 显示定位错误（用于真实定位失败时）
+        function showLocationError(message) {
+            const resultDiv = document.getElementById('location-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div style="
+                    padding: 12px 16px;
+                    background: #fef2f2;
+                    border: 1px solid #fecaca;
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <span style="font-size: 14px; color: #dc2626;">${message}</span>
+                </div>
+            `;
+            resetLocationButton();
+        }
+
+        // 初始化级联选择器
+        function initCascader() {
+            const col1 = document.getElementById('cascader-col-1');
+            col1.innerHTML = '';
+
+            // 添加国家/省份选项
+            Object.keys(addressData).forEach(country => {
+                Object.keys(addressData[country]).forEach(province => {
+                    const item = createCascaderItem(province, () => selectCascaderProvince(country, province));
+                    col1.appendChild(item);
+                });
+            });
+        }
+
+        // 创建级联选择项
+        function createCascaderItem(text, onClick, hasChildren = true) {
+            const item = document.createElement('div');
+            item.style.cssText = `
+                padding: 10px 12px;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 14px;
+                color: #374151;
+                transition: background 0.15s;
+            `;
+            item.innerHTML = `
+                <span>${text}</span>
+                ${hasChildren ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>' : ''}
+            `;
+            item.onmouseover = () => item.style.background = '#f3f4f6';
+            item.onmouseout = () => item.style.background = 'transparent';
+            item.onclick = onClick;
+            return item;
+        }
+
+        // 切换级联下拉显示
+        function toggleCascaderDropdown() {
+            const dropdown = document.getElementById('cascader-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 选择省份
+        function selectCascaderProvince(country, province) {
+            selectedAddressData.country = country;
+            selectedAddressData.province = province;
+            selectedAddressData.city = '';
+            selectedAddressData.district = '';
+
+            // 高亮选中项
+            highlightCascaderItem('cascader-col-1', province);
+
+            // 显示第二列
+            const col2 = document.getElementById('cascader-col-2');
+            col2.style.display = 'block';
+            col2.innerHTML = '';
+
+            if (addressData[country] && addressData[country][province]) {
+                Object.keys(addressData[country][province]).forEach(city => {
+                    const hasDistricts = addressData[country][province][city].length > 0;
+                    const item = createCascaderItem(city, () => selectCascaderCity(country, province, city), hasDistricts);
+                    col2.appendChild(item);
+                });
+            }
+
+            // 隐藏第三列
+            document.getElementById('cascader-col-3').style.display = 'none';
+
+            updateCascaderDisplay();
+        }
+
+        // 选择城市
+        function selectCascaderCity(country, province, city) {
+            selectedAddressData.city = city;
+            selectedAddressData.district = '';
+
+            // 高亮选中项
+            highlightCascaderItem('cascader-col-2', city);
+
+            // 显示第三列
+            const col3 = document.getElementById('cascader-col-3');
+
+            if (addressData[country] && addressData[country][province] && addressData[country][province][city]) {
+                const districts = addressData[country][province][city];
+                if (districts.length > 0) {
+                    col3.style.display = 'block';
+                    col3.innerHTML = '';
+                    districts.forEach(district => {
+                        const item = createCascaderItem(district, () => selectCascaderDistrict(district), false);
+                        col3.appendChild(item);
+                    });
+                } else {
+                    col3.style.display = 'none';
+                    // 没有区县，直接关闭下拉
+                    document.getElementById('cascader-dropdown').style.display = 'none';
+                }
+            }
+
+            updateCascaderDisplay();
+        }
+
+        // 选择区县
+        function selectCascaderDistrict(district) {
+            selectedAddressData.district = district;
+
+            // 高亮选中项
+            highlightCascaderItem('cascader-col-3', district);
+
+            updateCascaderDisplay();
+
+            // 关闭下拉
+            document.getElementById('cascader-dropdown').style.display = 'none';
+        }
+
+        // 高亮级联选中项
+        function highlightCascaderItem(colId, text) {
+            const col = document.getElementById(colId);
+            Array.from(col.children).forEach(item => {
+                const itemText = item.querySelector('span').textContent;
+                if (itemText === text) {
+                    item.style.background = '#eff6ff';
+                    item.style.color = '#3b82f6';
+                } else {
+                    item.style.background = 'transparent';
+                    item.style.color = '#374151';
+                }
+            });
+        }
+
+        // 更新级联显示文本
+        function updateCascaderDisplay() {
+            const textEl = document.getElementById('cascader-text');
+            let display = '';
+
+            if (selectedAddressData.province) display += selectedAddressData.province;
+            if (selectedAddressData.city && selectedAddressData.city !== selectedAddressData.province) {
+                display += ' / ' + selectedAddressData.city;
+            }
+            if (selectedAddressData.district) display += ' / ' + selectedAddressData.district;
+
+            if (display) {
+                textEl.textContent = display;
+                textEl.style.color = '#374151';
+            } else {
+                textEl.textContent = '请选择地区';
+                textEl.style.color = '#9ca3af';
+            }
+        }
+
+        // 确认地址选择
+        function confirmAddressFromModal() {
+            let fullAddress = '';
+
+            if (currentTab === 'location') {
+                // 使用定位模式
+                if (!locationAddress) {
+                    alert('请先获取当前位置');
+                    return;
+                }
+                fullAddress = locationAddress;
+            } else {
+                // 手动选择模式
+                if (!selectedAddressData.province) {
+                    alert('请选择地区');
+                    return;
+                }
+
+                if (selectedAddressData.country && selectedAddressData.country !== '中国') {
+                    fullAddress += selectedAddressData.country + ' ';
+                }
+                if (selectedAddressData.province) fullAddress += selectedAddressData.province;
+                if (selectedAddressData.city && selectedAddressData.city !== selectedAddressData.province) {
+                    fullAddress += selectedAddressData.city;
+                }
+                if (selectedAddressData.district) fullAddress += selectedAddressData.district;
+
+                const detailAddress = document.getElementById('detail-address-input').value;
+                if (detailAddress) fullAddress += detailAddress;
+            }
+
+            // 设置到表单
+            document.getElementById('address').value = fullAddress;
+            document.getElementById('address-display-text').textContent = fullAddress;
+            document.getElementById('address-display-text').style.color = '#374151';
+
+            // 关闭弹窗
+            closeAddressModal();
+        }
+
+        // 点击弹窗外部关闭级联下拉
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('cascader-dropdown');
+            const display = document.getElementById('cascader-display');
+            if (dropdown && display && !dropdown.contains(e.target) && !display.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </body>
 </html>
