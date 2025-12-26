@@ -2128,14 +2128,15 @@
         setActiveMenuItem('site1');
 
         // 模拟设备数据
+        // 实时功率: 正数=充电, 负数=放电, 0=待机
         let devices = [
             { id: 1, siteName: '科技园区站', cabinetCount: 8, enabled: true, installedPower: 500, realTimePower: 125.5, remainingEnergy: 425, soc: 85, address: '上海市浦东新区张江高科技园区' },
-            { id: 2, siteName: '科技园区站', cabinetCount: 12, enabled: true, installedPower: 500, realTimePower: 89.3, remainingEnergy: 460, soc: 92, address: '上海市浦东新区张江高科技园区' },
+            { id: 2, siteName: '科技园区站', cabinetCount: 12, enabled: true, installedPower: 500, realTimePower: -89.3, remainingEnergy: 460, soc: 92, address: '上海市浦东新区张江高科技园区' },
             { id: 3, siteName: '工业园区站', cabinetCount: 0, enabled: false, installedPower: 800, realTimePower: 0, remainingEnergy: 360, soc: 45, address: '苏州市工业园区星湖街328号' },
-            { id: 4, siteName: '工业园区站', cabinetCount: 10, enabled: true, installedPower: 800, realTimePower: 156.8, remainingEnergy: 624, soc: 78, address: '苏州市工业园区星湖街328号' },
+            { id: 4, siteName: '工业园区站', cabinetCount: 10, enabled: true, installedPower: 800, realTimePower: -156.8, remainingEnergy: 624, soc: 78, address: '苏州市工业园区星湖街328号' },
             { id: 5, siteName: '商业中心站', cabinetCount: 6, enabled: true, installedPower: 600, realTimePower: 0, remainingEnergy: 150, soc: 25, address: '深圳市福田区中心区福华三路' },
             { id: 6, siteName: '商业中心站', cabinetCount: 15, enabled: false, installedPower: 600, realTimePower: 98.7, remainingEnergy: 402, soc: 67, address: '深圳市福田区中心区福华三路' },
-            { id: 7, siteName: '物流园区站', cabinetCount: 9, enabled: true, installedPower: 1000, realTimePower: 112.4, remainingEnergy: 880, soc: 88, address: '广州市白云区钟落潭物流园' },
+            { id: 7, siteName: '物流园区站', cabinetCount: 9, enabled: true, installedPower: 1000, realTimePower: -112.4, remainingEnergy: 880, soc: 88, address: '广州市白云区钟落潭物流园' },
             { id: 8, siteName: '研发中心站', cabinetCount: 7, enabled: true, installedPower: 750, realTimePower: 0, remainingEnergy: 412.5, soc: 55, address: '北京市海淀区中关村软件园' }
         ];
 
@@ -2179,6 +2180,34 @@
             return addressMap[zhAddress] || zhAddress;
         }
 
+        // 格式化功率值并添加状态标签
+        // > 0: 充电 (系统从电网吸收功率)
+        // < 0: 放电 (系统向电网释放功率)
+        // = 0: 待机 (系统待机状态)
+        function formatPowerWithStatus(power, lang) {
+            const isZh = lang === 'zh';
+            let statusText, statusColor, statusBg;
+
+            if (power > 0) {
+                statusText = isZh ? '充电' : 'Charging';
+                statusColor = '#059669';
+                statusBg = '#d1fae5';
+            } else if (power < 0) {
+                statusText = isZh ? '放电' : 'Discharging';
+                statusColor = '#dc2626';
+                statusBg = '#fee2e2';
+            } else {
+                statusText = isZh ? '待机' : 'Standby';
+                statusColor = '#6b7280';
+                statusBg = '#f3f4f6';
+            }
+
+            const powerValue = power > 0 ? `+${power}` : power;
+            const statusTag = `<span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; color: ${statusColor}; background: ${statusBg}; margin-left: 8px;">${statusText}</span>`;
+
+            return `${powerValue} kW${statusTag}`;
+        }
+
         function renderTable() {
             const tbody = document.getElementById('deviceTableBody');
             tbody.innerHTML = '';
@@ -2202,7 +2231,7 @@
                     <td style="padding: 16px 12px;">${getTranslatedStationName(device.siteName)}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.cabinetCount || 0}${unitText}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.installedPower} kW</td>
-                    <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.realTimePower > 0 ? '+' : ''}${device.realTimePower} kW</td>
+                    <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${formatPowerWithStatus(device.realTimePower, currentLang)}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.remainingEnergy} kWh</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.soc}%</td>
                     <td style="padding: 16px 12px;">${getTranslatedAddress(device.address)}</td>
