@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻译对象测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+
+        .test-section {
+            margin-bottom: 32px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .test-section h2 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .result {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .result.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #10b981;
+        }
+
+        .result.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .result.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 翻译对象加载测试</h1>
+
+        <div class="test-section">
+            <h2>1. common.js 加载状态</h2>
+            <div id="commonJsStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. translations 对象检查</h2>
+            <div id="translationsStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 测试关键翻译键</h2>
+            <div id="keyTestStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. 翻译对象结构</h2>
+            <button onclick="showTranslationStructure()">显示完整结构</button>
+            <button onclick="searchKey()">搜索键值</button>
+            <div id="structureDisplay" style="margin-top: 16px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. 测试 getTranslation 函数</h2>
+            <button onclick="testGetTranslation()">运行测试</button>
+            <div id="functionTestStatus" style="margin-top: 16px;"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // 页面加载时自动运行测试
+        window.addEventListener('DOMContentLoaded', function() {
+            runAllTests();
+        });
+
+        function runAllTests() {
+            testCommonJs();
+            testTranslationsObject();
+            testKeys();
+        }
+
+        // 测试 1: common.js 是否加载
+        function testCommonJs() {
+            const statusDiv = document.getElementById('commonJsStatus');
+
+            if (typeof translations !== 'undefined') {
+                statusDiv.innerHTML = `
+                    <div class="result success">
+                        ✓ common.js 已成功加载
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="result error">
+                        ✗ common.js 未加载或 translations 对象未定义
+                    </div>
+                `;
+            }
+        }
+
+        // 测试 2: translations 对象结构
+        function testTranslationsObject() {
+            const statusDiv = document.getElementById('translationsStatus');
+
+            if (typeof translations === 'undefined') {
+                statusDiv.innerHTML = `
+                    <div class="result error">
+                        ✗ translations 对象不存在
+                    </div>
+                `;
+                return;
+            }
+
+            const languages = Object.keys(translations);
+            let html = `
+                <div class="result success">
+                    ✓ translations 对象存在<br>
+                    包含的语言: ${languages.join(', ')}
+                </div>
+            `;
+
+            // 检查每种语言
+            languages.forEach(lang => {
+                const keyCount = Object.keys(translations[lang]).length;
+                html += `
+                    <div class="result success">
+                        • ${lang}: ${keyCount} 个翻译键
+                    </div>
+                `;
+            });
+
+            statusDiv.innerHTML = html;
+        }
+
+        // 测试 3: 检查关键翻译键
+        function testKeys() {
+            const statusDiv = document.getElementById('keyTestStatus');
+
+            if (typeof translations === 'undefined') {
+                statusDiv.innerHTML = `
+                    <div class="result error">
+                        ✗ 无法测试：translations 对象不存在
+                    </div>
+                `;
+                return;
+            }
+
+            const testKeys = [
+                'cabinetStatusStandby',
+                'emsCategoryCpuStatus',
+                'cabinetBtnSettings',
+                'cabinetCurrentStrategy',
+                'cabinetChartLegendSOH'
+            ];
+
+            let html = '';
+
+            testKeys.forEach(key => {
+                const zhExists = translations.zh && translations.zh[key];
+                const enExists = translations.en && translations.en[key];
+
+                if (zhExists && enExists) {
+                    html += `
+                        <div class="result success">
+                            ✓ ${key}<br>
+                            　中文: ${translations.zh[key]}<br>
+                            　英文: ${translations.en[key]}
+                        </div>
+                    `;
+                } else if (zhExists || enExists) {
+                    html += `
+                        <div class="result warning">
+                            ⚠ ${key}<br>
+                            　中文: ${zhExists ? translations.zh[key] : '❌ 缺失'}<br>
+                            　英文: ${enExists ? translations.en[key] : '❌ 缺失'}
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="result error">
+                            ✗ ${key} - 所有语言中都缺失
+                        </div>
+                    `;
+                }
+            });
+
+            statusDiv.innerHTML = html;
+        }
+
+        // 显示完整的翻译结构
+        function showTranslationStructure() {
+            const display = document.getElementById('structureDisplay');
+
+            if (typeof translations === 'undefined') {
+                display.innerHTML = `
+                    <div class="result error">
+                        ✗ translations 对象不存在
+                    </div>
+                `;
+                return;
+            }
+
+            const lang = localStorage.getItem('language') || 'zh';
+            const keys = Object.keys(translations[lang] || {});
+
+            display.innerHTML = `
+                <div class="result success">
+                    当前语言: ${lang}<br>
+                    翻译键总数: ${keys.length}
+                </div>
+                <pre>${JSON.stringify(translations, null, 2)}</pre>
+            `;
+        }
+
+        // 搜索键值
+        function searchKey() {
+            const keyword = prompt('请输入要搜索的关键字（例如：cabinet、ems、btn）:');
+            if (!keyword) return;
+
+            const display = document.getElementById('structureDisplay');
+
+            if (typeof translations === 'undefined') {
+                display.innerHTML = `
+                    <div class="result error">
+                        ✗ translations 对象不存在
+                    </div>
+                `;
+                return;
+            }
+
+            const lang = localStorage.getItem('language') || 'zh';
+            const results = {};
+
+            Object.keys(translations[lang] || {}).forEach(key => {
+                if (key.toLowerCase().includes(keyword.toLowerCase())) {
+                    results[key] = translations[lang][key];
+                }
+            });
+
+            if (Object.keys(results).length === 0) {
+                display.innerHTML = `
+                    <div class="result warning">
+                        ⚠ 未找到包含 "${keyword}" 的翻译键
+                    </div>
+                `;
+            } else {
+                display.innerHTML = `
+                    <div class="result success">
+                        找到 ${Object.keys(results).length} 个匹配项：
+                    </div>
+                    <pre>${JSON.stringify(results, null, 2)}</pre>
+                `;
+            }
+        }
+
+        // 测试 getTranslation 函数
+        function testGetTranslation() {
+            const statusDiv = document.getElementById('functionTestStatus');
+
+            // 定义安全的 getTranslation 函数（与 cabinet-detail.html 中相同）
+            function getTranslation(key) {
+                if (typeof translations === 'undefined') {
+                    console.warn('翻译对象未加载，返回原始键值:', key);
+                    return key;
+                }
+
+                const lang = localStorage.getItem('language') || 'zh';
+
+                if (!translations[lang]) {
+                    console.warn(`语言 "${lang}" 的翻译数据不存在，使用键值:`, key);
+                    return key;
+                }
+
+                return translations[lang][key] || key;
+            }
+
+            const testKeys = [
+                'cabinetStatusStandby',
+                'emsCategoryCpuStatus',
+                'cabinetBtnSettings',
+                'nonExistentKey123'
+            ];
+
+            let html = '';
+
+            testKeys.forEach(key => {
+                const result = getTranslation(key);
+                const exists = (typeof translations !== 'undefined' &&
+                               translations[localStorage.getItem('language') || 'zh'] &&
+                               translations[localStorage.getItem('language') || 'zh'][key]);
+
+                if (exists) {
+                    html += `
+                        <div class="result success">
+                            ✓ getTranslation('${key}')<br>
+                            　返回: "${result}"
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="result warning">
+                            ⚠ getTranslation('${key}')<br>
+                            　返回: "${result}" (使用键值作为回退)
+                        </div>
+                    `;
+                }
+            });
+
+            statusDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 翻译测试</title>
+    <style>
+        body {
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .translation-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .key {
+            font-weight: 600;
+            color: #0066cc;
+        }
+        .value-zh {
+            color: #333;
+        }
+        .value-en {
+            color: #666;
+            font-style: italic;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌐 Dashboard 语言切换完整测试</h1>
+
+        <div class="test-section">
+            <h3>测试控制面板</h3>
+            <button onclick="testAllTranslations()">测试所有翻译</button>
+            <button onclick="checkMissingElements()">检查缺失元素</button>
+            <button onclick="window.open('dashboard.html', '_blank')">打开 Dashboard</button>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Dashboard 新增翻译项</h3>
+            <div class="grid" id="newTranslations"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>元素ID映射状态</h3>
+            <div id="elementStatus"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // 需要测试的新增翻译键
+        const newTranslationKeys = [
+            'menuSites', 'menuSettings', 'operationOverview', 'totalStations',
+            'cabinetCount', 'totalRevenueLabel', 'todayBtn', 'monthBtn', 'totalBtn',
+            'chargeAmount', 'dischargeAmount', 'revenue', 'stationRanking',
+            'compareDayText', 'totalCount', 'totalCapacity', 'offline', 'fault',
+            'todayCharge', 'todayDischarge', 'monthCharge', 'monthDischarge', 'cabinetTitle'
+        ];
+
+        // 显示新增翻译
+        function displayNewTranslations() {
+            const container = document.getElementById('newTranslations');
+            let html = '';
+
+            newTranslationKeys.forEach(key => {
+                const zhValue = translations.zh[key] || '❌ 缺失';
+                const enValue = translations.en[key] || '❌ 缺失';
+                const status = (translations.zh[key] && translations.en[key]) ? '✅' : '❌';
+
+                html += `
+                    <div class="translation-item">
+                        <span class="key">${status} ${key}</span>
+                        <span class="value-zh">${zhValue}</span>
+                        <span class="value-en">${enValue}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 测试所有翻译
+        function testAllTranslations() {
+            const results = document.getElementById('testResults');
+            let passCount = 0;
+            let failCount = 0;
+            let messages = [];
+
+            // 测试中英文翻译对
+            newTranslationKeys.forEach(key => {
+                if (translations.zh[key] && translations.en[key]) {
+                    passCount++;
+                } else {
+                    failCount++;
+                    messages.push(`❌ ${key}: 中文="${translations.zh[key] || '缺失'}" | 英文="${translations.en[key] || '缺失'}"`);
+                }
+            });
+
+            // 测试特殊ID元素
+            const specialIds = ['compareDayText1', 'compareDayText2', 'compareDayText3',
+                               'chargeAmount1', 'dischargeAmount1', 'revenue1'];
+
+            messages.push(`\n特殊元素ID处理：`);
+            specialIds.forEach(id => {
+                messages.push(`- ${id}: 需在dashboard.html中验证`);
+            });
+
+            if (failCount === 0) {
+                results.innerHTML = `<div class="success">✅ 所有 ${passCount} 个翻译项都已完成！</div>`;
+            } else {
+                results.innerHTML = `<div class="error">❌ ${failCount} 个翻译项有问题：<br>${messages.join('<br>')}</div>`;
+            }
+        }
+
+        // 检查缺失的元素
+        function checkMissingElements() {
+            const results = document.getElementById('elementStatus');
+            let html = '<h4>Dashboard.html 元素ID检查清单：</h4><ul>';
+
+            const elementIds = [
+                { id: 'menuSites', desc: '站点管理菜单' },
+                { id: 'menuSettings', desc: '系统管理菜单' },
+                { id: 'operationOverview', desc: '运行概览标题' },
+                { id: 'totalStations', desc: '总电站标签' },
+                { id: 'cabinetCount', desc: '储能柜标签' },
+                { id: 'totalRevenueLabel', desc: '总收益标签' },
+                { id: 'todayBtn', desc: '今日按钮' },
+                { id: 'monthBtn', desc: '本月按钮' },
+                { id: 'totalBtn', desc: '累计按钮' },
+                { id: 'stationRanking', desc: '电站排行榜标题' },
+                { id: 'cabinetTitle', desc: '储能柜区域标题' },
+                { id: 'totalCount', desc: '总数标签' },
+                { id: 'totalCapacity', desc: '总容量标签' },
+                { id: 'offline', desc: '离线标签' },
+                { id: 'fault', desc: '故障标签' },
+                { id: 'todayCharge', desc: '今日充电量' },
+                { id: 'todayDischarge', desc: '今日放电量' },
+                { id: 'monthCharge', desc: '本月充电量' },
+                { id: 'monthDischarge', desc: '本月放电量' }
+            ];
+
+            elementIds.forEach(item => {
+                html += `<li><code>id="${item.id}"</code> - ${item.desc}</li>`;
+            });
+
+            html += '</ul>';
+            html += '<p><strong>特殊处理的元素：</strong></p><ul>';
+            html += '<li><code>compareDayText1/2/3</code> - "比昨日"文本（3处）</li>';
+            html += '<li><code>chargeAmount1</code> - 充电量（运行概览）</li>';
+            html += '<li><code>dischargeAmount1</code> - 放电量（运行概览）</li>';
+            html += '<li><code>revenue1</code> - 收益（运行概览）</li>';
+            html += '</ul>';
+
+            results.innerHTML = html;
+        }
+
+        // 页面加载时执行
+        window.addEventListener('load', function() {
+            displayNewTranslations();
+            testAllTranslations();
+            checkMissingElements();
+        });
+    </script>
+</body>
+</html>

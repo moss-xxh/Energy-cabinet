@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>测试Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="../ueh/components/i18n.js"></script>
+    <script src="navbar.js"></script>
+</head>
+<body data-page="dashboard">
+    <main class="main-content" style="padding: 20px;">
+        <h1>测试页面</h1>
+        <p>如果你能看到这段文字，说明基本HTML结构正常。</p>
+
+        <h2>测试内容：</h2>
+        <div id="test-results"></div>
+
+        <script>
+            const results = document.getElementById('test-results');
+            let html = '<ul>';
+
+            // 测试1：i18n是否加载
+            html += '<li>window.i18n存在？' + (window.i18n ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试2：navbar是否加载
+            html += '<li>navbar加载？' + (document.querySelector('.header') ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试3：语言下拉菜单是否存在
+            html += '<li>语言下拉菜单存在？' + (document.getElementById('languageDropdownMenu') ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试4：toggleLanguageDropdown函数存在
+            html += '<li>toggleLanguageDropdown函数存在？' + (typeof toggleLanguageDropdown === 'function' ? '✅ 是' : '❌ 否') + '</li>';
+
+            // 测试5：selectLanguage函数存在
+            html += '<li>selectLanguage函数存在？' + (typeof selectLanguage === 'function' ? '✅ 是' : '❌ 否') + '</li>';
+
+            html += '</ul>';
+            results.innerHTML = html;
+
+            // 打印控制台信息
+            console.log('=== Dashboard测试 ===');
+            console.log('window.i18n:', window.i18n);
+            console.log('header元素:', document.querySelector('.header'));
+            console.log('languageDropdownMenu:', document.getElementById('languageDropdownMenu'));
+        </script>
+    </main>
+</body>
+</html>

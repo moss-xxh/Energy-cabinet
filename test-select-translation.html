@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试Select翻译</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试 Select 元素翻译</h1>
+
+    <div class="info">
+        <strong>当前语言：</strong> <span id="currentLang">zh</span>
+    </div>
+
+    <button onclick="switchToEnglish()">切换到英文</button>
+    <button onclick="switchToChinese()">切换到中文</button>
+
+    <h2>站点选择：</h2>
+    <select id="testSelect">
+        <option value="" data-translate="devicesAllSites">全部站点</option>
+        <option value="sz" data-translate="siteOptionShenzhen">深圳储能站 (8台 • 2.5MWh)</option>
+        <option value="gz" data-translate="siteOptionGuangzhou">广州储能站 (12台 • 3.75MWh)</option>
+        <option value="sh" data-translate="siteOptionShanghai">上海储能站 (10台 • 3.1MWh)</option>
+        <option value="bj" data-translate="siteOptionBeijing">北京储能站 (15台 • 4.7MWh)</option>
+    </select>
+
+    <script src="common.js"></script>
+    <script>
+        function updateSelectTranslations() {
+            const select = document.getElementById('testSelect');
+            const options = select.querySelectorAll('option[data-translate]');
+
+            options.forEach(option => {
+                const key = option.getAttribute('data-translate');
+                const translated = getTranslation(key);
+                if (translated) {
+                    option.textContent = translated;
+                    console.log(`翻译 ${key}: ${translated}`);
+                } else {
+                    console.log(`未找到翻译键: ${key}`);
+                }
+            });
+        }
+
+        function switchToEnglish() {
+            setLanguage('en');
+            updateSelectTranslations();
+            document.getElementById('currentLang').textContent = 'en';
+        }
+
+        function switchToChinese() {
+            setLanguage('zh');
+            updateSelectTranslations();
+            document.getElementById('currentLang').textContent = 'zh';
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+            setLanguage(currentLang);
+            updateSelectTranslations();
+
+            // 检查翻译是否存在
+            console.log('检查翻译键:');
+            console.log('devicesAllSites:', getTranslation('devicesAllSites'));
+            console.log('siteOptionShenzhen:', getTranslation('siteOptionShenzhen'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员文本语言切换测试</title>
+    <style>
+        body {
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        iframe {
+            width: 100%;
+            height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Dashboard 管理员文本语言切换测试</h1>
+
+        <div class="test-section">
+            <h3>1. LocalStorage 语言设置检查</h3>
+            <div id="storageStatus"></div>
+            <button onclick="setLanguage('zh')">设置中文</button>
+            <button onclick="setLanguage('en')">设置英文</button>
+            <button onclick="clearLanguage()">清除设置</button>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 翻译文本检查</h3>
+            <div id="translationStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Dashboard 页面测试</h3>
+            <p>请在新标签页打开 dashboard.html，检查以下内容：</p>
+            <ol>
+                <li>页面加载时，"管理员"文本是否正确显示</li>
+                <li>点击语言切换图标后，是否变成 "Administrator"</li>
+                <li>刷新页面后，语言设置是否保持</li>
+            </ol>
+            <div id="dashboardStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 问题诊断</h3>
+            <div id="diagnosis"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. 修复建议</h3>
+            <div id="solution"></div>
+        </div>
+    </div>
+
+    <script>
+        // 检查localStorage
+        function checkStorage() {
+            const lang = localStorage.getItem('language');
+            const status = document.getElementById('storageStatus');
+            if (lang) {
+                status.innerHTML = `<div class="status info">当前语言设置: <strong>${lang}</strong></div>`;
+                status.innerHTML += `<div class="status ${lang === 'zh' || lang === 'en' ? 'success' : 'error'}">
+                    ${lang === 'zh' || lang === 'en' ? '✅' : '❌'} 语言设置有效
+                </div>`;
+            } else {
+                status.innerHTML = `<div class="status info">未设置语言，默认使用: zh</div>`;
+            }
+        }
+
+        // 设置语言
+        function setLanguage(lang) {
+            localStorage.setItem('language', lang);
+            checkStorage();
+            checkTranslations();
+        }
+
+        // 清除语言设置
+        function clearLanguage() {
+            localStorage.removeItem('language');
+            checkStorage();
+        }
+
+        // 检查翻译文本
+        function checkTranslations() {
+            const status = document.getElementById('translationStatus');
+            const currentLang = localStorage.getItem('language') || 'zh';
+
+            // 模拟翻译对象
+            const translations = {
+                zh: { userName: '管理员' },
+                en: { userName: 'Administrator' }
+            };
+
+            status.innerHTML = `
+                <div class="status info">
+                    当前语言: <strong>${currentLang}</strong><br>
+                    应显示文本: <strong>${translations[currentLang].userName}</strong>
+                </div>
+            `;
+
+            // 检查common.js是否存在
+            fetch('common.js')
+                .then(response => response.text())
+                .then(text => {
+                    if (text.includes("userName: '管理员'") && text.includes("userName: 'Administrator'")) {
+                        status.innerHTML += `<div class="status success">✅ common.js 包含正确的翻译文本</div>`;
+                    } else {
+                        status.innerHTML += `<div class="status error">❌ common.js 翻译文本可能有问题</div>`;
+                    }
+
+                    // 检查setLanguage函数
+                    if (text.includes('function setLanguage')) {
+                        status.innerHTML += `<div class="status success">✅ setLanguage 函数存在</div>`;
+                    }
+                })
+                .catch(err => {
+                    status.innerHTML += `<div class="status error">❌ 无法读取 common.js</div>`;
+                });
+        }
+
+        // 诊断问题
+        function diagnose() {
+            const diagnosis = document.getElementById('diagnosis');
+            const currentLang = localStorage.getItem('language') || 'zh';
+
+            diagnosis.innerHTML = `
+                <div class="status info">
+                    <strong>可能的问题：</strong><br>
+                    1. dashboard.html 可能在 common.js 加载前就设置了文本<br>
+                    2. 页面可能覆盖了 common.js 的初始化<br>
+                    3. ID 为 "userName" 的元素可能被其他脚本修改
+                </div>
+            `;
+
+            // 提供解决方案
+            const solution = document.getElementById('solution');
+            solution.innerHTML = `
+                <div class="status success">
+                    <strong>解决方案：</strong><br>
+                    1. 确保 dashboard.html 引入了 common.js<br>
+                    2. 确保页面加载时调用了 setLanguage(currentLang)<br>
+                    3. 检查是否有其他代码覆盖了 userName 的文本<br>
+                    4. 语言切换按钮已修改为黑色图标样式 ✅
+                </div>
+            `;
+        }
+
+        // 页面加载时执行
+        window.addEventListener('load', function() {
+            checkStorage();
+            checkTranslations();
+            diagnose();
+
+            // 显示当前dashboard的状态
+            const dashboardStatus = document.getElementById('dashboardStatus');
+            dashboardStatus.innerHTML = `
+                <div class="status info">
+                    <strong>修改内容：</strong><br>
+                    ✅ 语言切换按钮改为黑色图标（与登录页一致）<br>
+                    ✅ common.js 包含 userName 的翻译<br>
+                    ✅ setLanguage 函数会更新 ID 为 userName 的元素<br>
+                    ⚠️ 需要刷新 dashboard.html 页面以查看效果
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

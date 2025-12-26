@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>径向词云测试 - 能源储能系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .theme-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle button {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #3b82f6;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .theme-toggle button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 复制主文件的径向词云样式 */
+        .alarm-word-cloud-radial {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: radial-gradient(circle at center,
+                rgba(59, 130, 246, 0.1) 0%,
+                rgba(59, 130, 246, 0.05) 50%,
+                transparent 70%);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        .cloud-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle,
+                rgba(59, 130, 246, 0.15) 0%,
+                rgba(59, 130, 246, 0.05) 40%,
+                transparent 70%);
+            filter: blur(60px);
+            animation: cloudPulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes cloudPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .word-tag {
+            position: absolute;
+            padding: 6px 14px;
+            border: 1.5px solid transparent;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeInRadial 0.8s ease-out forwards;
+            z-index: 1;
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeInRadial {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .word-tag:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .word-tag[data-severity="critical"] {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .word-tag[data-severity="critical"]:hover {
+            color: #dc2626;
+            border-color: #ef4444;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4), 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .word-tag[data-severity="major"] {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .word-tag[data-severity="major"]:hover {
+            color: #d97706;
+            border-color: #f59e0b;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .word-tag[data-severity="minor"],
+        .word-tag[data-severity="info"] {
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .word-tag[data-severity="minor"]:hover,
+        .word-tag[data-severity="info"]:hover {
+            color: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .alarm-word-cloud-radial:has(.word-tag:hover) .word-tag:not(:hover) {
+            opacity: 0.4;
+        }
+
+        .tag-tooltip {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: rgba(30, 30, 30, 0.95);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tag-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(30, 30, 30, 0.95);
+        }
+
+        .word-tag:hover .tag-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .tooltip-stats {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .stats-footer {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-legend {
+            display: flex;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot[data-level="critical"] {
+            background: #ef4444;
+        }
+
+        .legend-dot[data-level="major"] {
+            background: #f59e0b;
+        }
+
+        .legend-dot[data-level="minor"] {
+            background: #3b82f6;
+        }
+
+        .stats-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .stats-total span {
+            color: #3b82f6;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 径向圆形词云</h1>
+        <p class="subtitle">能源储能系统 · 告警类型可视化测试</p>
+
+        <div class="theme-toggle">
+            <button onclick="toggleTheme()">🌓 切换主题</button>
+        </div>
+
+        <div class="card">
+            <div class="alarm-word-cloud-radial" id="alarmWordCloud">
+                <div class="cloud-glow"></div>
+            </div>
+
+            <div class="stats-footer">
+                <div class="stats-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot" data-level="critical"></span>
+                        <span>严重 (<span id="criticalCount">0</span>)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" data-level="major"></span>
+                        <span>重要 (<span id="majorCount">0</span>)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" data-level="minor"></span>
+                        <span>一般 (<span id="minorCount">0</span>)</span>
+                    </div>
+                </div>
+                <div class="stats-total">
+                    总计: <span id="totalAlarmCount">0</span> 条告警
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟告警数据
+        const mockAlarms = [
+            ...Array.from({length: 25}, () => ({type: '电池过温', severity: 'critical'})),
+            ...Array.from({length: 20}, () => ({type: 'SOC异常', severity: 'major'})),
+            ...Array.from({length: 18}, () => ({type: 'BMS通讯故障', severity: 'critical'})),
+            ...Array.from({length: 15}, () => ({type: '温控系统异常', severity: 'major'})),
+            ...Array.from({length: 12}, () => ({type: '电压不均衡', severity: 'minor'})),
+            ...Array.from({length: 10}, () => ({type: '绝缘故障', severity: 'critical'})),
+            ...Array.from({length: 8}, () => ({type: '烟感告警', severity: 'critical'})),
+            ...Array.from({length: 7}, () => ({type: '漏水告警', severity: 'major'})),
+            ...Array.from({length: 6}, () => ({type: '门禁异常', severity: 'minor'})),
+            ...Array.from({length: 5}, () => ({type: '消防系统告警', severity: 'major'})),
+            ...Array.from({length: 4}, () => ({type: '风扇故障', severity: 'minor'})),
+            ...Array.from({length: 3}, () => ({type: 'PCS通讯中断', severity: 'major'})),
+        ];
+
+        /**
+         * 计算径向位置（黄金角螺旋）
+         */
+        function calculateRadialPosition(index, total, radius, centerX, centerY) {
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // 约137.5度
+            const angle = index * goldenAngle;
+            const r = radius * Math.sqrt(index / total);
+
+            // 添加少量随机偏移
+            const randomOffset = {
+                x: (Math.random() - 0.5) * 15,
+                y: (Math.random() - 0.5) * 15
+            };
+
+            return {
+                x: centerX + r * Math.cos(angle) + randomOffset.x,
+                y: centerY + r * Math.sin(angle) + randomOffset.y
+            };
+        }
+
+        /**
+         * 计算字号（对数缩放）
+         */
+        function calculateFontSize(count, minCount, maxCount, minSize, maxSize) {
+            if (maxCount === minCount) return (minSize + maxSize) / 2;
+
+            const logMin = Math.log(minCount || 1);
+            const logMax = Math.log(maxCount);
+            const logCount = Math.log(count);
+
+            const ratio = (logCount - logMin) / (logMax - logMin);
+            return minSize + ratio * (maxSize - minSize);
+        }
+
+        /**
+         * 获取主导告警等级
+         */
+        function getDominantLevel(alarms) {
+            const levelCounts = {};
+            alarms.forEach(alarm => {
+                levelCounts[alarm.severity] = (levelCounts[alarm.severity] || 0) + 1;
+            });
+
+            const priority = ['critical', 'major', 'minor', 'info'];
+            for (const level of priority) {
+                if (levelCounts[level]) return level;
+            }
+            return 'info';
+        }
+
+        /**
+         * 绘制径向圆形词云
+         */
+        function drawRadialWordCloud() {
+            const container = document.getElementById('alarmWordCloud');
+            if (!container) return;
+
+            // 清空现有标签
+            const existingTags = container.querySelectorAll('.word-tag');
+            existingTags.forEach(tag => tag.remove());
+
+            // 统计告警类型
+            const typeStats = {};
+            mockAlarms.forEach(alarm => {
+                if (!typeStats[alarm.type]) {
+                    typeStats[alarm.type] = { count: 0, alarms: [] };
+                }
+                typeStats[alarm.type].count++;
+                typeStats[alarm.type].alarms.push(alarm);
+            });
+
+            // 排序并取TOP 20
+            const sortedTypes = Object.entries(typeStats)
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 20);
+
+            // 计算容器尺寸
+            const containerRect = container.getBoundingClientRect();
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+
+            const maxRadius = Math.min(containerWidth * 0.35, containerHeight * 0.4, 200);
+            const centerX = containerWidth / 2;
+            const centerY = containerHeight / 2;
+
+            // 计算字号范围
+            const counts = sortedTypes.map(t => t[1].count);
+            const maxCount = Math.max(...counts);
+            const minCount = Math.min(...counts);
+            const fontSizeRange = { min: 12, max: 36 };
+
+            // 生成标签
+            sortedTypes.forEach(([type, stats], index) => {
+                const { count, alarms } = stats;
+                const position = calculateRadialPosition(
+                    index,
+                    sortedTypes.length,
+                    maxRadius,
+                    centerX,
+                    centerY
+                );
+                const fontSize = calculateFontSize(
+                    count,
+                    minCount,
+                    maxCount,
+                    fontSizeRange.min,
+                    fontSizeRange.max
+                );
+                const severity = getDominantLevel(alarms);
+                const percentage = ((count / mockAlarms.length) * 100).toFixed(1);
+
+                const tag = document.createElement('div');
+                tag.className = 'word-tag';
+                tag.setAttribute('data-severity', severity);
+                tag.style.left = `${position.x}px`;
+                tag.style.top = `${position.y}px`;
+                tag.style.fontSize = `${fontSize}px`;
+                tag.style.animationDelay = `${index * 0.05}s`;
+                tag.textContent = type;
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tag-tooltip';
+                tooltip.innerHTML = `
+                    <div class="tooltip-title">${type}</div>
+                    <div class="tooltip-stats">
+                        📊 ${count} 次 · 📈 ${percentage}% · ⚠️ ${severity === 'critical' ? '严重' : severity === 'major' ? '重要' : '一般'}
+                    </div>
+                `;
+                tag.appendChild(tooltip);
+
+                tag.addEventListener('click', () => {
+                    console.log(`点击告警类型: ${type} (${count}次)`);
+                });
+
+                container.appendChild(tag);
+            });
+
+            // 更新统计信息
+            const levelCounts = { critical: 0, major: 0, minor: 0 };
+            sortedTypes.forEach(([type, stats]) => {
+                const level = getDominantLevel(stats.alarms);
+                if (level === 'critical') levelCounts.critical++;
+                else if (level === 'major') levelCounts.major++;
+                else levelCounts.minor++;
+            });
+
+            document.getElementById('criticalCount').textContent = levelCounts.critical;
+            document.getElementById('majorCount').textContent = levelCounts.major;
+            document.getElementById('minorCount').textContent = levelCounts.minor;
+            document.getElementById('totalAlarmCount').textContent = mockAlarms.length;
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+
+            // 浅色主题样式调整
+            if (currentTheme === 'dark') {
+                document.body.style.background = '#f1f5f9';
+                document.body.style.color = '#1e293b';
+                document.querySelector('.card').style.background = 'white';
+            } else {
+                document.body.style.background = '#0f172a';
+                document.body.style.color = '#f1f5f9';
+                document.querySelector('.card').style.background = '#1e293b';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            drawRadialWordCloud();
+
+            // 响应式重绘
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(drawRadialWordCloud, 300);
+            });
+        });
+    </script>
+</body>
+</html>
