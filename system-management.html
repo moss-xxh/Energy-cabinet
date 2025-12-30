@@ -716,11 +716,7 @@
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
                 </a>
                 <div class="submenu" style="display: block;">
-                    <a href="javascript:void(0)" class="menu-item submenu-item active" onclick="switchSystemModule('menus')">
-                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
-                        <span>菜单管理</span>
-                    </a>
-                    <a href="javascript:void(0)" class="menu-item submenu-item" onclick="switchSystemModule('roles')">
+                    <a href="javascript:void(0)" class="menu-item submenu-item active" onclick="switchSystemModule('roles')">
                         <span style="font-size: 16px; margin-right: 10px;">👥</span>
                         <span>角色管理</span>
                     </a>
@@ -741,8 +737,8 @@
     <main class="main-content" id="mainContent">
         <!-- 页面标题 -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 class="page-title" id="pageTitle" style="font-size: 24px; font-weight: 600; color: var(--text-primary); margin: 0;">菜单管理</h1>
-            <button class="btn btn-primary" id="addMenuBtn" onclick="showAddMenuModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
+            <h1 class="page-title" id="pageTitle" style="font-size: 24px; font-weight: 600; color: var(--text-primary); margin: 0;">角色管理</h1>
+            <button class="btn btn-primary" id="addMenuBtn" onclick="showAddMenuModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block; display: none;">
                 <i class="fas fa-plus"></i>
                 新增菜单
             </button>
@@ -750,7 +746,7 @@
 
         <!-- 内容区 -->
         <!-- 角色管理 -->
-        <div id="rolesModule" class="system-module" style="display: none;">
+        <div id="rolesModule" class="system-module" style="display: block;">
             <!-- 筛选面板 -->
             <div class="search-filter-section" style="background: white; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <div class="search-row" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
@@ -905,7 +901,7 @@
         </div>
 
         <!-- 菜单管理 -->
-        <div id="menusModule" class="system-module">
+        <div id="menusModule" class="system-module" style="display: none;">
             <div class="page-content">
                 <!-- 菜单列表 -->
                 <div class="menu-list-container" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
