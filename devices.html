@@ -2398,13 +2398,6 @@
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 12px; color: #666;" data-translate="devicesPanelMaxUtilization">最高利用率</span>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 14px; font-weight: 600; color: #f59e0b;"><span id="max-utilization">92</span>%</div>
-                                    <div style="font-size: 10px; color: #999;"><span data-translate="devicesPanelCabinet">储能柜</span><span id="max-util-cabinet">003</span></div>
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 12px; color: #666;" data-translate="devicesPanelMinSOC">最低SOC</span>
                                 <div style="text-align: right;">
                                     <div style="font-size: 14px; font-weight: 600; color: #ef4444;"><span id="min-soc">15</span>%</div>
@@ -2476,10 +2469,6 @@
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
                             <input type="radio" name="displayMode" value="soh" onchange="changeDisplayMode('soh')">
                             <span style="font-size: 14px; color: #666;" data-translate="devicesDisplaySOH">SOH</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                            <input type="radio" name="displayMode" value="utilization" onchange="changeDisplayMode('utilization')">
-                            <span style="font-size: 14px; color: #666;" data-translate="devicesDisplayUtilization">利用率</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
                             <input type="radio" name="displayMode" value="status" onchange="changeDisplayMode('status')">
@@ -2824,14 +2813,14 @@
 
         // 艹！模拟设备数据，添加中英文名称支持
         let devices = [
-            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, status: 'charging', mode: 'auto-charge' },
-            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, status: 'discharging', mode: 'auto-discharge' },
-            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, status: 'standby', mode: 'standby' },
-            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, status: 'charging', mode: 'standby' },
-            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, status: 'standby', mode: 'standby' },
-            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, status: 'charging', mode: 'manual-charge' },
-            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, status: 'discharging', mode: 'manual-discharge' },
-            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, status: 'standby', mode: 'waiting' }
+            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, maxPower: 250, status: 'charging', mode: 'auto-charge' },
+            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, maxPower: 250, status: 'discharging', mode: 'auto-discharge' },
+            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, maxPower: 200, status: 'standby', mode: 'standby' },
+            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, maxPower: 200, status: 'charging', mode: 'standby' },
+            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, maxPower: 300, status: 'standby', mode: 'standby' },
+            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, maxPower: 300, status: 'charging', mode: 'manual-charge' },
+            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, maxPower: 250, status: 'discharging', mode: 'manual-discharge' },
+            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, maxPower: 200, status: 'standby', mode: 'waiting' }
         ];
 
         let currentPage = 1;
@@ -2874,7 +2863,14 @@
                     <td style="padding: 12px;">${siteName || ''}</td>
                     <td style="padding: 12px; text-align: center;">${device.soc}%</td>
                     <td style="padding: 12px; text-align: center;">${device.soh}%</td>
-                    <td style="padding: 12px; text-align: center;">${device.power > 0 ? '+' : ''}${device.power} kWh</td>
+                    <td style="padding: 12px; text-align: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span>${device.power > 0 ? '+' : ''}${device.power} kW</span>
+                            <div style="width: 60px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+                                <div style="width: ${Math.abs(device.power) / (device.maxPower || 250) * 100}%; height: 100%; background: ${device.power > 0 ? '#10b981' : device.power < 0 ? '#3b82f6' : '#9ca3af'}; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                    </td>
                     <td style="padding: 12px; text-align: center;">
                         ${getModeBadge(device.mode)}
                     </td>
@@ -4787,9 +4783,6 @@
                                 break;
                             case 'soh':
                                 displayText = `${cabinet.soh}%`;
-                                break;
-                            case 'utilization':
-                                displayText = `${cabinet.utilization}%`;
                                 break;
                             case 'status':
                                 displayText = cabinet.status === 'charging' ? '充电' : 
