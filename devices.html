@@ -2226,11 +2226,15 @@
 
         <!-- 表格视图容器 -->
         <div id="table-view" class="card">
-            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 12px; align-items: center;">
                 <button class="btn btn-primary" onclick="showAddDeviceModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
                     <i class="fas fa-plus"></i>
                     <span data-translate="devicesBtnAdd">添加设备</span>
                 </button>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 0 8px; height: 40px; border: 1px solid var(--border-color); border-radius: 6px; background: white;">
+                    <input type="checkbox" id="selectAllForExport" onchange="toggleSelectAllForExport()" style="width: 16px; height: 16px; cursor: pointer;">
+                    <span data-translate="devicesSelectAll" style="font-size: 14px; color: var(--text-secondary);">全部设备</span>
+                </label>
                 <button class="btn" onclick="exportDevices()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
                     <i class="fas fa-download"></i>
                     <span data-translate="devicesBtnExport">导出</span>
@@ -3052,12 +3056,38 @@
             renderTable();
         }
 
+        // 全选/取消全选导出
+        function toggleSelectAllForExport() {
+            const selectAllCheckbox = document.getElementById('selectAllForExport');
+            const isChecked = selectAllCheckbox.checked;
+
+            // 同步表格中的所有复选框
+            const checkboxes = document.querySelectorAll('#deviceTable tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+
+            // 同步表头的全选框
+            const selectAllDevices = document.getElementById('selectAllDevices');
+            if (selectAllDevices) {
+                selectAllDevices.checked = isChecked;
+            }
+        }
+
         // 导出设备列表
         function exportDevices() {
             const t = translations[localStorage.getItem('language') || 'zh'];
+            const selectAllForExport = document.getElementById('selectAllForExport');
 
-            // 获取要导出的数据（当前筛选后的数据）
-            const dataToExport = filteredDevices.length > 0 ? filteredDevices : devices;
+            let dataToExport;
+
+            if (selectAllForExport && selectAllForExport.checked) {
+                // 勾选"全部设备"时，导出所有设备（不受筛选条件影响）
+                dataToExport = devices;
+            } else {
+                // 未勾选时，导出当前筛选后的数据
+                dataToExport = filteredDevices.length > 0 ? filteredDevices : devices;
+            }
 
             if (dataToExport.length === 0) {
                 showNotification(t.devicesExportNoData || '没有可导出的数据', 'warning');
