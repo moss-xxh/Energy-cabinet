@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>能量流转图编辑</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .page-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            margin-top: 60px;
+        }
+
+        /* 顶部工具栏 */
+        .top-toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .toolbar-center {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .station-select {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toolbar-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        .toolbar-btn.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .toolbar-btn.primary:hover {
+            background: #2563eb;
+        }
+
+        /* 左侧设备面板 */
+        .device-panel {
+            width: 280px;
+            background: #1a1f2e;
+            border-right: 1px solid #2d3548;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #10b981;
+            border-bottom: 1px solid #2d3548;
+        }
+
+        .device-category {
+            padding: 12px 16px;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            padding: 4px 0;
+        }
+
+        .category-title i {
+            color: #f59e0b;
+            width: 16px;
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #252d3d;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .device-item:hover {
+            background: #2d3750;
+            border-color: #3b82f6;
+        }
+
+        .device-item.selected {
+            background: #1e40af;
+            border-color: #3b82f6;
+        }
+
+        .device-item:active {
+            cursor: grabbing;
+        }
+
+        .device-icon {
+            width: 40px;
+            height: 40px;
+            background: #1a1f2e;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .device-icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .device-icon i {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .device-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .device-name {
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .device-spec {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* 中间画布区域 */
+        .canvas-container {
+            flex: 1;
+            background: #0f1419;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: #3b82f6;
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        .canvas-area {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* 画布上的设备节点 */
+        .canvas-node {
+            position: absolute;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 120px;
+            cursor: move;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            z-index: 20;
+        }
+
+        .canvas-node:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .canvas-node.selected {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .canvas-node .node-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 8px;
+            background: #0f172a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-node .node-icon i {
+            font-size: 24px;
+            color: #64748b;
+        }
+
+        .canvas-node .node-name {
+            text-align: center;
+            font-size: 13px;
+            color: #e2e8f0;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .canvas-node .node-value {
+            text-align: center;
+            font-size: 12px;
+            color: #10b981;
+        }
+
+        .canvas-node .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-node:hover .delete-btn {
+            display: flex;
+        }
+
+        /* 连接线 SVG */
+        .connections-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connection-line {
+            stroke: #3b82f6;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 8, 4;
+            animation: flowAnimation 1s linear infinite;
+        }
+
+        @keyframes flowAnimation {
+            0% {
+                stroke-dashoffset: 12;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* 右侧工具栏 */
+        .tools-panel {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 30;
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .tool-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        /* 空状态提示 */
+        .canvas-empty {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #64748b;
+        }
+
+        .canvas-empty i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #334155;
+        }
+
+        .canvas-empty p {
+            font-size: 14px;
+        }
+
+        /* 深色主题适配 */
+        [data-theme="dark"] .top-toolbar {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .back-btn,
+        [data-theme="dark"] .toolbar-btn {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .station-select {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        /* 拖拽时的样式 */
+        .device-item.dragging {
+            opacity: 0.5;
+        }
+
+        .canvas-area.drag-over {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* 属性面板 */
+        .property-panel {
+            position: fixed;
+            right: -320px;
+            top: 60px;
+            width: 320px;
+            height: calc(100vh - 60px);
+            background: white;
+            border-left: 1px solid var(--border-color);
+            transition: right 0.3s;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .property-panel.open {
+            right: 0;
+        }
+
+        .property-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .property-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .property-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .property-content {
+            padding: 20px;
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        [data-theme="dark"] .property-panel {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .property-header {
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .property-input {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <div class="top-toolbar">
+        <div class="toolbar-left">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                <span data-translate="energyFlowBack">返回</span>
+            </button>
+            <span class="page-title" data-translate="energyFlowPageTitle">能量流转图编辑</span>
+        </div>
+        <div class="toolbar-center">
+            <span style="font-size: 14px; color: var(--text-secondary);" data-translate="energyFlowSelectStation">选择站点：</span>
+            <select class="station-select" id="stationSelect" onchange="loadStationData()">
+                <option value="all" data-translate="energyFlowAllStations">全部站点</option>
+                <option value="station1">科技园区站</option>
+                <option value="station2">工业园区站</option>
+                <option value="station3">商业中心站</option>
+            </select>
+        </div>
+        <div class="toolbar-right">
+            <button class="toolbar-btn" onclick="switchToTableView()">
+                <i class="fas fa-table"></i>
+                <span data-translate="energyFlowTableView">表格视图</span>
+            </button>
+            <button class="toolbar-btn" onclick="switchToSceneView()">
+                <i class="fas fa-cube"></i>
+                <span data-translate="energyFlowSceneView">场景视图</span>
+            </button>
+            <button class="toolbar-btn primary" onclick="saveFlowChart()">
+                <i class="fas fa-save"></i>
+                <span data-translate="energyFlowSave">能量流</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <!-- 左侧设备面板 -->
+        <div class="device-panel">
+            <div class="panel-header" data-translate="energyFlowAvailableDevices">可用设备</div>
+
+            <!-- 电源设备 -->
+            <div class="device-category">
+                <div class="category-title">
+                    <i class="fas fa-bolt"></i>
+                    <span data-translate="energyFlowPowerDevices">电源设备</span>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="grid" data-name="市电" data-power="500">
+                    <div class="device-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name" data-translate="energyFlowGrid">市电</div>
+                        <div class="device-spec">500V 3相</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="generator" data-name="柴发1" data-power="500">
+                    <div class="device-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name" data-translate="energyFlowGenerator">柴发1</div>
+                        <div class="device-spec">500KW</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="generator" data-name="柴发2" data-power="500">
+                    <div class="device-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">柴发2</div>
+                        <div class="device-spec">500KW</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="solar" data-name="光伏1" data-power="200">
+                    <div class="device-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name" data-translate="energyFlowSolar">光伏1</div>
+                        <div class="device-spec">200KW</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="solar" data-name="光伏2" data-power="200">
+                    <div class="device-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">光伏2</div>
+                        <div class="device-spec">200KW</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="solar" data-name="光伏3" data-power="200">
+                    <div class="device-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">光伏3</div>
+                        <div class="device-spec">200KW</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 储能设备 -->
+            <div class="device-category">
+                <div class="category-title">
+                    <i class="fas fa-battery-full"></i>
+                    <span data-translate="energyFlowStorageDevices">储能设备</span>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="pcs" data-name="PCS1" data-power="250" data-capacity="500">
+                    <div class="device-icon">
+                        <i class="fas fa-car-battery"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">PCS1</div>
+                        <div class="device-spec">250KW/500KWh</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="pcs" data-name="PCS2" data-power="250" data-capacity="500">
+                    <div class="device-icon">
+                        <i class="fas fa-car-battery"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">PCS2</div>
+                        <div class="device-spec">250KW/500KWh</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="pcs" data-name="PCS3" data-power="300" data-capacity="600">
+                    <div class="device-icon">
+                        <i class="fas fa-car-battery"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">PCS3</div>
+                        <div class="device-spec">300KW/600KWh</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 负载设备 -->
+            <div class="device-category">
+                <div class="category-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <span data-translate="energyFlowLoadDevices">负载设备</span>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="load" data-name="负载1" data-power="300">
+                    <div class="device-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name" data-translate="energyFlowLoad">负载1</div>
+                        <div class="device-spec">300KW</div>
+                    </div>
+                </div>
+
+                <div class="device-item" draggable="true" data-type="load" data-name="负载2" data-power="200">
+                    <div class="device-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">负载2</div>
+                        <div class="device-spec">200KW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间画布区域 -->
+        <div class="canvas-container">
+            <div class="canvas-title" data-translate="energyFlowDiagramTitle">能量流转图</div>
+
+            <div class="canvas-area" id="canvasArea">
+                <!-- SVG 连接线 -->
+                <svg class="connections-svg" id="connectionsSvg"></svg>
+
+                <!-- 空状态提示 -->
+                <div class="canvas-empty" id="canvasEmpty">
+                    <i class="fas fa-project-diagram"></i>
+                    <p data-translate="energyFlowEmptyTip">拖拽左侧设备到此处开始编辑</p>
+                </div>
+
+                <!-- 画布节点将动态添加 -->
+            </div>
+
+            <!-- 右侧工具栏 -->
+            <div class="tools-panel">
+                <button class="tool-btn" onclick="zoomIn()" title="放大">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="tool-btn" onclick="zoomOut()" title="缩小">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="tool-btn" onclick="resetZoom()" title="重置">
+                    <i class="fas fa-compress-arrows-alt"></i>
+                </button>
+                <button class="tool-btn" onclick="toggleGrid()" title="网格">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button class="tool-btn" onclick="autoLayout()" title="自动布局">
+                    <i class="fas fa-magic"></i>
+                </button>
+                <button class="tool-btn" onclick="clearCanvas()" title="清空">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 属性面板 -->
+    <div class="property-panel" id="propertyPanel">
+        <div class="property-header">
+            <h3 data-translate="energyFlowProperties">设备属性</h3>
+            <button class="property-close" onclick="closePropertyPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="property-content">
+            <div class="property-group">
+                <div class="property-label" data-translate="energyFlowDeviceName">设备名称</div>
+                <input type="text" class="property-input" id="propName" placeholder="设备名称">
+            </div>
+            <div class="property-group">
+                <div class="property-label" data-translate="energyFlowDevicePower">额定功率 (KW)</div>
+                <input type="number" class="property-input" id="propPower" placeholder="功率">
+            </div>
+            <div class="property-group">
+                <div class="property-label" data-translate="energyFlowDeviceCapacity">容量 (KWh)</div>
+                <input type="number" class="property-input" id="propCapacity" placeholder="容量">
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        // 画布节点数据
+        let canvasNodes = [];
+        let nodeIdCounter = 0;
+        let selectedNode = null;
+        let scale = 1;
+        let isDragging = false;
+        let dragNode = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            loadSavedData();
+
+            // 应用翻译
+            if (typeof applyTranslations === 'function') {
+                applyTranslations();
+            }
+        });
+
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+
+        // 切换到表格视图
+        function switchToTableView() {
+            window.location.href = 'devices.html';
+        }
+
+        // 切换到场景视图
+        function switchToSceneView() {
+            window.location.href = 'devices.html?view=scene';
+        }
+
+        // 初始化拖拽功能
+        function initDragAndDrop() {
+            const deviceItems = document.querySelectorAll('.device-item');
+            const canvasArea = document.getElementById('canvasArea');
+
+            // 设备项拖拽开始
+            deviceItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        type: this.dataset.type,
+                        name: this.dataset.name,
+                        power: this.dataset.power,
+                        capacity: this.dataset.capacity || ''
+                    }));
+                    this.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    this.classList.remove('dragging');
+                });
+            });
+
+            // 画布区域接收拖拽
+            canvasArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            canvasArea.addEventListener('dragleave', function(e) {
+                this.classList.remove('drag-over');
+            });
+
+            canvasArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+
+                try {
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const rect = canvasArea.getBoundingClientRect();
+                    const x = e.clientX - rect.left - 60;
+                    const y = e.clientY - rect.top - 50;
+
+                    addNodeToCanvas(data, x, y);
+                } catch (err) {
+                    console.error('Drop error:', err);
+                }
+            });
+
+            // 画布点击取消选中
+            canvasArea.addEventListener('click', function(e) {
+                if (e.target === canvasArea || e.target.classList.contains('connections-svg')) {
+                    deselectAllNodes();
+                }
+            });
+        }
+
+        // 添加节点到画布
+        function addNodeToCanvas(data, x, y) {
+            const canvasArea = document.getElementById('canvasArea');
+            const emptyTip = document.getElementById('canvasEmpty');
+
+            // 隐藏空状态提示
+            if (emptyTip) {
+                emptyTip.style.display = 'none';
+            }
+
+            const nodeId = 'node_' + (++nodeIdCounter);
+            const node = {
+                id: nodeId,
+                type: data.type,
+                name: data.name,
+                power: data.power,
+                capacity: data.capacity,
+                x: x,
+                y: y
+            };
+
+            canvasNodes.push(node);
+
+            // 创建节点元素
+            const nodeEl = document.createElement('div');
+            nodeEl.className = 'canvas-node';
+            nodeEl.id = nodeId;
+            nodeEl.style.left = x + 'px';
+            nodeEl.style.top = y + 'px';
+
+            const iconClass = getIconClass(data.type);
+            nodeEl.innerHTML = `
+                <button class="delete-btn" onclick="deleteNode('${nodeId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="node-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="node-name">${data.name}</div>
+                <div class="node-value">${data.power}KW</div>
+            `;
+
+            // 节点拖拽
+            nodeEl.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('delete-btn') || e.target.closest('.delete-btn')) {
+                    return;
+                }
+
+                e.preventDefault();
+                selectNode(nodeId);
+
+                isDragging = true;
+                dragNode = nodeEl;
+                const rect = nodeEl.getBoundingClientRect();
+                const canvasRect = canvasArea.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+            });
+
+            canvasArea.appendChild(nodeEl);
+
+            // 自动更新连接线
+            updateConnections();
+            saveData();
+        }
+
+        // 获取图标类名
+        function getIconClass(type) {
+            const icons = {
+                'grid': 'fas fa-plug',
+                'generator': 'fas fa-industry',
+                'solar': 'fas fa-solar-panel',
+                'pcs': 'fas fa-car-battery',
+                'load': 'fas fa-building'
+            };
+            return icons[type] || 'fas fa-cube';
+        }
+
+        // 选中节点
+        function selectNode(nodeId) {
+            deselectAllNodes();
+            const nodeEl = document.getElementById(nodeId);
+            if (nodeEl) {
+                nodeEl.classList.add('selected');
+                selectedNode = nodeId;
+                openPropertyPanel(nodeId);
+            }
+        }
+
+        // 取消所有选中
+        function deselectAllNodes() {
+            document.querySelectorAll('.canvas-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+            selectedNode = null;
+            closePropertyPanel();
+        }
+
+        // 删除节点
+        function deleteNode(nodeId) {
+            const nodeEl = document.getElementById(nodeId);
+            if (nodeEl) {
+                nodeEl.remove();
+            }
+            canvasNodes = canvasNodes.filter(n => n.id !== nodeId);
+
+            // 显示空状态提示
+            if (canvasNodes.length === 0) {
+                document.getElementById('canvasEmpty').style.display = 'block';
+            }
+
+            updateConnections();
+            saveData();
+        }
+
+        // 鼠标移动处理
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging && dragNode) {
+                const canvasArea = document.getElementById('canvasArea');
+                const rect = canvasArea.getBoundingClientRect();
+
+                let newX = e.clientX - rect.left - dragOffset.x;
+                let newY = e.clientY - rect.top - dragOffset.y;
+
+                // 边界限制
+                newX = Math.max(0, Math.min(newX, rect.width - dragNode.offsetWidth));
+                newY = Math.max(0, Math.min(newY, rect.height - dragNode.offsetHeight));
+
+                dragNode.style.left = newX + 'px';
+                dragNode.style.top = newY + 'px';
+
+                // 更新节点数据
+                const nodeId = dragNode.id;
+                const node = canvasNodes.find(n => n.id === nodeId);
+                if (node) {
+                    node.x = newX;
+                    node.y = newY;
+                }
+
+                updateConnections();
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isDragging) {
+                isDragging = false;
+                dragNode = null;
+                saveData();
+            }
+        });
+
+        // 更新连接线
+        function updateConnections() {
+            const svg = document.getElementById('connectionsSvg');
+            svg.innerHTML = '';
+
+            // 简单示例：连接所有节点形成流程
+            if (canvasNodes.length < 2) return;
+
+            // 按类型分组
+            const sources = canvasNodes.filter(n => ['grid', 'generator', 'solar'].includes(n.type));
+            const storage = canvasNodes.filter(n => n.type === 'pcs');
+            const loads = canvasNodes.filter(n => n.type === 'load');
+
+            // 电源到储能
+            sources.forEach(source => {
+                storage.forEach(pcs => {
+                    drawConnection(svg, source, pcs);
+                });
+            });
+
+            // 储能到负载
+            storage.forEach(pcs => {
+                loads.forEach(load => {
+                    drawConnection(svg, pcs, load);
+                });
+            });
+        }
+
+        // 绘制连接线
+        function drawConnection(svg, from, to) {
+            const fromEl = document.getElementById(from.id);
+            const toEl = document.getElementById(to.id);
+
+            if (!fromEl || !toEl) return;
+
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            const canvasRect = document.getElementById('canvasArea').getBoundingClientRect();
+
+            const x1 = fromRect.left + fromRect.width / 2 - canvasRect.left;
+            const y1 = fromRect.top + fromRect.height / 2 - canvasRect.top;
+            const x2 = toRect.left + toRect.width / 2 - canvasRect.left;
+            const y2 = toRect.top + toRect.height / 2 - canvasRect.top;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+            // 贝塞尔曲线
+            const midX = (x1 + x2) / 2;
+            const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'connection-line');
+            svg.appendChild(path);
+        }
+
+        // 打开属性面板
+        function openPropertyPanel(nodeId) {
+            const node = canvasNodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            document.getElementById('propName').value = node.name || '';
+            document.getElementById('propPower').value = node.power || '';
+            document.getElementById('propCapacity').value = node.capacity || '';
+
+            document.getElementById('propertyPanel').classList.add('open');
+        }
+
+        // 关闭属性面板
+        function closePropertyPanel() {
+            document.getElementById('propertyPanel').classList.remove('open');
+        }
+
+        // 工具栏功能
+        function zoomIn() {
+            scale = Math.min(scale * 1.2, 2);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale / 1.2, 0.5);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            scale = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const canvasArea = document.getElementById('canvasArea');
+            canvasArea.style.transform = `scale(${scale})`;
+            canvasArea.style.transformOrigin = 'center center';
+        }
+
+        function toggleGrid() {
+            const canvasArea = document.getElementById('canvasArea');
+            canvasArea.classList.toggle('show-grid');
+        }
+
+        function autoLayout() {
+            // 自动布局：按类型排列
+            const sources = canvasNodes.filter(n => ['grid', 'generator', 'solar'].includes(n.type));
+            const storage = canvasNodes.filter(n => n.type === 'pcs');
+            const loads = canvasNodes.filter(n => n.type === 'load');
+
+            const canvasWidth = document.getElementById('canvasArea').offsetWidth;
+            const canvasHeight = document.getElementById('canvasArea').offsetHeight;
+
+            // 左侧电源
+            sources.forEach((node, i) => {
+                node.x = 100;
+                node.y = 100 + i * 120;
+                const el = document.getElementById(node.id);
+                if (el) {
+                    el.style.left = node.x + 'px';
+                    el.style.top = node.y + 'px';
+                }
+            });
+
+            // 中间储能
+            storage.forEach((node, i) => {
+                node.x = canvasWidth / 2 - 60;
+                node.y = 100 + i * 120;
+                const el = document.getElementById(node.id);
+                if (el) {
+                    el.style.left = node.x + 'px';
+                    el.style.top = node.y + 'px';
+                }
+            });
+
+            // 右侧负载
+            loads.forEach((node, i) => {
+                node.x = canvasWidth - 220;
+                node.y = 100 + i * 120;
+                const el = document.getElementById(node.id);
+                if (el) {
+                    el.style.left = node.x + 'px';
+                    el.style.top = node.y + 'px';
+                }
+            });
+
+            updateConnections();
+            saveData();
+        }
+
+        function clearCanvas() {
+            if (!confirm('确定要清空画布吗？')) return;
+
+            canvasNodes.forEach(node => {
+                const el = document.getElementById(node.id);
+                if (el) el.remove();
+            });
+            canvasNodes = [];
+            document.getElementById('canvasEmpty').style.display = 'block';
+            document.getElementById('connectionsSvg').innerHTML = '';
+            saveData();
+        }
+
+        // 保存数据
+        function saveData() {
+            localStorage.setItem('energyFlowData', JSON.stringify(canvasNodes));
+        }
+
+        // 加载保存的数据
+        function loadSavedData() {
+            const saved = localStorage.getItem('energyFlowData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    data.forEach(node => {
+                        addNodeToCanvas({
+                            type: node.type,
+                            name: node.name,
+                            power: node.power,
+                            capacity: node.capacity
+                        }, node.x, node.y);
+                    });
+                } catch (e) {
+                    console.error('Load data error:', e);
+                }
+            }
+        }
+
+        // 保存能量流图
+        function saveFlowChart() {
+            saveData();
+            if (typeof showNotification === 'function') {
+                showNotification('能量流图已保存', 'success');
+            } else {
+                alert('能量流图已保存');
+            }
+        }
+
+        // 加载站点数据
+        function loadStationData() {
+            const stationId = document.getElementById('stationSelect').value;
+            console.log('Loading station:', stationId);
+            // 可以根据站点加载不同的数据
+        }
+    </script>
+</body>
+</html>
