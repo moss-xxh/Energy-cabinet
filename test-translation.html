@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试国际化翻译</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .language-switcher {
+            margin-bottom: 30px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #3562E3;
+            padding-bottom: 10px;
+        }
+        .translation-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #3562E3;
+        }
+        .key {
+            font-weight: bold;
+            color: #666;
+            font-family: monospace;
+        }
+        .value {
+            color: #333;
+            margin-left: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #3562E3;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2c51c9;
+        }
+        .current-lang {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notification Config 页面翻译测试</h1>
+
+    <div class="language-switcher">
+        <strong>选择语言 / Select Language:</strong>
+        <button onclick="testLanguage('zh')" id="btn-zh">中文</button>
+        <button onclick="testLanguage('en')" id="btn-en">English</button>
+        <span style="margin-left: 20px;">当前语言 / Current Language: <strong id="current-lang">zh</strong></span>
+    </div>
+
+    <div id="translation-test"></div>
+
+    <script src="common.js"></script>
+    <script>
+        // 测试的翻译键
+        const testKeys = [
+            // 页面标题和描述
+            'notifPageTitle',
+            'notifPageDesc',
+            'notifConfigPageTitle',
+
+            // 主页面卡片
+            'notifCardTitle',
+            'notifTestBtn',
+            'notifSmartTitle',
+            'notifSmartDesc',
+
+            // 告警级别
+            'notifLevelCritical',
+            'notifLevelCriticalDesc',
+            'notifLevelError',
+            'notifLevelErrorDesc',
+            'notifLevelWarning',
+            'notifLevelWarningDesc',
+
+            // 策略卡片摘要
+            'notifRecipients',
+            'notifChannels',
+            'notifNoiseReduction',
+            'notifMinutesMax',
+            'notifTimes',
+            'notifPerson',
+            'notifTypes',
+            'notifConfigDetails',
+            'notifConfiguration',
+
+            // 详情页
+            'notifBackBtn',
+            'notifSaveConfig',
+            'notifAddRecipient',
+            'notifRecipientChannels',
+            'notifRecipientChannelsDesc',
+            'notifNoRecipients',
+            'notifNoRecipientsDetail',
+            'notifTableRecipient',
+            'notifTableActions',
+
+            // 通知渠道
+            'notifChannelPhone',
+            'notifChannelSms',
+            'notifChannelEmail',
+            'notifChannelWechat',
+
+            // 降噪配置
+            'notifNoiseReductionTitle',
+            'notifMinutesWithin',
+            'notifMaxSend',
+            'notifNotifications',
+
+            // 升级通知
+            'notifEscalation',
+            'notifEnableEscalation',
+            'notifEscalationTimeout',
+            'notifEscalationTimeoutUnit',
+            'notifEscalationDesc',
+
+            // 用户管理
+            'notifAddUserTitle',
+            'notifUserName',
+            'notifUserRole',
+            'notifUserPhone',
+            'notifUserEmail',
+            'notifUserWechat',
+            'notifRoleAdmin',
+            'notifRoleOperator',
+
+            // 按钮
+            'notifBtnCancel',
+            'notifBtnConfirm',
+            'notifBtnAdd',
+
+            // 提示消息
+            'notifTestSuccess',
+            'notifSaveSuccess',
+            'notifAddSuccess',
+            'notifRemoveSuccess'
+        ];
+
+        function testLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('current-lang').textContent = lang;
+
+            // 更新按钮状态
+            document.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('current-lang');
+            });
+            document.getElementById(`btn-${lang}`).classList.add('current-lang');
+
+            renderTranslations();
+        }
+
+        function renderTranslations() {
+            const container = document.getElementById('translation-test');
+            const sections = {
+                '页面标题': ['notifPageTitle', 'notifPageDesc', 'notifConfigPageTitle'],
+                '主页面': ['notifCardTitle', 'notifTestBtn', 'notifSmartTitle', 'notifSmartDesc'],
+                '告警级别': ['notifLevelCritical', 'notifLevelCriticalDesc', 'notifLevelError', 'notifLevelErrorDesc', 'notifLevelWarning', 'notifLevelWarningDesc'],
+                '策略摘要': ['notifRecipients', 'notifChannels', 'notifNoiseReduction', 'notifMinutesMax', 'notifTimes', 'notifPerson', 'notifTypes', 'notifConfigDetails'],
+                '详情页': ['notifBackBtn', 'notifSaveConfig', 'notifAddRecipient', 'notifRecipientChannels', 'notifRecipientChannelsDesc'],
+                '通知渠道': ['notifChannelPhone', 'notifChannelSms', 'notifChannelEmail', 'notifChannelWechat'],
+                '用户角色': ['notifRoleAdmin', 'notifRoleOperator'],
+                '提示消息': ['notifTestSuccess', 'notifSaveSuccess', 'notifAddSuccess', 'notifRemoveSuccess']
+            };
+
+            let html = '';
+
+            for (const [section, keys] of Object.entries(sections)) {
+                html += `<div class="test-section">`;
+                html += `<h2>${section}</h2>`;
+
+                for (const key of keys) {
+                    const value = translations[currentLang][key] || `[Missing: ${key}]`;
+                    const otherLang = currentLang === 'zh' ? 'en' : 'zh';
+                    const otherValue = translations[otherLang][key] || `[Missing: ${key}]`;
+
+                    html += `<div class="translation-item">`;
+                    html += `<span class="key">${key}:</span><br>`;
+                    html += `<span class="value">${currentLang === 'zh' ? '中文' : 'English'}: ${value}</span><br>`;
+                    html += `<span class="value" style="color: #888;">${currentLang === 'zh' ? 'English' : '中文'}: ${otherValue}</span>`;
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            testLanguage('zh');
+        });
+    </script>
+</body>
+</html>
