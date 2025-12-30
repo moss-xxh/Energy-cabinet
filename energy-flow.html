@@ -2704,10 +2704,8 @@
                             (fromId.includes('storage') || fromId.includes('储能') || fromId.includes('battery') || fromId.includes('pcs')) &&
                             (toId.includes('grid') || toId.includes('utility') || toId.includes('市电'));
 
-                        // 如果是市电到光伏或储能柜的连线，跳过添加动画
-                        if (isGridToSolar || isSolarToGrid || isGridToStorage || isStorageToGrid) {
-                            // 不添加流动动画
-                        } else {
+                        // 为所有连线添加流动动画
+                        {
                             // 创建隐藏的路径用于动画
                             const animPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             const pathId = `flow-path-${index}`;
