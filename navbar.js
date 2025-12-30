@@ -140,10 +140,6 @@ function createSidebar(currentPage = 'dashboard') {
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 12px;"></i>
                 </a>
                 <div class="submenu">
-                    <a href="menus.html" class="menu-item submenu-item ${currentPage === 'menus' ? 'active' : ''}">
-                        <span style="font-size: 16px; margin-right: 10px;">📋</span>
-                        <span id="menuMenus" data-translate="menuMenus">菜单管理</span>
-                    </a>
                     <a href="roles.html" class="menu-item submenu-item ${currentPage === 'roles' ? 'active' : ''}">
                         <span style="font-size: 16px; margin-right: 10px;">👥</span>
                         <span id="menuRoles" data-translate="menuRoles">角色管理</span>
