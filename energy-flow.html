@@ -3424,29 +3424,43 @@
                 return;
             }
 
-            // 将所有连线转为直线模式
-            let changedCount = 0;
-            deviceConnections.forEach(conn => {
-                if (conn.pathMode !== 'straight' ||
-                    (conn.controlPoints && conn.controlPoints.length > 0)) {
-                    conn.pathMode = 'straight';
-                    conn.controlPoints = [];
-                    changedCount++;
+            // 检查是否有选中的连线
+            if (selectedConnection) {
+                // 只拉直选中的连线
+                if (selectedConnection.pathMode !== 'straight' ||
+                    (selectedConnection.controlPoints && selectedConnection.controlPoints.length > 0)) {
+                    selectedConnection.pathMode = 'straight';
+                    selectedConnection.controlPoints = [];
+
+                    // 重新绘制所有连线
+                    drawAllConnections();
+
+                    showMiniToast('✅ 已拉直选中的连线');
+                } else {
+                    showMiniToast('✅ 该连线已经是直线');
                 }
-            });
+            } else {
+                // 没有选中连线时，拉直所有连线
+                let changedCount = 0;
+                deviceConnections.forEach(conn => {
+                    if (conn.pathMode !== 'straight' ||
+                        (conn.controlPoints && conn.controlPoints.length > 0)) {
+                        conn.pathMode = 'straight';
+                        conn.controlPoints = [];
+                        changedCount++;
+                    }
+                });
 
-            if (changedCount === 0) {
-                showMiniToast('✅ 所有连线已经是直线');
-                return;
+                if (changedCount === 0) {
+                    showMiniToast('✅ 所有连线已经是直线');
+                    return;
+                }
+
+                // 重新绘制所有连线
+                drawAllConnections();
+
+                showMiniToast(`✅ 已拉直 ${changedCount} 条连线`);
             }
-
-            // 取消选中状态
-            selectedConnection = null;
-
-            // 重新绘制所有连线
-            drawAllConnections();
-
-            showMiniToast(`✅ 已拉直 ${changedCount} 条连线`);
         }
 
         // 居中显示画布内容
