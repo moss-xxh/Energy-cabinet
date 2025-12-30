@@ -472,6 +472,7 @@ const translations = {
         devicesStatusStandby: '待机',
         devicesStatusCharging: '充电',
         devicesStatusDischarging: '放电',
+        devicesStatusOffline: '离线',
         devicesSearchBtn: '查询',
         devicesResetBtn: '重置',
         devicesAddDeviceBtn: '添加设备',
@@ -1610,6 +1611,9 @@ const translations = {
         devicesBtnAdd: '添加设备',
         devicesBtnOTA: 'EMS升级',
         devicesBtnExport: '导出',
+        devicesExportSuccess: '导出成功',
+        devicesExportNoData: '没有可导出的数据',
+        devicesExportFileName: '设备列表',
         devicesTableCode: '设备编码',
         devicesTableName: '名称',
         devicesTableSite: '所属站点',
@@ -1642,6 +1646,7 @@ const translations = {
         devicesStatusStandby: '待机',
         devicesStatusCharging: '充电',
         devicesStatusDischarging: '放电',
+        devicesStatusOffline: '离线',
 
         // EMS升级相关
         devicesOTAWarning: '请先选择要升级的设备',
@@ -2690,6 +2695,7 @@ const translations = {
         devicesStatusStandby: 'Standby',
         devicesStatusCharging: 'Charging',
         devicesStatusDischarging: 'Discharging',
+        devicesStatusOffline: 'Offline',
         devicesSearchBtn: 'Search',
         devicesResetBtn: 'Reset',
         devicesAddDeviceBtn: 'Add Device',
@@ -3828,6 +3834,9 @@ const translations = {
         devicesBtnAdd: 'Add Device',
         devicesBtnOTA: 'EMS Upgrade',
         devicesBtnExport: 'Export',
+        devicesExportSuccess: 'Export successful',
+        devicesExportNoData: 'No data to export',
+        devicesExportFileName: 'Device_List',
         devicesTableCode: 'Device Code',
         devicesTableName: 'Name',
         devicesTableSite: 'Site',
@@ -3860,6 +3869,7 @@ const translations = {
         devicesStatusStandby: 'Standby',
         devicesStatusCharging: 'Charging',
         devicesStatusDischarging: 'Discharging',
+        devicesStatusOffline: 'Offline',
 
         // EMS Upgrade
         devicesOTAWarning: 'Please select devices to upgrade first',

@@ -2207,9 +2207,10 @@
                     </select>
                     <select id="statusFilter" class="form-input" style="width: 120px; height: 40px; padding-left: 12px;">
                         <option value="" data-translate="devicesAllStatus">全部状态</option>
-                        <option value="standby" data-translate="devicesStatusStandby">待机</option>
                         <option value="charging" data-translate="devicesStatusCharging">充电</option>
                         <option value="discharging" data-translate="devicesStatusDischarging">放电</option>
+                        <option value="offline" data-translate="devicesStatusOffline">离线</option>
+                        <option value="standby" data-translate="devicesStatusStandby">待机</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 12px;">
@@ -2229,6 +2230,10 @@
                 <button class="btn btn-primary" onclick="showAddDeviceModal()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
                     <i class="fas fa-plus"></i>
                     <span data-translate="devicesBtnAdd">添加设备</span>
+                </button>
+                <button class="btn" onclick="exportDevices()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
+                    <i class="fas fa-download"></i>
+                    <span data-translate="devicesBtnExport">导出</span>
                 </button>
                 <button class="btn btn-primary" onclick="showOTAUpgrade()" style="height: 40px; padding: 0 16px; width: auto; display: none; background: #10b981;">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -3045,6 +3050,102 @@
             filteredDevices = [...devices];
             currentPage = 1;
             renderTable();
+        }
+
+        // 导出设备列表
+        function exportDevices() {
+            const t = translations[localStorage.getItem('language') || 'zh'];
+
+            // 获取要导出的数据（当前筛选后的数据）
+            const dataToExport = filteredDevices.length > 0 ? filteredDevices : devices;
+
+            if (dataToExport.length === 0) {
+                showNotification(t.devicesExportNoData || '没有可导出的数据', 'warning');
+                return;
+            }
+
+            // 定义CSV表头
+            const headers = [
+                t.devicesTableSN || '设备SN',
+                t.devicesTableName || '设备名称',
+                t.devicesTableSite || '所属站点',
+                t.devicesTableSOC || 'SOC',
+                t.devicesTablePower || '功率',
+                t.devicesTableMode || '运行模式',
+                t.devicesTableStatus || '状态'
+            ];
+
+            // 获取状态和模式的翻译
+            const getStatusText = (status) => {
+                const statusMap = {
+                    'charging': t.devicesStatusCharging || '充电',
+                    'discharging': t.devicesStatusDischarging || '放电',
+                    'standby': t.devicesStatusStandby || '待机',
+                    'offline': t.devicesStatusOffline || '离线'
+                };
+                return statusMap[status] || status;
+            };
+
+            const getModeText = (mode) => {
+                const modeMap = {
+                    'manual-charge': t.devicesModeManualCharge || '手动充电',
+                    'manual-discharge': t.devicesModeManualDischarge || '手动放电',
+                    'auto-charge': t.devicesModeAutoCharge || '自动充电',
+                    'auto-discharge': t.devicesModeAutoDischarge || '自动放电',
+                    'standby': t.devicesModeStandby || '待机中',
+                    'waiting': t.devicesModeWaiting || '等待执行'
+                };
+                return modeMap[mode] || mode;
+            };
+
+            // 构建CSV内容
+            let csvContent = '\uFEFF'; // BOM for UTF-8
+            csvContent += headers.join(',') + '\n';
+
+            dataToExport.forEach(device => {
+                const row = [
+                    device.sn || '',
+                    device.name || '',
+                    device.siteName || device.site || '',
+                    (device.soc || 0) + '%',
+                    (device.power || 0) + 'kW',
+                    getModeText(device.mode),
+                    getStatusText(device.status)
+                ];
+                // 处理包含逗号或引号的字段
+                const escapedRow = row.map(field => {
+                    const str = String(field);
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return '"' + str.replace(/"/g, '""') + '"';
+                    }
+                    return str;
+                });
+                csvContent += escapedRow.join(',') + '\n';
+            });
+
+            // 创建下载链接
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+
+            // 生成文件名（包含日期）
+            const now = new Date();
+            const dateStr = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + '_' +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0');
+            const fileName = (t.devicesExportFileName || '设备列表') + '_' + dateStr + '.csv';
+
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showNotification(t.devicesExportSuccess || '导出成功', 'success');
         }
 
         // 分页功能
