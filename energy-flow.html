@@ -1628,6 +1628,34 @@
             showMiniToast('✅ 设备设置已保存', 'success');
         }
 
+        // 应用编辑模式UI（不切换状态，仅应用UI）
+        function applyEditModeUI() {
+            console.log('✏️ 应用编辑模式UI');
+            const editModeBtn = document.getElementById('editModeBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const deviceListPanel = document.getElementById('deviceListPanel');
+
+            editModeBtn.style.display = 'inline-flex';
+            editModeBtn.innerHTML = '<i class="fas fa-eye" style="color: white;"></i><span>预览</span>';
+            editModeBtn.className = 'toolbar-btn';
+            editModeBtn.style.background = '#6b7280';
+            editModeBtn.style.borderColor = '#6b7280';
+            editModeBtn.style.color = 'white';
+            editModeBtn.title = '切换到预览模式';
+            saveBtn.style.display = 'inline-flex';
+            document.getElementById('alignmentBtns').style.display = 'flex';
+            deviceListPanel.style.display = 'block';
+
+            // 重新渲染设备以显示删除按钮和连接点
+            renderPlacedDevices();
+
+            // 启用所有已放置设备的拖拽和连线功能
+            const placedDeviceElements = document.querySelectorAll('.placed-device');
+            placedDeviceElements.forEach(el => {
+                el.style.cursor = 'move';
+            });
+        }
+
         // 切换编辑/预览模式
         function toggleEditMode() {
             isEditMode = !isEditMode;
@@ -3876,9 +3904,9 @@
                 initEnergyFlow();
                 window.energyFlowInitialized = true;
 
-                // 自动进入编辑模式
+                // 应用编辑模式UI（因为isEditMode默认为true）
                 setTimeout(function() {
-                    toggleEditMode();
+                    applyEditModeUI();
                 }, 100);
             }
         });
