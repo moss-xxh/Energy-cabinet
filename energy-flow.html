@@ -3665,6 +3665,21 @@
             }, 2000);
         }
 
+        // 自动保存到localStorage（静默保存，不跳转）
+        function saveToLocalStorage() {
+            const config = {
+                placedDevices: placedDevices,
+                connections: deviceConnections,
+                timestamp: new Date().toISOString()
+            };
+            try {
+                localStorage.setItem('energyFlowConfig', JSON.stringify(config));
+                console.log('💾 自动保存成功');
+            } catch (e) {
+                console.error('❌ 自动保存失败:', e);
+            }
+        }
+
         // 保存配置到localStorage
         function saveFlowConfig() {
             console.log('💾 saveFlowConfig 被调用');
