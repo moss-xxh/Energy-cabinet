@@ -5318,8 +5318,8 @@
             showMiniToast(`已隐藏 ${paramType.toUpperCase()} 参数`, 'success');
         }
 
-        // 删除设备（点击×按钮）
-        function deleteDevice(event, deviceId) {
+        // 删除能流图设备（点击×按钮）
+        function deleteFlowDevice(event, deviceId) {
             event.stopPropagation();
             event.preventDefault();
 
@@ -6171,7 +6171,7 @@
                          style="position: absolute; left: ${left}px; top: ${top}px; cursor: ${isEditMode ? 'pointer' : 'default'};">
 
                         <!-- 设备删除按钮（仅编辑模式显示） -->
-                        ${isEditMode ? '<span class="device-delete-btn" onclick="deleteDevice(event, \'' + device.id + '\')">×</span>' : ''}
+                        ${isEditMode ? '<span class="device-delete-btn" onclick="deleteFlowDevice(event, \'' + device.id + '\')">×</span>' : ''}
 
                         <!-- 连接点容器（仅编辑模式显示） -->
                         <div class="connection-points" style="display: ${isEditMode ? 'block' : 'none'};">
