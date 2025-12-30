@@ -10,6 +10,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="navbar.js"></script>
     <style>
+        /* 故障/告警图标闪动动画 */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        . {
+            animation: blink 1s ease-in-out infinite;
+        }
+
         /* 页面布局 */
         .main-content {
             height: calc(100vh - 60px);
@@ -2318,7 +2327,7 @@
                 <p data-translate="devicesLoadingView">加载视图中...</p>
             </div>
 
-            <!-- 艹！状态图例 - 放在内容区域内，左下角位置向上移100px，水平排列 -->
+            <!-- 状态图例 - 放在内容区域内，左下角位置向上移100px，水平排列 -->
             <div id="devicesSceneStatusLegend" style="position: absolute; bottom: 130px; left: 30px; z-index: 100; background: rgba(255, 255, 255, 0.95); border-radius: 8px; padding: 12px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); display: none;">
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -2330,8 +2339,12 @@
                         <span style="font-size: 13px; color: #333; font-weight: 500;" data-translate="devicesPanelOffline">离线</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); border-radius: 3px; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);"></div>
+                        <i class="fas fa-wrench" style="color: #ef4444; font-size: 16px;"></i>
                         <span style="font-size: 13px; color: #333; font-weight: 500;" data-translate="devicesPanelFault">故障</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-bell" style="color: #facc15; font-size: 16px;"></i>
+                        <span style="font-size: 13px; color: #333; font-weight: 500;" data-translate="devicesPanelAlarm">告警</span>
                     </div>
                 </div>
             </div>
@@ -2351,21 +2364,21 @@
                     
                     <!-- 状态概览（合并版） -->
                     <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <!-- 在线/离线状态 -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px;">
                             <div style="text-align: center; padding: 8px; background: #f0fdf4; border-radius: 6px;">
                                 <div style="font-size: 16px; font-weight: 600; color: #10b981;" id="online-count">5</div>
                                 <div style="font-size: 10px; color: #666;" data-translate="devicesPanelOnline">在线</div>
                             </div>
                             <div style="text-align: center; padding: 8px; background: #fef3c7; border-radius: 6px;">
-                                <div style="font-size: 16px; font-weight: 600; color: #f59e0b;" id="offline-count">2</div>
+                                <div style="font-size: 16px; font-weight: 600; color: #f59e0b;" id="offline-count">3</div>
                                 <div style="font-size: 10px; color: #666;" data-translate="devicesPanelOffline">离线</div>
                             </div>
-                            <div style="text-align: center; padding: 8px; background: #fee2e2; border-radius: 6px;">
-                                <div style="font-size: 16px; font-weight: 600; color: #ef4444;" id="fault-count">1</div>
-                                <div style="font-size: 10px; color: #666;" data-translate="devicesPanelFault">故障</div>
-                            </div>
+                        </div>
+                        <!-- 充电/放电/待机状态（在线设备的细分） -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                             <div style="text-align: center; padding: 8px; background: #dcfce7; border-radius: 6px;">
-                                <div style="font-size: 16px; font-weight: 600; color: #10b981;" id="charging-count">3</div>
+                                <div style="font-size: 16px; font-weight: 600; color: #10b981;" id="charging-count">2</div>
                                 <div style="font-size: 10px; color: #666;" data-translate="devicesPanelCharging">充电</div>
                             </div>
                             <div style="text-align: center; padding: 8px; background: #dbeafe; border-radius: 6px;">
@@ -2373,7 +2386,7 @@
                                 <div style="font-size: 10px; color: #666;" data-translate="devicesPanelDischarging">放电</div>
                             </div>
                             <div style="text-align: center; padding: 8px; background: #f3f4f6; border-radius: 6px;">
-                                <div style="font-size: 16px; font-weight: 600; color: #64748b;" id="standby-count">3</div>
+                                <div style="font-size: 16px; font-weight: 600; color: #64748b;" id="standby-count">1</div>
                                 <div style="font-size: 10px; color: #666;" data-translate="devicesPanelStandby">待机</div>
                             </div>
                         </div>
@@ -2391,7 +2404,7 @@
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 12px; color: #666;" data-translate="devicesPanelCurrentEnergy">当前电量</span>
+                                <span style="font-size: 12px; color: #666;" data-translate="devicesPanelRemainingEnergy">剩余电量</span>
                                 <div style="text-align: right;">
                                     <div style="font-size: 16px; font-weight: 700; color: #10b981;"><span id="current-energy">1.96</span> MWh</div>
                                     <div style="font-size: 10px; color: #999;"><span data-translate="devicesPanelEnergyRatio">占比</span> <span id="energy-percent">78.4</span>%</div>
@@ -2414,37 +2427,49 @@
                         </div>
                     </div>
 
-                    <!-- 收益统计 -->
+                    <!-- 充放电统计 -->
                     <div style="margin-bottom: 12px;">
-                        <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 12px;" data-translate="devicesPanelProfitStats">收益统计</div>
+                        <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 12px;" data-translate="devicesPanelChargeStats">充放电统计</div>
                         <div style="background: #f8fafc; border-radius: 8px; padding: 12px;">
-                            <!-- 第一排 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                            <!-- 第一排：今日 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
                                 <div style="flex: 1; text-align: center;">
-                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelYesterdayProfit">昨日收益</div>
-                                    <div style="font-size: 16px; font-weight: 700; color: #3b82f6;">¥<span id="yesterday-profit">12,350</span></div>
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelTodayCharge">今日充电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #10b981;"><span id="today-charge">856</span> kWh</div>
                                 </div>
-                                <div style="width: 1px; height: 40px; background: #e5e7eb;"></div>
+                                <div style="width: 1px; height: 36px; background: #e5e7eb;"></div>
                                 <div style="flex: 1; text-align: center;">
-                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelTodayProfit">今日收益</div>
-                                    <div style="font-size: 16px; font-weight: 700; color: #10b981;">¥<span id="today-profit">8,450</span></div>
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelTodayDischarge">今日放电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #3b82f6;"><span id="today-discharge">723</span> kWh</div>
                                 </div>
                             </div>
-                            <!-- 第二排 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px;">
+                            <!-- 第二排：昨日 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
                                 <div style="flex: 1; text-align: center;">
-                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelMonthProfit">本月收益</div>
-                                    <div style="font-size: 16px; font-weight: 700; color: #f59e0b;">¥<span id="month-profit">326.5</span>K</div>
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelYesterdayCharge">昨日充电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #10b981;"><span id="yesterday-charge">1,245</span> kWh</div>
                                 </div>
-                                <div style="width: 1px; height: 40px; background: #e5e7eb;"></div>
+                                <div style="width: 1px; height: 36px; background: #e5e7eb;"></div>
                                 <div style="flex: 1; text-align: center;">
-                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelTotalProfit">累计收益</div>
-                                    <div style="font-size: 16px; font-weight: 700; color: #8b5cf6;">¥<span id="total-profit">1.85</span>M</div>
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelYesterdayDischarge">昨日放电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #3b82f6;"><span id="yesterday-discharge">1,089</span> kWh</div>
+                                </div>
+                            </div>
+                            <!-- 第三排：本月 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px;">
+                                <div style="flex: 1; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelMonthCharge">本月充电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #10b981;"><span id="month-charge">28.5</span> MWh</div>
+                                </div>
+                                <div style="width: 1px; height: 36px; background: #e5e7eb;"></div>
+                                <div style="flex: 1; text-align: center;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 4px;" data-translate="devicesPanelMonthDischarge">本月放电量</div>
+                                    <div style="font-size: 14px; font-weight: 700; color: #3b82f6;"><span id="month-discharge">24.8</span> MWh</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     </div>
                 </div>
             </div>
@@ -2487,21 +2512,37 @@
                             <div class="data-label" id="data-label-1" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜001" id="cabinet-img-1" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(1)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-1" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-1" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-1" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-1" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-2" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜002" id="cabinet-img-2" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(2)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-2" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-2" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-2" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-2" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-3" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜003" id="cabinet-img-3" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(3)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-3" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-3" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-3" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-3" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-4" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜004" id="cabinet-img-4" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(4)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-4" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-4" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-4" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-4" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                     </div>
                     <!-- 第二排 -->
@@ -2510,21 +2551,37 @@
                             <div class="data-label" id="data-label-5" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜005" id="cabinet-img-5" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(5)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-5" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-5" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-5" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-5" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-6" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜006" id="cabinet-img-6" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(6)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-6" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-6" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-6" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-6" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-7" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜007" id="cabinet-img-7" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(7)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-7" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-7" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-7" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-7" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <div class="data-label" id="data-label-8" style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; z-index: 101; display: none;"></div>
                             <img src="储能柜.jpg" alt="储能柜008" id="cabinet-img-8" style="width: 150px; height: auto; cursor: pointer; transition: all 0.3s ease; transform: translateZ(0);" onclick="selectCabinet(8)" onmouseover="this.style.transform='translateZ(20px) scale(1.05)'" onmouseout="this.style.transform='translateZ(0)'">
                             <div class="status-overlay" id="status-overlay-8" style="position: absolute; top: calc(15% - 10px); left: calc(15% - 5px); width: calc(70% + 10px); height: calc(70% + 20px); pointer-events: none; border-radius: 4px;"></div>
+                            <div id="icon-container-8" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 102;">
+                                <div id="fault-icon-8" style="display: none;" title="故障"><i class="fas fa-wrench " style="color: #ef4444; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                                <div id="alarm-icon-8" style="display: none;" title="告警"><i class="fas fa-bell " style="color: #facc15; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2811,16 +2868,16 @@
         // 设置当前页面菜单项
         setActiveMenuItem('devices');
 
-        // 艹！模拟设备数据，添加中英文名称支持
+        // 模拟设备数据，添加中英文名称支持
         let devices = [
-            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, maxPower: 250, status: 'charging', mode: 'auto-charge' },
-            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, maxPower: 250, status: 'discharging', mode: 'auto-discharge' },
-            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, maxPower: 200, status: 'standby', mode: 'standby' },
-            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, maxPower: 200, status: 'charging', mode: 'standby' },
-            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, maxPower: 300, status: 'standby', mode: 'standby' },
-            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, maxPower: 300, status: 'charging', mode: 'manual-charge' },
-            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, maxPower: 250, status: 'discharging', mode: 'manual-discharge' },
-            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, maxPower: 200, status: 'standby', mode: 'waiting' }
+            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, maxPower: 250, status: 'charging', mode: 'auto-charge', fault: false, alarm: false },
+            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, maxPower: 250, status: 'discharging', mode: 'auto-discharge', fault: false, alarm: true },
+            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, maxPower: 200, status: 'standby', mode: 'standby', fault: true, alarm: false },
+            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, maxPower: 200, status: 'charging', mode: 'standby', fault: false, alarm: false },
+            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, maxPower: 300, status: 'standby', mode: 'standby', fault: false, alarm: false },
+            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, maxPower: 300, status: 'charging', mode: 'manual-charge', fault: false, alarm: true },
+            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, maxPower: 250, status: 'discharging', mode: 'manual-discharge', fault: true, alarm: true },
+            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, maxPower: 200, status: 'standby', mode: 'waiting', fault: false, alarm: false }
         ];
 
         let currentPage = 1;
@@ -2854,22 +2911,26 @@
                 const deviceName = typeof device.name === 'object' ? device.name[currentLang] : device.name;
                 const siteName = typeof device.siteName === 'object' ? device.siteName[currentLang] : device.siteName;
 
+                // 生成故障/告警图标
+                let statusIcons = '';
+                if (device.fault) {
+                    statusIcons += '<i class="fas fa-wrench" style="color: #ef4444; font-size: 14px; margin-left: 6px;" title="故障"></i>';
+                }
+                if (device.alarm) {
+                    statusIcons += '<i class="fas fa-bell" style="color: #facc15; font-size: 14px; margin-left: 6px;" title="告警"></i>';
+                }
+
                 tr.innerHTML = `
                     <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
                         <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: pointer;">
                     </td>
-                    <td style="padding: 12px;">${device.code}</td>
+                    <td style="padding: 12px;">${device.code}${statusIcons}</td>
                     <td style="padding: 12px;">${deviceName}</td>
                     <td style="padding: 12px;">${siteName || ''}</td>
                     <td style="padding: 12px; text-align: center;">${device.soc}%</td>
                     <td style="padding: 12px; text-align: center;">${device.soh}%</td>
                     <td style="padding: 12px; text-align: center;">
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <span>${device.power > 0 ? '+' : ''}${device.power} kW</span>
-                            <div style="width: 60px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
-                                <div style="width: ${Math.abs(device.power) / (device.maxPower || 250) * 100}%; height: 100%; background: ${device.power > 0 ? '#10b981' : device.power < 0 ? '#3b82f6' : '#9ca3af'}; border-radius: 2px;"></div>
-                            </div>
-                        </div>
+                        <span>${device.power > 0 ? '+' : ''}${device.power} kW</span>
                     </td>
                     <td style="padding: 12px; text-align: center;">
                         ${getModeBadge(device.mode)}
@@ -4776,7 +4837,7 @@
                                 displayText = `${cabinet.soc}%`;
                                 break;
                             case 'power':
-                                displayText = `${cabinet.power} kWh`;
+                                displayText = `${cabinet.power} kW`;
                                 break;
                             case 'temperature':
                                 displayText = `${cabinet.temperature}°`;
@@ -4840,21 +4901,46 @@
             // 初始化储能柜数据（如果还没有）
             if (cabinets.length === 0) {
                 // 创建8个储能柜的模拟数据
-                // 艹！状态：online（在线）、offline（离线）、fault（故障）
+                // 状态：online（在线）、offline（离线）
+                // 在线设备有 charge_status：charging（充电）、discharging（放电）、standby（待机）
                 for (let i = 1; i <= 8; i++) {
+                    const isOnline = i <= 5; // 5个在线，3个离线
+                    let chargeStatus = 'standby';
+                    let power = 0;
+
+                    if (isOnline) {
+                        // 在线设备：2个充电，2个放电，1个待机
+                        if (i <= 2) {
+                            chargeStatus = 'charging';
+                            power = Math.floor(Math.random() * 100 + 50);
+                        } else if (i <= 4) {
+                            chargeStatus = 'discharging';
+                            power = -Math.floor(Math.random() * 100 + 50);
+                        } else {
+                            chargeStatus = 'standby';
+                            power = 0;
+                        }
+                    }
+
+                    // 模拟故障和告警状态（示例：第3个有故障，第2和第6个有告警，第7个两者都有）
+                    let hasFault = (i === 3 || i === 7);
+                    let hasAlarm = (i === 2 || i === 6 || i === 7);
+
                     cabinets.push({
                         id: i,
-                        status: i <= 5 ? 'online' : (i <= 7 ? 'offline' : 'fault'),
+                        status: isOnline ? 'online' : 'offline',
                         soc: Math.floor(Math.random() * 40 + 50),
                         soh: Math.floor(Math.random() * 10 + 90),
-                        power: i <= 3 ? Math.floor(Math.random() * 100 + 50) :
-                               (i <= 6 ? -Math.floor(Math.random() * 100 + 50) : 0),
+                        power: power,
+                        maxPower: 250, // 最大功率
                         voltage: (Math.random() * 50 + 720).toFixed(1),
                         current: (Math.random() * 100 + 100).toFixed(1),
                         temperature: (Math.random() * 5 + 23).toFixed(1),
-                        charge_status: i <= 3 ? 'charging' : (i <= 5 ? 'discharging' : 'standby'),
+                        charge_status: chargeStatus,
                         efficiency: Math.floor(Math.random() * 5 + 93),
-                        utilization: Math.floor(Math.random() * 30 + 60)
+                        utilization: Math.floor(Math.random() * 30 + 60),
+                        fault: hasFault, // 故障状态
+                        alarm: hasAlarm  // 告警状态
                     });
                 }
             }
@@ -4872,10 +4958,9 @@
             let efficiencies = [];
             
             cabinets.forEach(cabinet => {
-                // 状态统计 - 艹！统计在线、离线、故障数量
+                // 状态统计 - 统计在线、离线数量
                 if (cabinet.status === 'online') onlineCount++;
-                else if (cabinet.status === 'offline') offlineCount++;
-                else if (cabinet.status === 'fault') faultCount++;
+                else offlineCount++;
                 
                 // 收集SOC值
                 if (cabinet.status !== 'standby') {
@@ -4927,14 +5012,16 @@
             if (offlineCountEl) offlineCountEl.textContent = offlineCount;
             if (faultCountEl) faultCountEl.textContent = faultCount;
             
-            // 充放电状态
+            // 充放电状态（只统计在线设备）
             let chargingCount = 0;
             let dischargingCount = 0;
             let standbyCount = 0;
             cabinets.forEach(cabinet => {
-                if (cabinet.charge_status === 'charging') chargingCount++;
-                else if (cabinet.charge_status === 'discharging') dischargingCount++;
-                else if (cabinet.charge_status === 'standby') standbyCount++;
+                if (cabinet.status === 'online') {
+                    if (cabinet.charge_status === 'charging') chargingCount++;
+                    else if (cabinet.charge_status === 'discharging') dischargingCount++;
+                    else standbyCount++;
+                }
             });
             const chargingCountEl = document.getElementById('charging-count');
             const dischargingCountEl = document.getElementById('discharging-count');
@@ -4955,8 +5042,10 @@
             const minSohCabinetEl = document.getElementById('min-soh-cabinet');
             
             if (totalCapacityEl) totalCapacityEl.textContent = totalCapacity.toFixed(1);
-            if (currentEnergyEl) currentEnergyEl.textContent = (totalCapacity * avgSOC / 100).toFixed(2);
-            if (energyPercentEl) energyPercentEl.textContent = avgSOC;
+            // 剩余电量占比固定为60%
+            const energyPercent = 60;
+            if (currentEnergyEl) currentEnergyEl.textContent = (totalCapacity * energyPercent / 100).toFixed(2);
+            if (energyPercentEl) energyPercentEl.textContent = energyPercent;
             
             // 找出最高利用率和最低SOC/SOH的储能柜
             let maxUtil = { value: 0, id: 0 };
@@ -4984,32 +5073,52 @@
             if (minSocCabinetEl) minSocCabinetEl.textContent = String(minSoc.id).padStart(3, '0');
             if (minSohEl) minSohEl.textContent = minSoh.value;
             if (minSohCabinetEl) minSohCabinetEl.textContent = String(minSoh.id).padStart(3, '0');
-            
-            // 收益统计
-            const yesterdayProfitEl = document.getElementById('yesterday-profit');
-            const todayProfitEl = document.getElementById('today-profit');
-            const monthProfitEl = document.getElementById('month-profit');
-            const totalProfitEl = document.getElementById('total-profit');
-            
-            if (yesterdayProfitEl) yesterdayProfitEl.textContent = '12,350';
-            if (todayProfitEl) todayProfitEl.textContent = '8,450';
-            if (monthProfitEl) monthProfitEl.textContent = '326.5';
-            if (totalProfitEl) totalProfitEl.textContent = '1.85';
-            
-            // 更新储能柜状态颜色叠加 - 艹！蓝色在线、黄色离线、红色故障
+
+            // 充放电统计
+            const todayChargeEl = document.getElementById('today-charge');
+            const todayDischargeEl = document.getElementById('today-discharge');
+            const yesterdayChargeEl = document.getElementById('yesterday-charge');
+            const yesterdayDischargeEl = document.getElementById('yesterday-discharge');
+            const monthChargeEl = document.getElementById('month-charge');
+            const monthDischargeEl = document.getElementById('month-discharge');
+
+            if (todayChargeEl) todayChargeEl.textContent = '856';
+            if (todayDischargeEl) todayDischargeEl.textContent = '723';
+            if (yesterdayChargeEl) yesterdayChargeEl.textContent = '1,245';
+            if (yesterdayDischargeEl) yesterdayDischargeEl.textContent = '1,089';
+            if (monthChargeEl) monthChargeEl.textContent = '28.5';
+            if (monthDischargeEl) monthDischargeEl.textContent = '24.8';
+
+            // 更新储能柜状态颜色叠加和故障/告警图标
             cabinets.forEach((cabinet, index) => {
                 const overlay = document.getElementById(`status-overlay-${cabinet.id}`);
+                const iconContainer = document.getElementById(`icon-container-${cabinet.id}`);
+                const faultIcon = document.getElementById(`fault-icon-${cabinet.id}`);
+                const alarmIcon = document.getElementById(`alarm-icon-${cabinet.id}`);
+
                 if (overlay) {
                     if (cabinet.status === 'online') {
                         // 在线 - 蓝色叠加
                         overlay.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
-                    } else if (cabinet.status === 'offline') {
+                    } else {
                         // 离线 - 黄色叠加
                         overlay.style.backgroundColor = 'rgba(245, 158, 11, 0.3)';
-                    } else if (cabinet.status === 'fault') {
-                        // 故障 - 红色叠加
-                        overlay.style.backgroundColor = 'rgba(239, 68, 68, 0.3)';
                     }
+                }
+
+                // 更新故障图标
+                if (faultIcon) {
+                    faultIcon.style.display = cabinet.fault ? 'block' : 'none';
+                }
+
+                // 更新告警图标
+                if (alarmIcon) {
+                    alarmIcon.style.display = cabinet.alarm ? 'block' : 'none';
+                }
+
+                // 如果有故障或告警，显示图标容器
+                if (iconContainer) {
+                    iconContainer.style.display = (cabinet.fault || cabinet.alarm) ? 'flex' : 'none';
                 }
             });
         }
