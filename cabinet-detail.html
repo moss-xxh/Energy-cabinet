@@ -632,6 +632,155 @@
                 opacity: 0;
             }
         }
+
+        /* 控制项状态指示样式 */
+        .control-status {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .control-status.loading {
+            color: #f59e0b;
+        }
+        .control-status.loading::after {
+            content: '⏳';
+            animation: spin 1s linear infinite;
+        }
+        .control-status.success {
+            color: #10b981;
+        }
+        .control-status.success::after {
+            content: '✓';
+        }
+        .control-status.error {
+            color: #ef4444;
+        }
+        .control-status.error::after {
+            content: '✗';
+        }
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* 确认弹窗样式 */
+        .control-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .control-confirm-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        [data-theme="dark"] .control-confirm-content {
+            background: #1e293b;
+        }
+        .control-confirm-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .control-confirm-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .control-confirm-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        .control-confirm-icon.danger {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+        .control-confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .control-confirm-body {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        .control-confirm-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .control-confirm-row:last-child {
+            border-bottom: none;
+        }
+        .control-confirm-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .control-confirm-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .control-confirm-value.old {
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+        .control-confirm-value.new {
+            color: #3b82f6;
+        }
+        .control-confirm-note {
+            font-size: 13px;
+            color: #f59e0b;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .control-confirm-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .control-confirm-buttons button {
+            flex: 1;
+            height: 44px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .control-confirm-buttons .btn-cancel {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .control-confirm-buttons .btn-confirm {
+            background: #3b82f6;
+            color: white;
+        }
+        .control-confirm-buttons .btn-confirm:hover {
+            background: #2563eb;
+        }
     </style>
 </head>
 <body data-page="devices">
@@ -1188,30 +1337,44 @@
                                 <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                     <div>
                                         <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetBatteryBalanceControl">均衡控制</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetBatteryBalanceActive">主动均衡</option>
-                                            <option data-translate="cabinetBatteryBalancePassive">被动均衡</option>
-                                        </select>
+                                        <div style="position: relative;">
+                                            <select id="balanceControl" class="form-input" style="width: 100%;" onchange="handleControlChange('balanceControl', this)">
+                                                <option value="active" data-translate="cabinetBatteryBalanceActive">主动均衡</option>
+                                                <option value="passive" data-translate="cabinetBatteryBalancePassive">被动均衡</option>
+                                                <option value="off">关闭</option>
+                                            </select>
+                                            <span id="balanceControl-status" class="control-status"></span>
+                                        </div>
                                     </div>
                                     <div>
                                         <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetBatteryFanControl">风扇控制</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetBatteryFanAuto">自动</option>
-                                            <option data-translate="cabinetBatteryFanOn">开启</option>
-                                            <option data-translate="cabinetBatteryFanOff">关闭</option>
-                                        </select>
+                                        <div style="position: relative;">
+                                            <select id="fanControl" class="form-input" style="width: 100%;" onchange="handleControlChange('fanControl', this)">
+                                                <option value="auto" data-translate="cabinetBatteryFanAuto">自动</option>
+                                                <option value="on" data-translate="cabinetBatteryFanOn">开启</option>
+                                                <option value="off" data-translate="cabinetBatteryFanOff">关闭</option>
+                                            </select>
+                                            <span id="fanControl-status" class="control-status"></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                     <div>
                                         <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetBatteryTempProtect">温度保护</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetBatteryTempProtectOn">开启</option>
-                                            <option data-translate="cabinetBatteryTempProtectOff">关闭</option>
-                                        </select>
+                                        <div style="position: relative;">
+                                            <select id="tempProtect" class="form-input" style="width: 100%;" onchange="handleControlChange('tempProtect', this)">
+                                                <option value="on" data-translate="cabinetBatteryTempProtectOn">开启</option>
+                                                <option value="off" data-translate="cabinetBatteryTempProtectOff">关闭</option>
+                                            </select>
+                                            <span id="tempProtect-status" class="control-status"></span>
+                                        </div>
                                     </div>
                                     <div>
-                                        <!-- 预留位置，保持网格布局平衡 -->
+                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">保护温度阈值</label>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <input type="number" id="tempThreshold" value="55" min="40" max="70" class="form-input" style="width: 100%;">
+                                            <span style="color: var(--text-secondary);">℃</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1219,42 +1382,71 @@
                             <!-- 消防控制 -->
                             <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                                 <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="cabinetFireControlTitle">消防控制</h3>
+
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <!-- 灭火模式 -->
                                     <div>
-                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetFireStartMode">灭火启动</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetFireStartAuto">自动启动</option>
-                                            <option data-translate="cabinetFireStartManual">手动启动</option>
+                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">灭火模式</label>
+                                        <select id="fireStartMode" class="form-input" style="width: 100%;" onchange="toggleManualFireBtn(this.value)">
+                                            <option value="auto">自动（探测触发）</option>
+                                            <option value="manual">手动</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetFireAgentType">灭火剂类型</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetFireAgentPerfluorohexanone">全氟己酮</option>
-                                            <option data-translate="cabinetFireAgentHeptafluoropropane">七氟丙烷</option>
-                                        </select>
+                                    <!-- 手动灭火开关（默认隐藏） -->
+                                    <div id="manualFireContainer" style="display: none;">
+                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">手动灭火</label>
+                                        <button id="manualFireBtn" onclick="toggleFireState()"
+                                                style="width: 100%; height: 40px; border: 2px solid var(--border-color); border-radius: 8px;
+                                                       background: var(--bg-primary); font-size: 14px; font-weight: 600; cursor: pointer;
+                                                       transition: all 0.2s;">
+                                            开启
+                                        </button>
                                     </div>
+                                    <!-- 占位（自动模式时保持布局） -->
+                                    <div id="fireAutoPlaceholder"></div>
+
+                                    <!-- 声光报警模式 -->
                                     <div>
                                         <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetFireAlarm">声光报警</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetFireAlarmEnable">启用</option>
-                                            <option data-translate="cabinetFireAlarmDisable">禁用</option>
+                                        <select id="alarmMode" class="form-input" style="width: 100%;" onchange="toggleManualAlarmBtn(this.value)">
+                                            <option value="auto">自动</option>
+                                            <option value="manual">手动</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetFireEmergencyPower">紧急断电</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetFireEmergencyAuto">自动</option>
-                                            <option data-translate="cabinetFireEmergencyManual">手动</option>
-                                        </select>
+                                    <!-- 手动报警按钮（默认隐藏） -->
+                                    <div id="manualAlarmContainer" style="display: none;">
+                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">手动报警</label>
+                                        <button id="manualAlarmBtn" onclick="toggleAlarmState()"
+                                                style="width: 100%; height: 40px; border: 2px solid var(--border-color); border-radius: 8px;
+                                                       background: var(--bg-primary); font-size: 14px; font-weight: 600; cursor: pointer;
+                                                       transition: all 0.2s;">
+                                            触发报警
+                                        </button>
                                     </div>
+                                    <!-- 占位（声光报警自动模式时保持布局） -->
+                                    <div id="alarmAutoPlaceholder"></div>
+
+                                    <!-- 通风控制 -->
                                     <div>
                                         <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="cabinetFireVentControl">通风控制</label>
-                                        <select class="form-input" style="width: 100%;">
-                                            <option data-translate="cabinetFireVentAuto">自动控制</option>
-                                            <option data-translate="cabinetFireVentForceOn">强制开启</option>
-                                            <option data-translate="cabinetFireVentForceOff">强制关闭</option>
-                                        </select>
+                                        <div style="position: relative;">
+                                            <select id="ventControl" class="form-input" style="width: 100%;">
+                                                <option value="auto" data-translate="cabinetFireVentAuto">自动</option>
+                                                <option value="forceOn" data-translate="cabinetFireVentForceOn">强制开启</option>
+                                                <option value="forceOff" data-translate="cabinetFireVentForceOff">强制关闭</option>
+                                            </select>
+                                            <span id="ventControl-status" class="control-status"></span>
+                                        </div>
+                                    </div>
+                                    <!-- 紧急断电 -->
+                                    <div>
+                                        <label style="display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 6px;">紧急断电</label>
+                                        <button id="manualPowerOffBtn" onclick="togglePowerOffState()"
+                                                style="width: 100%; height: 40px; border: 2px solid var(--border-color); border-radius: 8px;
+                                                       background: var(--bg-primary); font-size: 14px; font-weight: 600; cursor: pointer;
+                                                       transition: all 0.2s;">
+                                            紧急断电
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -9269,6 +9461,510 @@
         window.addEventListener('beforeunload', function() {
             stopRealtimeUpdates();
         });
+
+        // ===========================================
+        // 控制项闭环交互系统
+        // ===========================================
+
+        // 控制项配置
+        const controlConfig = {
+            balanceControl: {
+                name: '均衡控制',
+                options: {
+                    active: '主动均衡',
+                    passive: '被动均衡',
+                    off: '关闭'
+                },
+                note: '切换后将在下次充放电时生效',
+                danger: false
+            },
+            fanControl: {
+                name: '风扇控制',
+                options: {
+                    auto: '自动',
+                    on: '开启',
+                    off: '关闭'
+                },
+                note: '关闭风扇可能导致温度升高',
+                danger: true,
+                dangerValue: 'off'
+            },
+            tempProtect: {
+                name: '温度保护',
+                options: {
+                    on: '开启',
+                    off: '关闭'
+                },
+                note: '⚠️ 关闭温度保护可能导致电池损坏或起火！',
+                danger: true,
+                dangerValue: 'off'
+            },
+            fireStartMode: {
+                name: '灭火启动',
+                options: {
+                    auto: '自动启动',
+                    manual: '手动启动'
+                },
+                note: '手动模式下需人工触发灭火',
+                danger: false
+            },
+            fireAlarm: {
+                name: '声光报警',
+                options: {
+                    enable: '启用',
+                    disable: '禁用'
+                },
+                note: '禁用后火灾时无声光提示',
+                danger: true,
+                dangerValue: 'disable'
+            },
+            emergencyPower: {
+                name: '紧急断电',
+                options: {
+                    auto: '自动',
+                    manual: '手动'
+                },
+                note: '手动模式下需人工切断电源',
+                danger: false
+            },
+            ventControl: {
+                name: '通风控制',
+                options: {
+                    auto: '自动控制',
+                    forceOn: '强制开启',
+                    forceOff: '强制关闭'
+                },
+                note: '强制关闭可能影响散热和排烟',
+                danger: true,
+                dangerValue: 'forceOff'
+            }
+        };
+
+        // 保存当前控制状态
+        let currentControlValues = {};
+
+        // 初始化控制状态
+        function initControlValues() {
+            Object.keys(controlConfig).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) {
+                    currentControlValues[key] = el.value;
+                }
+            });
+        }
+
+        // 处理控制项变更
+        function handleControlChange(controlId, selectEl) {
+            const config = controlConfig[controlId];
+            const oldValue = currentControlValues[controlId];
+            const newValue = selectEl.value;
+
+            // 如果值没变，直接返回
+            if (oldValue === newValue) return;
+
+            // 显示确认弹窗
+            showControlConfirm(controlId, oldValue, newValue, config, selectEl);
+        }
+
+        // 显示确认弹窗
+        function showControlConfirm(controlId, oldValue, newValue, config, selectEl) {
+            const isDanger = config.danger && newValue === config.dangerValue;
+
+            const modal = document.createElement('div');
+            modal.className = 'control-confirm-modal';
+            modal.id = 'controlConfirmModal';
+            modal.innerHTML = `
+                <div class="control-confirm-content">
+                    <div class="control-confirm-header">
+                        <div class="control-confirm-icon ${isDanger ? 'danger' : 'warning'}">
+                            <i class="fas ${isDanger ? 'fa-exclamation-triangle' : 'fa-cog'}"></i>
+                        </div>
+                        <div class="control-confirm-title">确认修改${config.name}？</div>
+                    </div>
+                    <div class="control-confirm-body">
+                        <div class="control-confirm-row">
+                            <span class="control-confirm-label">控制项</span>
+                            <span class="control-confirm-value">${config.name}</span>
+                        </div>
+                        <div class="control-confirm-row">
+                            <span class="control-confirm-label">当前设置</span>
+                            <span class="control-confirm-value old">${config.options[oldValue] || oldValue}</span>
+                        </div>
+                        <div class="control-confirm-row">
+                            <span class="control-confirm-label">目标设置</span>
+                            <span class="control-confirm-value new">${config.options[newValue] || newValue}</span>
+                        </div>
+                        ${config.note ? `<div class="control-confirm-note"><i class="fas fa-info-circle"></i>${config.note}</div>` : ''}
+                    </div>
+                    <div class="control-confirm-buttons">
+                        <button class="btn-cancel" onclick="cancelControlChange('${controlId}', '${oldValue}')">取消</button>
+                        <button class="btn-confirm" style="${isDanger ? 'background:#ef4444;' : ''}" onclick="confirmControlChange('${controlId}', '${newValue}')">
+                            ${isDanger ? '确认（危险操作）' : '确认修改'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 取消控制变更
+        function cancelControlChange(controlId, oldValue) {
+            const selectEl = document.getElementById(controlId);
+            if (selectEl) {
+                selectEl.value = oldValue;
+            }
+            closeControlConfirm();
+        }
+
+        // 确认控制变更
+        function confirmControlChange(controlId, newValue) {
+            closeControlConfirm();
+
+            // 显示加载状态
+            const statusEl = document.getElementById(controlId + '-status');
+            if (statusEl) {
+                statusEl.className = 'control-status loading';
+            }
+
+            // 模拟下发指令（实际项目中这里调用API）
+            sendControlCommand(controlId, newValue).then(result => {
+                if (result.success) {
+                    // 更新当前值
+                    currentControlValues[controlId] = newValue;
+
+                    // 显示成功状态
+                    if (statusEl) {
+                        statusEl.className = 'control-status success';
+                        setTimeout(() => {
+                            statusEl.className = 'control-status';
+                        }, 3000);
+                    }
+
+                    // 显示成功提示
+                    showControlToast(`${controlConfig[controlId].name}已设置为"${controlConfig[controlId].options[newValue]}"`, 'success');
+
+                    // 记录操作日志
+                    logControlOperation(controlId, currentControlValues[controlId], newValue);
+                } else {
+                    // 恢复原值
+                    const selectEl = document.getElementById(controlId);
+                    if (selectEl) {
+                        selectEl.value = currentControlValues[controlId];
+                    }
+
+                    // 显示错误状态
+                    if (statusEl) {
+                        statusEl.className = 'control-status error';
+                        setTimeout(() => {
+                            statusEl.className = 'control-status';
+                        }, 3000);
+                    }
+
+                    // 显示错误提示
+                    showControlToast(`指令下发失败：${result.error}`, 'error');
+                }
+            });
+        }
+
+        // 模拟发送控制指令
+        function sendControlCommand(controlId, value) {
+            return new Promise((resolve) => {
+                // 模拟网络延迟
+                setTimeout(() => {
+                    // 模拟90%成功率
+                    const success = Math.random() > 0.1;
+                    if (success) {
+                        resolve({ success: true });
+                    } else {
+                        resolve({ success: false, error: '设备通信超时' });
+                    }
+                }, 800 + Math.random() * 500);
+            });
+        }
+
+        // 关闭确认弹窗
+        function closeControlConfirm() {
+            const modal = document.getElementById('controlConfirmModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 显示控制操作提示
+        function showControlToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                animation: slideUp 0.3s ease;
+                ${type === 'success' ? 'background: #10b981; color: white;' : 'background: #ef4444; color: white;'}
+            `;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                ${message}
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 记录操作日志
+        function logControlOperation(controlId, oldValue, newValue) {
+            const log = {
+                timestamp: new Date().toISOString(),
+                controlId: controlId,
+                controlName: controlConfig[controlId].name,
+                oldValue: controlConfig[controlId].options[oldValue],
+                newValue: controlConfig[controlId].options[newValue],
+                operator: 'admin' // 实际项目中从登录信息获取
+            };
+            console.log('控制操作日志:', log);
+            // 实际项目中这里发送到后端保存
+        }
+
+        // 页面加载时初始化控制值
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initControlValues, 100);
+        });
+
+        // ===========================================
+        // 消防/安全手动操作系统
+        // ===========================================
+
+        // ===========================================
+        // 消防控制 - 简化版
+        // ===========================================
+
+        let fireState = false; // 灭火开关状态
+
+        // 灭火模式切换（下拉列表触发）
+        function toggleManualFireBtn(mode) {
+            const manualContainer = document.getElementById('manualFireContainer');
+            const placeholder = document.getElementById('fireAutoPlaceholder');
+
+            if (mode === 'manual') {
+                // 手动模式：显示开启按钮
+                manualContainer.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                // 自动模式：隐藏开启按钮
+                manualContainer.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'block';
+                // 重置灭火状态
+                fireState = false;
+                const btn = document.getElementById('manualFireBtn');
+                if (btn) {
+                    btn.textContent = '开启';
+                    btn.style.border = '2px solid var(--border-color)';
+                    btn.style.background = 'var(--bg-primary)';
+                    btn.style.color = 'inherit';
+                }
+            }
+        }
+
+        // 切换灭火开关状态（选中样式，与充电按钮一致）
+        function toggleFireState() {
+            const btn = document.getElementById('manualFireBtn');
+
+            if (!fireState) {
+                // 选中状态 - 浅蓝色背景+蓝色边框
+                fireState = true;
+                btn.style.background = '#dbeafe';
+                btn.style.borderColor = '#3b82f6';
+                btn.style.color = '#1e40af';
+            } else {
+                // 未选中状态
+                fireState = false;
+                btn.style.background = 'var(--bg-primary)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = 'var(--text-primary)';
+            }
+        }
+
+        // 声光报警模式切换（下拉列表触发）
+        function toggleManualAlarmBtn(mode) {
+            const manualContainer = document.getElementById('manualAlarmContainer');
+            const placeholder = document.getElementById('alarmAutoPlaceholder');
+
+            if (mode === 'manual') {
+                // 手动模式：显示触发报警按钮
+                manualContainer.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                // 自动模式：隐藏按钮并重置状态
+                manualContainer.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'block';
+                alarmState = false;
+                const btn = document.getElementById('manualAlarmBtn');
+                if (btn) {
+                    btn.style.background = 'var(--bg-primary)';
+                    btn.style.borderColor = 'var(--border-color)';
+                    btn.style.color = 'var(--text-primary)';
+                }
+            }
+        }
+
+        // 声光报警状态切换（选中样式）
+        let alarmState = false;
+        function toggleAlarmState() {
+            const btn = document.getElementById('manualAlarmBtn');
+
+            if (!alarmState) {
+                // 选中状态 - 浅蓝色背景+蓝色边框
+                alarmState = true;
+                btn.style.background = '#dbeafe';
+                btn.style.borderColor = '#3b82f6';
+                btn.style.color = '#1e40af';
+            } else {
+                // 未选中状态
+                alarmState = false;
+                btn.style.background = 'var(--bg-primary)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = 'var(--text-primary)';
+            }
+        }
+
+        // 紧急断电状态切换（选中样式）
+        let powerOffState = false;
+        function togglePowerOffState() {
+            const btn = document.getElementById('manualPowerOffBtn');
+
+            if (!powerOffState) {
+                // 选中状态 - 浅蓝色背景+蓝色边框
+                powerOffState = true;
+                btn.style.background = '#dbeafe';
+                btn.style.borderColor = '#3b82f6';
+                btn.style.color = '#1e40af';
+            } else {
+                // 未选中状态
+                powerOffState = false;
+                btn.style.background = 'var(--bg-primary)';
+                btn.style.borderColor = 'var(--border-color)';
+                btn.style.color = 'var(--text-primary)';
+            }
+        }
+
+        // 更新消防状态显示
+        function updateFireStatus(status, text) {
+            const statusEl = document.getElementById('fireSystemStatus');
+            const statusPanel = document.getElementById('fireStatusPanel');
+
+            const statusConfig = {
+                normal: { bg: '#10b981', icon: 'fa-check-circle', panelBg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '#bbf7d0' },
+                firing: { bg: '#ef4444', icon: 'fa-fire', panelBg: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', border: '#fecaca' },
+                fired: { bg: '#f59e0b', icon: 'fa-check-circle', panelBg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', border: '#fcd34d' },
+                poweroff: { bg: '#6b7280', icon: 'fa-power-off', panelBg: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)', border: '#d1d5db' }
+            };
+
+            const config = statusConfig[status] || statusConfig.normal;
+
+            if (statusEl) {
+                statusEl.style.background = config.bg;
+                statusEl.innerHTML = `<i class="fas ${config.icon}" style="margin-right: 4px;"></i>${text}`;
+            }
+
+            if (statusPanel) {
+                statusPanel.style.background = config.panelBg;
+                statusPanel.style.borderColor = config.border;
+            }
+        }
+
+        // 应用消防延时
+        function applyFireDelay() {
+            const delayInput = document.getElementById('fireDelay');
+            const delay = parseInt(delayInput.value) || 30;
+
+            if (delay < 0 || delay > 120) {
+                showControlToast('延时范围：0-120秒', 'error');
+                return;
+            }
+
+            showControlToast(`消防延时已设置为 ${delay} 秒`, 'success');
+        }
+
+        // 危险操作确认弹窗
+        function showDangerConfirm(options) {
+            const modal = document.createElement('div');
+            modal.className = 'control-confirm-modal';
+            modal.id = 'dangerConfirmModal';
+            modal.innerHTML = `
+                <div class="control-confirm-content" style="border: 2px solid #ef4444;">
+                    <div class="control-confirm-header">
+                        <div class="control-confirm-icon danger">
+                            <i class="fas ${options.icon}" style="color: ${options.iconColor};"></i>
+                        </div>
+                        <div class="control-confirm-title">${options.title}</div>
+                    </div>
+                    <div class="control-confirm-body" style="background: #fef2f2;">
+                        <div style="font-size: 15px; font-weight: 600; color: #991b1b; margin-bottom: 12px;">
+                            ${options.message}
+                        </div>
+                        <div style="font-size: 13px; color: #7f1d1d; margin-bottom: 12px; padding: 8px; background: #fee2e2; border-radius: 6px;">
+                            ⚠️ ${options.warning}
+                        </div>
+                        <div style="font-size: 13px; color: #374151;">
+                            <strong>执行动作：</strong>
+                            <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                                ${options.consequences.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="control-confirm-buttons">
+                        <button class="btn-cancel" onclick="closeDangerConfirm()">取消</button>
+                        <button class="btn-confirm" style="background: #ef4444;" onclick="executeDangerAction()">
+                            ${options.confirmText}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // 保存回调
+            modal.onConfirmCallback = options.onConfirm;
+            document.body.appendChild(modal);
+        }
+
+        function closeDangerConfirm() {
+            const modal = document.getElementById('dangerConfirmModal');
+            if (modal) modal.remove();
+        }
+
+        function executeDangerAction() {
+            const modal = document.getElementById('dangerConfirmModal');
+            if (modal && modal.onConfirmCallback) {
+                modal.onConfirmCallback();
+            }
+            closeDangerConfirm();
+        }
+
+        // 添加报警闪烁动画样式
+        const alarmStyle = document.createElement('style');
+        alarmStyle.textContent = `
+            @keyframes alarmPulse {
+                0%, 100% {
+                    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+                    border-color: #fecaca;
+                }
+                50% {
+                    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+                    border-color: #f87171;
+                }
+            }
+        `;
+        document.head.appendChild(alarmStyle);
     </script>
 
     <!-- 统一导航栏组件 -->
