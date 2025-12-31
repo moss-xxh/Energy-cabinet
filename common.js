@@ -606,8 +606,8 @@ const translations = {
         cabinetFieldCategoryCharts: '图表',
         cabinetChartPowerSOC: '功率与SOC综合分析',
         cabinetChartPowerSOCShort: '功率 & SOC',
-        cabinetChartRevenue: '收益分析',
-        cabinetChartRevenueShort: '充放电 & 收益',
+        cabinetChartRevenue: '电量分析',
+        cabinetChartRevenueShort: '充放电量',
         cabinetStrategyParamsTitle: '策略调度参数',
         cabinetCurrentStrategy: '当前策略',
         cabinetStrategyPeakValley: '峰谷套利',
@@ -831,10 +831,31 @@ const translations = {
 
         // === Fire Real-time Data ===
         fireSmokeDetector: '烟感探测器',
+        fireTempDetector: '温感探测器',
         fireAlarmStatus: '火警状态',
-        fireExtinguisherStatus: '灭火器状态',
+        fireExtinguisherStatus: '灭火装置状态',
+        fireExtinguisherPressure: '灭火剂压力',
+        fireExhaustFan: '排风扇',
         fireEmergencyShutdown: '紧急停机',
         fireAlarmDevice: '声光报警器',
+
+        // === Fire Categories ===
+        fireCategoryDetection: '探测系统',
+        fireCategoryExtinguisher: '灭火装置',
+        fireCategoryLinkage: '联动控制',
+        fireCategoryChart: '历史图表',
+
+        // === Fire Status Values ===
+        valueDetectorNormal: '正常',
+        valueFireAlarmNormal: '无告警',
+        valueExtinguisherReady: '待命',
+        valueAlarmNormal: '正常',
+        valueStandby: '待机',
+        statusPressureNormal: '压力正常',
+
+        // === Fire History Charts ===
+        chartFireSystemStatus: '系统状态历史',
+        chartFireAlarmRecords: '告警记录分析',
 
         // === Meter Real-time Data ===
         meterTotalActivePower: '总有功功率',
@@ -2830,8 +2851,8 @@ const translations = {
         cabinetFieldCategoryCharts: 'Charts',
         cabinetChartPowerSOC: 'Power & SOC Analysis',
         cabinetChartPowerSOCShort: 'Power & SOC',
-        cabinetChartRevenue: 'Revenue Analysis',
-        cabinetChartRevenueShort: 'Charge/Discharge & Revenue',
+        cabinetChartRevenue: 'Energy Analysis',
+        cabinetChartRevenueShort: 'Charge/Discharge',
         cabinetStrategyParamsTitle: 'Strategy Parameters',
         cabinetCurrentStrategy: 'Current Strategy',
         cabinetStrategyPeakValley: 'Peak-Valley Arbitrage',
@@ -3055,10 +3076,31 @@ const translations = {
 
         // === Fire Real-time Data ===
         fireSmokeDetector: 'Smoke Detector',
+        fireTempDetector: 'Temperature Detector',
         fireAlarmStatus: 'Fire Alarm Status',
         fireExtinguisherStatus: 'Extinguisher Status',
+        fireExtinguisherPressure: 'Extinguisher Pressure',
+        fireExhaustFan: 'Exhaust Fan',
         fireEmergencyShutdown: 'Emergency Shutdown',
         fireAlarmDevice: 'Audio/Visual Alarm Device',
+
+        // === Fire Categories ===
+        fireCategoryDetection: 'Detection System',
+        fireCategoryExtinguisher: 'Extinguisher',
+        fireCategoryLinkage: 'Linkage Control',
+        fireCategoryChart: 'History Charts',
+
+        // === Fire Status Values ===
+        valueDetectorNormal: 'Normal',
+        valueFireAlarmNormal: 'No Alarm',
+        valueExtinguisherReady: 'Ready',
+        valueAlarmNormal: 'Normal',
+        valueStandby: 'Standby',
+        statusPressureNormal: 'Pressure Normal',
+
+        // === Fire History Charts ===
+        chartFireSystemStatus: 'System Status History',
+        chartFireAlarmRecords: 'Alarm Records Analysis',
 
         // === Meter Real-time Data ===
         meterTotalActivePower: 'Total Active Power',

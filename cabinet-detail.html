@@ -863,10 +863,10 @@
                             </div>
                         </div>
                         
-                        <!-- 温度监测 (橙色线缆区域) -->
-                        <div class="blinking-marker" style="top: 38%; left: 71%;" onclick="switchComponent('thermal')"></div>
-                        <div class="marker-label" style="top: 36%; left: 79%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="thermalMarkerLabel" onclick="switchComponent('thermal')">
-                            <span style="font-weight: 500; color: #333333;" data-translate="cabinetComponentThermal">温度</span>
+                        <!-- 热管理 (橙色线缆区域) -->
+                        <div class="blinking-marker" style="top: 38%; left: 71%;" onclick="switchComponent('thermalMgmt')"></div>
+                        <div class="marker-label" style="top: 36%; left: 79%; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.98); padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid #10b981; cursor: pointer;" id="thermalMarkerLabel" onclick="switchComponent('thermalMgmt')">
+                            <span style="font-weight: 500; color: #333333;" data-translate="cabinetComponentThermalMgmt">热管理</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <span class="status-dot online" id="thermalMarkerStatusDot"></span>
                                 <span style="font-size: 11px; color: #10b981;" id="thermalMarkerStatusText" data-translate="statusOnline">在线</span>
@@ -983,11 +983,10 @@
                 <div class="component-tabs">
                     <button class="component-tab active" onclick="switchComponent('overall')" data-translate="cabinetTabOverall">整机</button>
                     <button class="component-tab" onclick="switchComponent('ems')" data-translate="cabinetTabEMS">EMS</button>
-                    <button class="component-tab" onclick="switchComponent('pcs')" data-translate="cabinetTabPCS">逆变器</button>
+                    <button class="component-tab" onclick="switchComponent('pcs')" data-translate="cabinetTabPCS">PCS</button>
                     <button class="component-tab" onclick="switchComponent('bms')" data-translate="cabinetTabBMS">BMS</button>
                     <button class="component-tab" onclick="switchComponent('meter')" data-translate="cabinetTabMeter">电表</button>
-                    <button class="component-tab" onclick="switchComponent('cooling')" data-translate="cabinetTabCooling">液冷机组</button>
-                    <button class="component-tab" onclick="switchComponent('thermal')" data-translate="cabinetTabThermal">温度</button>
+                    <button class="component-tab" onclick="switchComponent('thermalMgmt')" data-translate="cabinetTabThermalMgmt">热管理</button>
                     <button class="component-tab" onclick="switchComponent('fire')" data-translate="cabinetTabFire">消防</button>
                 </div>
 
@@ -2287,31 +2286,31 @@
             const tabMapping = {
                 'pcs': 'pcs',
                 'bms': 'bms',
-                'cooling': 'thermal',
+                'thermalMgmt': 'thermalMgmt',
                 'fire': 'fire',
                 'electrical': 'hv',
                 'ems': 'ems'
             };
-            
+
             const tabComponent = tabMapping[componentName] || 'overall';
-            
+
             // 更新标签选中状态
             document.querySelectorAll('.component-tab').forEach(t => {
                 t.classList.remove('active');
             });
-            
+
             const targetTab = document.querySelector(`.component-tab[onclick*="'${tabComponent}'"]`);
             if (targetTab) {
                 targetTab.classList.add('active');
             }
-            
+
             // 更新当前组件
             currentComponent = tabComponent;
-            
+
             // 更新数据显示
             updateComponentData(tabComponent);
         }
-        
+
         // 获取组件对应的标签名称
         function getComponentTabName(componentName) {
             const mapping = {
@@ -2320,8 +2319,7 @@
                 'pcs': 'PCS',
                 'bms': 'BMS',
                 'meter': '电表',
-                'cooling': '液冷机组',
-                'thermal': '温度',
+                'thermalMgmt': '热管理',
                 'fire': '消防',
                 'electrical': '高压箱',
                 'hv': '高压箱'
@@ -2611,41 +2609,6 @@
                     break;
                 case 'ems_old':
                     realtimeData.innerHTML = `
-                        <!-- 策略调度参数 -->
-                        <div class="metrics-section">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">策略调度参数</h3>
-                                <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" data-translate-title="btnFieldSettings" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
-                                    <i class="fas fa-cog"></i>
-                                    <span data-translate="cabinetBtnSettings">${getTranslation('cabinetBtnSettings')}</span>
-                                </button>
-                            </div>
-                            <div class="metrics-grid">
-                                <div class="metric-card">
-                                    <div class="metric-label" data-translate="cabinetCurrentStrategy">当前策略</div>
-                                    <div class="metric-value">
-                                        <span style="font-size: 16px; color: #2563eb;" data-translate="cabinetStrategyPeakValley">峰谷套利</span>
-                                    </div>
-                                    <div style="font-size: 12px; color: #666; margin-top: 4px;" data-translate="cabinetStrategyAutoRunning">自动执行中</div>
-                                </div>
-                                <div class="metric-card">
-                                    <div class="metric-label" data-translate="cabinetScheduleCmd">调度指令</div>
-                                    <div class="metric-value">
-                                        <span style="font-size: 16px; color: #10b981;">充电</span>
-                                    </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">目标功率125kW</div>
-                                </div>
-                                <div class="metric-card">
-                                    <div class="metric-label">目标SOC</div>
-                                    <div class="metric-value">
-                                        <span id="emsTargetSOC">${(85 + Math.random() * 10).toFixed(0)}</span>
-                                        <span class="metric-unit">%</span>
-                                    </div>
-                                    <div style="font-size: 12px; color: #666; margin-top: 4px;">峰时放电准备</div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- 通信控制参数 -->
                         <div class="metrics-section">
                             <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">通信控制参数</h3>
@@ -3112,12 +3075,8 @@
                     realtimeData.innerHTML = generateMeterHTML();
                     break;
                     
-                case 'thermal':
-                    realtimeData.innerHTML = generateComponentHTML('thermal');
-                    break;
-
-                case 'cooling':
-                    realtimeData.innerHTML = generateCoolingHTML();
+                case 'thermalMgmt':
+                    realtimeData.innerHTML = generateThermalMgmtHTML();
                     break;
                 case 'thermal_old':
                 case 'cooling_old':
@@ -3826,19 +3785,11 @@
                 return;
             }
             
-            if (currentComponent === 'thermal') {
-                // 温度历史数据 - 使用动态生成
-                document.getElementById('historyData').innerHTML = generateHistoryHTML('thermal');
+            if (currentComponent === 'thermalMgmt') {
+                // 热管理历史数据 - 使用动态生成
+                document.getElementById('historyData').innerHTML = generateThermalMgmtHistoryHTML();
 
-                setTimeout(() => { initThermalHistoryCharts(); }, 100);
-                return;
-            }
-
-            if (currentComponent === 'cooling') {
-                // 液冷机组历史数据 - 使用动态生成
-                document.getElementById('historyData').innerHTML = generateHistoryHTML('cooling');
-
-                setTimeout(() => { initCoolingHistoryCharts(); }, 100);
+                setTimeout(() => { initThermalMgmtHistoryCharts(); }, 100);
                 return;
             }
 
@@ -4730,9 +4681,12 @@
         
         // 存储消防图表实例
         let fireChartInstances = {};
-        
+
         // 存储PCS图表实例
         let pcsChartInstances = {};
+
+        // 存储热管理图表实例
+        let thermalMgmtChartInstances = {};
 
         // 处理电表图表的日期选择
         function changeMeterChartDate(chartId, selectedDate) {
@@ -4859,18 +4813,6 @@
                 case 'fire-system':
                     // 系统状态历史 - 状态分布图
                     chartInstance.data.datasets[0].data = [75, 20, 3, 2]; // 正常、警告、故障、维护
-                    break;
-                case 'fire-gas':
-                    // 气体浓度监测
-                    chartInstance.data.datasets[0].data = generateData(0.01, 0.02); // CO浓度
-                    chartInstance.data.datasets[1].data = generateData(0.003, 0.005); // 烟雾浓度
-                    break;
-                case 'fire-alarm':
-                    // 告警记录分析 - 告警次数
-                    chartInstance.data.datasets[0].data = Array.from({length: 24}, (_, i) => {
-                        const pseudoRandom = Math.sin(seed * 7.1 + i * 1.8) * 0.5 + 0.5;
-                        return Math.floor(pseudoRandom * 3); // 0-2次告警
-                    });
                     break;
             }
             
@@ -5454,6 +5396,425 @@
             }
         }
 
+        // 生成热管理历史数据HTML
+        function generateThermalMgmtHistoryHTML() {
+            let html = `
+                <!-- 设置按钮 -->
+                <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 8px;">
+                    <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
+                        <i class="fas fa-cog"></i>
+                        <span>字段设置</span>
+                    </button>
+                </div>
+            `;
+
+            // 温度趋势与温差监控图表
+            html += `
+                <div class="chart-container" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text-primary);">
+                            <i class="fas fa-temperature-high" style="margin-right: 8px; color: #ef4444;"></i>
+                            温度趋势与温差监控
+                            <span style="font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-left: 12px;">电芯温差 ≤3°C 为行业优秀水平</span>
+                        </h4>
+                        <input type="date" id="thermal-temp-date" value="${new Date().toISOString().split('T')[0]}"
+                               onchange="changeThermalMgmtChartDate('temp', this.value)"
+                               style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="thermalMgmtTempChart"></canvas>
+                    </div>
+                </div>
+            `;
+
+            // COP与冷却效率图表
+            html += `
+                <div class="chart-container" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text-primary);">
+                            <i class="fas fa-snowflake" style="margin-right: 8px; color: #3b82f6;"></i>
+                            COP 与冷却效率
+                            <span style="font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-left: 12px;">COP值越高系统能效越好</span>
+                        </h4>
+                        <input type="date" id="thermal-cooling-date" value="${new Date().toISOString().split('T')[0]}"
+                               onchange="changeThermalMgmtChartDate('cooling', this.value)"
+                               style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="thermalMgmtCoolingChart"></canvas>
+                    </div>
+                </div>
+            `;
+
+            // 压力与流量图表
+            html += `
+                <div class="chart-container" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h4 style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text-primary);">
+                            <i class="fas fa-tachometer-alt" style="margin-right: 8px; color: #10b981;"></i>
+                            压力与流量监控
+                        </h4>
+                        <input type="date" id="thermal-pressure-date" value="${new Date().toISOString().split('T')[0]}"
+                               onchange="changeThermalMgmtChartDate('pressure', this.value)"
+                               style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">
+                    </div>
+                    <div style="height: 280px;">
+                        <canvas id="thermalMgmtPressureChart"></canvas>
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        // 初始化热管理历史图表
+        function initThermalMgmtHistoryCharts() {
+            // 销毁旧的图表实例
+            Object.values(thermalMgmtChartInstances).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            thermalMgmtChartInstances = {};
+
+            // 生成温度数据（确保最高和最低温度关联）
+            const maxTempData = Array.from({length: 24}, () => 35 + Math.random() * 8);
+            const minTempData = maxTempData.map(max => max - 2 - Math.random() * 3);
+            const avgTempData = maxTempData.map((max, i) => (max + minTempData[i]) / 2);
+            const tempDiffData = maxTempData.map((max, i) => max - minTempData[i]);
+
+            // 温度趋势与温差图
+            const tempCtx = document.getElementById('thermalMgmtTempChart');
+            if (tempCtx) {
+                thermalMgmtChartInstances['temp'] = new Chart(tempCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                        datasets: [{
+                            label: '电池最高温度',
+                            data: maxTempData.map(v => v.toFixed(1)),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        }, {
+                            label: '电池最低温度',
+                            data: minTempData.map(v => v.toFixed(1)),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        }, {
+                            label: '电池平均温度',
+                            data: avgTempData.map(v => v.toFixed(1)),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        }, {
+                            label: '电芯温差',
+                            data: tempDiffData.map(v => v.toFixed(1)),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            annotation: {
+                                annotations: {
+                                    line1: {
+                                        type: 'line',
+                                        yMin: 3,
+                                        yMax: 3,
+                                        yScaleID: 'y1',
+                                        borderColor: '#10b981',
+                                        borderWidth: 2,
+                                        borderDash: [10, 5],
+                                        label: {
+                                            display: true,
+                                            content: '行业标准 3°C',
+                                            position: 'end'
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: '温度 (°C)' },
+                                min: 20,
+                                max: 50
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: '温差 (°C)' },
+                                min: 0,
+                                max: 8,
+                                grid: { drawOnChartArea: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // COP与冷却效率图
+            const coolingCtx = document.getElementById('thermalMgmtCoolingChart');
+            if (coolingCtx) {
+                // 生成COP数据（模拟随环境变化）
+                const copData = Array.from({length: 24}, (_, i) => {
+                    // 白天高温时COP较低，夜间低温时COP较高
+                    const baseValue = i >= 10 && i <= 16 ? 3.5 : 4.5;
+                    return (baseValue + Math.random() * 1).toFixed(2);
+                });
+                const coolingEffData = Array.from({length: 24}, () => (88 + Math.random() * 10).toFixed(1));
+                const coolingPowerData = Array.from({length: 24}, (_, i) => {
+                    // 白天制冷功率较高
+                    const baseValue = i >= 10 && i <= 16 ? 6 : 3;
+                    return (baseValue + Math.random() * 2).toFixed(1);
+                });
+
+                thermalMgmtChartInstances['cooling'] = new Chart(coolingCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                        datasets: [{
+                            label: 'COP 性能系数',
+                            data: copData,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y'
+                        }, {
+                            label: '冷却效率 (%)',
+                            data: coolingEffData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y1'
+                        }, {
+                            label: '制冷功率 (kW)',
+                            data: coolingPowerData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y2'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    afterBody: function(context) {
+                                        const cop = parseFloat(context[0]?.raw || 0);
+                                        if (cop >= 4) return '能效等级: 优秀';
+                                        if (cop >= 3) return '能效等级: 良好';
+                                        return '能效等级: 一般';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'COP' },
+                                min: 2,
+                                max: 6,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toFixed(1);
+                                    }
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: '效率 (%)' },
+                                min: 80,
+                                max: 100,
+                                grid: { drawOnChartArea: false }
+                            },
+                            y2: {
+                                type: 'linear',
+                                display: false,
+                                min: 0,
+                                max: 12
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 压力与流量图
+            const pressureCtx = document.getElementById('thermalMgmtPressureChart');
+            if (pressureCtx) {
+                thermalMgmtChartInstances['pressure'] = new Chart(pressureCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                        datasets: [{
+                            label: '出水压力',
+                            data: Array.from({length: 24}, () => (2.5 + Math.random() * 0.5).toFixed(2)),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        }, {
+                            label: '进水压力',
+                            data: Array.from({length: 24}, () => (2.2 + Math.random() * 0.3).toFixed(2)),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        }, {
+                            label: '水泵转速',
+                            data: Array.from({length: 24}, () => (1200 + Math.random() * 300).toFixed(0)),
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top' }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: '压力 (bar)' },
+                                min: 1.5,
+                                max: 3.5
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: '转速 (RPM)' },
+                                min: 1000,
+                                max: 1800,
+                                grid: { drawOnChartArea: false }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 热管理图表日期变更函数
+        function changeThermalMgmtChartDate(chartType, selectedDate) {
+            console.log(`Loading thermal management data for ${chartType} on date: ${selectedDate}`);
+
+            // 根据选择的日期生成对应的数据
+            const dateObj = new Date(selectedDate);
+            const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+
+            // 使用日期作为随机数种子，确保同一天的数据保持一致
+            const seed = dayOfYear;
+            const generateData = (base, variation, count = 24) => {
+                return Array.from({length: count}, (_, i) => {
+                    const pseudoRandom = Math.sin(seed * 8.3 + i * 1.9) * 0.5 + 0.5;
+                    return (base + (pseudoRandom - 0.5) * variation).toFixed(2);
+                });
+            };
+
+            // 获取图表实例并更新数据
+            const chartInstance = thermalMgmtChartInstances[chartType];
+            if (!chartInstance) return;
+
+            switch (chartType) {
+                case 'temp':
+                    // 温度趋势图
+                    const maxTempData = generateData(39, 8);
+                    const minTempData = maxTempData.map((v, i) => (parseFloat(v) - 2 - Math.sin(seed * 5.2 + i * 1.5) * 1.5).toFixed(2));
+                    const avgTempData = maxTempData.map((v, i) => ((parseFloat(v) + parseFloat(minTempData[i])) / 2).toFixed(2));
+                    const tempDiffData = maxTempData.map((v, i) => (parseFloat(v) - parseFloat(minTempData[i])).toFixed(2));
+
+                    chartInstance.data.datasets[0].data = maxTempData;
+                    chartInstance.data.datasets[1].data = minTempData;
+                    chartInstance.data.datasets[2].data = avgTempData;
+                    chartInstance.data.datasets[3].data = tempDiffData;
+                    break;
+
+                case 'cooling':
+                    // COP与冷却效率图
+                    const copData = Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = Math.sin(seed * 6.7 + i * 2.1) * 0.5 + 0.5;
+                        const baseValue = i >= 10 && i <= 16 ? 3.5 : 4.5;
+                        return (baseValue + pseudoRandom * 1).toFixed(2);
+                    });
+                    const coolingEffData = generateData(93, 10);
+                    const coolingPowerData = Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = Math.sin(seed * 4.5 + i * 1.8) * 0.5 + 0.5;
+                        const baseValue = i >= 10 && i <= 16 ? 6 : 3;
+                        return (baseValue + pseudoRandom * 2).toFixed(1);
+                    });
+
+                    chartInstance.data.datasets[0].data = copData;
+                    chartInstance.data.datasets[1].data = coolingEffData;
+                    chartInstance.data.datasets[2].data = coolingPowerData;
+                    break;
+
+                case 'pressure':
+                    // 压力与流量图
+                    chartInstance.data.datasets[0].data = generateData(2.75, 0.5); // 出水压力
+                    chartInstance.data.datasets[1].data = generateData(2.35, 0.3); // 进水压力
+                    chartInstance.data.datasets[2].data = Array.from({length: 24}, (_, i) => {
+                        const pseudoRandom = Math.sin(seed * 3.9 + i * 2.3) * 0.5 + 0.5;
+                        return (1200 + pseudoRandom * 300).toFixed(0);
+                    }); // 水泵转速
+                    break;
+            }
+
+            chartInstance.update();
+        }
+
         // 初始化液冷机组历史图表
         function initCoolingHistoryCharts() {
             // 温度历史曲线
@@ -5609,103 +5970,7 @@
                     });
                 }
             }
-            
-            // 气体浓度监测
-            if (shouldShowField('fire', 'history', 'gasConcentration')) {
-                const gasCtx = document.getElementById('fireGasChart');
-                if (gasCtx) {
-                    fireChartInstances['fire-gas'] = new Chart(gasCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                            datasets: [{
-                                label: getTranslation('cabinetChartLegendCOConcentration'),
-                                data: Array.from({length: 24}, () => Math.random() * 10 + 5),
-                                borderColor: '#dc2626',
-                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                                borderWidth: 2,
-                                tension: 0.4
-                            }, {
-                                label: getTranslation('cabinetChartLegendSmokeConcentration'),
-                                data: Array.from({length: 24}, () => Math.random() * 8 + 3),
-                                borderColor: '#6b7280',
-                                backgroundColor: 'rgba(107, 114, 128, 0.1)',
-                                borderWidth: 2,
-                                tension: 0.4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { position: 'top' } },
-                            scales: { y: { beginAtZero: true, title: { display: true, text: getTranslation('cabinetChartAxisConcentration') } } }
-                        }
-                    });
-                }
-            }
-            
-            // 告警记录分析
-            if (shouldShowField('fire', 'history', 'alarmHistory')) {
-                const alarmCtx = document.getElementById('fireAlarmChart');
-                if (alarmCtx) {
-                    fireChartInstances['fire-alarm'] = new Chart(alarmCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: ['1', '2', '3', '4', '5', '6'],
-                            datasets: [{
-                                label: getTranslation('cabinetChartLegendSmokeAlarm'),
-                                data: [2, 1, 0, 1, 0, 1],
-                                backgroundColor: 'rgba(107, 114, 128, 0.8)',
-                                borderColor: '#6b7280',
-                                borderWidth: 1
-                            }, {
-                                label: getTranslation('cabinetChartLegendTempAlarm'),
-                                data: [1, 0, 2, 0, 1, 0],
-                                backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                                borderColor: '#f59e0b',
-                                borderWidth: 1
-                            }, {
-                                label: getTranslation('cabinetChartLegendGasAlarm'),
-                                data: [0, 1, 1, 0, 0, 1],
-                                backgroundColor: 'rgba(220, 38, 38, 0.8)',
-                                borderColor: '#dc2626',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { position: 'top' },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            let label = context.dataset.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            label += context.parsed.y;
-                                            return label;
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: { display: true, text: getTranslation('cabinetChartAxisAlarmTimes') },
-                                    ticks: {
-                                        stepSize: 1
-                                    }
-                                },
-                                x: {
-                                    stacked: true
-                                }
-                            }
-                        }
-                    });
-                }
-            }
+
         }
         
         // 收益分析图表相关函数
@@ -5738,7 +6003,7 @@
             }
             
             // 生成图表数据
-            const { labels, chargingData, dischargingData, revenueData } = generateRevenueAnalysisData(timeType);
+            const { labels, chargingData, dischargingData } = generateRevenueAnalysisData(timeType);
             
             const ctx = document.getElementById('revenueAnalysisChart');
             if (!ctx) return;
@@ -5748,7 +6013,7 @@
                 revenueAnalysisChartInstance.destroy();
             }
             
-            // 创建混合图表
+            // 创建柱状图（仅充放电量）
             revenueAnalysisChartInstance = new Chart(ctx.getContext('2d'), {
                 type: 'bar',
                 data: {
@@ -5757,24 +6022,12 @@
                         label: getTranslation('cabinetChartLegendChargeAmount'),
                         data: chargingData,
                         backgroundColor: '#10b981',
-                        borderRadius: 4,
-                        yAxisID: 'y'
+                        borderRadius: 4
                     }, {
                         label: getTranslation('cabinetChartLegendDischargeAmount'),
                         data: dischargingData,
                         backgroundColor: '#3b82f6',
-                        borderRadius: 4,
-                        yAxisID: 'y'
-                    }, {
-                        label: getTranslation('cabinetChartLegendRevenue'),
-                        data: revenueData,
-                        type: 'line',
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        yAxisID: 'y1',
-                        fill: false
+                        borderRadius: 4
                     }]
                 },
                 options: {
@@ -5802,36 +6055,17 @@
                                 text: getTranslation('cabinetChartAxisEnergyKWh')
                             },
                             beginAtZero: true
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: getTranslation('cabinetChartAxisRevenueYuan2')
-                            },
-                            beginAtZero: true,
-                            grid: {
-                                drawOnChartArea: false
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString() + '元';
-                                }
-                            }
                         }
                     }
                 }
             });
         }
         
-        // 生成收益分析数据
+        // 生成电量分析数据
         function generateRevenueAnalysisData(timeType) {
             let labels = [];
             let chargingData = [];
             let dischargingData = [];
-            let revenueData = [];
 
             const today = new Date();
             // 获取当前语言设置
@@ -5844,7 +6078,6 @@
                         labels.push(i + ':00');
                         chargingData.push(Math.random() * 100 + 50);
                         dischargingData.push(Math.random() * 80 + 40);
-                        revenueData.push(Math.random() * 500 + 200);
                     }
                     break;
                 case 'month':
@@ -5857,7 +6090,6 @@
                         }
                         chargingData.push(Math.random() * 2000 + 1000);
                         dischargingData.push(Math.random() * 1800 + 900);
-                        revenueData.push(Math.random() * 8000 + 4000);
                     }
                     break;
                 case 'year':
@@ -5869,7 +6101,6 @@
                             labels.push(month);
                             chargingData.push(Math.random() * 50000 + 25000);
                             dischargingData.push(Math.random() * 45000 + 22000);
-                            revenueData.push(Math.random() * 200000 + 100000);
                         });
                     } else {
                         // 中文：显示数字+月
@@ -5878,7 +6109,6 @@
                             labels.push(month);
                             chargingData.push(Math.random() * 50000 + 25000);
                             dischargingData.push(Math.random() * 45000 + 22000);
-                            revenueData.push(Math.random() * 200000 + 100000);
                         });
                     }
                     break;
@@ -5892,7 +6122,6 @@
                             labels.push(year);
                             chargingData.push(Math.random() * 600000 + 300000);
                             dischargingData.push(Math.random() * 550000 + 280000);
-                            revenueData.push(Math.random() * 2500000 + 1200000);
                         });
                     } else {
                         // 中文：显示年份+年
@@ -5901,13 +6130,12 @@
                             labels.push(year);
                             chargingData.push(Math.random() * 600000 + 300000);
                             dischargingData.push(Math.random() * 550000 + 280000);
-                            revenueData.push(Math.random() * 2500000 + 1200000);
                         });
                     }
                     break;
             }
 
-            return { labels, chargingData, dischargingData, revenueData };
+            return { labels, chargingData, dischargingData };
         }
         
         // 初始化整机历史数据图表
@@ -6280,7 +6508,7 @@
                 { id: 'pcs', element: 'pcsMarkerStatus', labelId: 'pcsMarkerLabel' },
                 { id: 'bms', element: 'bmsMarkerStatus', labelId: 'bmsMarkerLabel' },
                 { id: 'meter', element: 'meterMarkerStatus', labelId: 'meterMarkerLabel' },
-                { id: 'thermal', element: 'thermalMarkerStatus', labelId: 'thermalMarkerLabel' },
+                { id: 'thermalMgmt', element: 'thermalMarkerStatus', labelId: 'thermalMarkerLabel' },
                 { id: 'fire', element: 'fireMarkerStatus', labelId: 'fireMarkerLabel' }
             ];
             
@@ -6338,22 +6566,20 @@
         const fieldConfigs = {
             overall: {
                 realtime: [
-                    { 
-                        category: '策略调度参数',
+                    {
+                        category: '调度参数',
                         fields: [
-                            { id: 'currentStrategy', name: '当前策略', checked: true },
                             { id: 'dispatchCommand', name: '调度指令', checked: true },
-                            { id: 'targetSOC', name: '目标SOC', checked: true },
-                            { id: 'maxPower', name: '最大功率', checked: true }
+                            { id: 'power', name: '充放电功率', checked: true },
+                            { id: 'soc', name: 'SOC', checked: true }
                         ]
                     },
                     {
                         category: '核心运行参数',
                         fields: [
-                            { id: 'soc', name: 'SOC', checked: true },
                             { id: 'soh', name: 'SOH', checked: true },
                             { id: 'temperature', name: '温度', checked: true },
-                            { id: 'power', name: '充放电功率', checked: true },
+                            { id: 'cycles', name: '循环次数', checked: true },
                             { id: 'current', name: '电池电流', checked: true },
                             { id: 'voltage', name: '电池电压', checked: true }
                         ]
@@ -6365,12 +6591,6 @@
                             { id: 'todayDischarge', name: '今日放电量', checked: true },
                             { id: 'totalCharge', name: '累计充电量', checked: true },
                             { id: 'totalDischarge', name: '累计放电量', checked: true }
-                        ]
-                    },
-                    {
-                        category: '其他参数',
-                        fields: [
-                            { id: 'cycles', name: '循环次数', checked: true }
                         ]
                     }
                 ],
@@ -6478,35 +6698,15 @@
                     {
                         category: '系统状态',
                         fields: [
-                            { id: 'communicationStatus', name: '通讯状态', checked: true },
-                            { id: 'runningStatus', name: '运行状态', checked: true },
                             { id: 'totalVoltage', name: '总压', checked: true },
+                            { id: 'totalCurrent', name: '总电流', checked: true },
                             { id: 'insulationResistancePos', name: '绝缘电阻(正)', checked: true },
                             { id: 'insulationResistanceNeg', name: '绝缘电阻(负)', checked: true },
                             { id: 'availableChargeCapacity', name: '可充电量', checked: true },
                             { id: 'availableDischargeCapacity', name: '可放电量', checked: true },
                             { id: 'maxChargeCurrentAllowed', name: '允许最大充电电流', checked: true },
-                            { id: 'maxDischargeCurrentAllowed', name: '允许最大放电电流', checked: true }
-                        ]
-                    },
-                    {
-                        category: '核心指标',
-                        fields: [
-                            { id: 'totalCurrent', name: '总电流', checked: true },
-                            { id: 'power', name: '功率', checked: true },
-                            { id: 'soc', name: 'SOC', checked: true },
-                            { id: 'soh', name: 'SOH', checked: true },
-                            { id: 'packCount', name: 'Pack数量', checked: true },
-                            { id: 'cycles', name: '循环次数', checked: true }
-                        ]
-                    },
-                    {
-                        category: '运行统计',
-                        fields: [
-                            { id: 'todayCharge', name: '今日充电量', checked: true },
-                            { id: 'todayDischarge', name: '今日放电量', checked: true },
-                            { id: 'totalCharge', name: '累计充电量', checked: true },
-                            { id: 'totalDischarge', name: '累计放电量', checked: true }
+                            { id: 'maxDischargeCurrentAllowed', name: '允许最大放电电流', checked: true },
+                            { id: 'packCount', name: 'Pack数量', checked: true }
                         ]
                     },
                     {
@@ -6594,59 +6794,38 @@
                     }
                 ]
             },
-            thermal: {
+            thermalMgmt: {
                 realtime: [
                     {
-                        categoryKey: 'thermalCategoryRunningStatus',
+                        categoryKey: 'thermalMgmtCategoryStatus',
                         fields: [
-                            { id: 'cabinetTemp', name: '储能柜温度', checked: true },
-                            { id: 'runningMode', name: '运行模式', checked: true },
-                            { id: 'humidity', name: '相对湿度', checked: true }
+                            { id: 'commStatus', name: '通讯状态', checked: true },
+                            { id: 'runningStatus', name: '运行状态', checked: true },
+                            { id: 'runningMode', name: '运行模式', checked: true }
                         ]
                     },
                     {
-                        categoryKey: 'thermalCategoryCoreParams',
+                        categoryKey: 'thermalMgmtCategoryTemp',
                         fields: [
+                            { id: 'cabinetTemp', name: '储能柜温度', checked: true },
                             { id: 'battMaxTemp', name: '电池包最高温度', checked: true },
                             { id: 'battMinTemp', name: '电池包最低温度', checked: true },
                             { id: 'battAvgTemp', name: '电池包平均温度', checked: true },
                             { id: 'battTempDiff', name: '电池包温差', checked: true },
-                            { id: 'inletTemp', name: '进风温度', checked: true },
-                            { id: 'outletTemp', name: '出风温度', checked: true },
+                            { id: 'humidity', name: '相对湿度', checked: true }
+                        ]
+                    },
+                    {
+                        categoryKey: 'thermalMgmtCategoryCooling',
+                        fields: [
+                            { id: 'outletWaterTemp', name: '出水温度', checked: true },
+                            { id: 'inletWaterTemp', name: '进水温度', checked: true },
+                            { id: 'waterTempDiff', name: '水温温差', checked: true },
                             { id: 'coolantTemp', name: '冷却液温度', checked: true }
                         ]
-                    }
-                ],
-                history: [
-                    {
-                        categoryKey: 'thermalCategoryChart',
-                        fields: [
-                            { id: 'tempDistribution', nameKey: 'chartThermalTempHistory', checked: true },
-                            { id: 'coolingSystem', nameKey: 'chartThermalCoolingSystem', checked: true },
-                            { id: 'heatMap', nameKey: 'chartThermalFanSpeed', checked: true }
-                        ]
-                    }
-                ]
-            },
-            cooling: {
-                realtime: [
-                    {
-                        categoryKey: 'coolingCategoryStatus',
-                        fields: [
-                            { id: 'commStatus', name: '通讯状态', checked: true },
-                            { id: 'runningStatus', name: '运行状态', checked: true }
-                        ]
                     },
                     {
-                        categoryKey: 'coolingCategoryTemp',
-                        fields: [
-                            { id: 'outletTemp', name: '出水温度', checked: true },
-                            { id: 'inletTemp', name: '进水温度', checked: true },
-                            { id: 'tempDiff', name: '温差', checked: true }
-                        ]
-                    },
-                    {
-                        categoryKey: 'coolingCategoryPressure',
+                        categoryKey: 'thermalMgmtCategoryPressure',
                         fields: [
                             { id: 'outletPressure', name: '出水压力', checked: true },
                             { id: 'inletPressure', name: '进水压力', checked: true },
@@ -6656,11 +6835,11 @@
                 ],
                 history: [
                     {
-                        categoryKey: 'coolingCategoryChart',
+                        categoryKey: 'thermalMgmtCategoryChart',
                         fields: [
-                            { id: 'tempHistory', nameKey: '温度历史', checked: true },
-                            { id: 'pressureHistory', nameKey: '压力历史', checked: true },
-                            { id: 'pumpSpeedHistory', nameKey: '水泵转速历史', checked: true }
+                            { id: 'tempTrend', nameKey: '温度趋势', checked: true },
+                            { id: 'coolingEfficiency', nameKey: '冷却效率', checked: true },
+                            { id: 'pressureHistory', nameKey: '压力历史', checked: true }
                         ]
                     }
                 ]
@@ -6671,15 +6850,23 @@
                         categoryKey: 'fireCategoryDetection',
                         fields: [
                             { id: 'smokeDetector', name: '烟感探测器', checked: true },
+                            { id: 'tempDetector', name: '温感探测器', checked: true },
                             { id: 'fireAlarmStatus', name: '火警状态', checked: true }
+                        ]
+                    },
+                    {
+                        categoryKey: 'fireCategoryExtinguisher',
+                        fields: [
+                            { id: 'extinguisherStatus', name: '灭火装置状态', checked: true },
+                            { id: 'extinguisherPressure', name: '灭火剂压力', checked: true }
                         ]
                     },
                     {
                         categoryKey: 'fireCategoryLinkage',
                         fields: [
-                            { id: 'extinguisherStatus', name: '灭火器状态', checked: true },
-                            { id: 'emergencyShutdown', name: '紧急停机', checked: true },
-                            { id: 'alarmDevice', name: '声光报警器', checked: true }
+                            { id: 'exhaustFan', name: '排风扇', checked: true },
+                            { id: 'alarmDevice', name: '声光报警器', checked: true },
+                            { id: 'emergencyShutdown', name: '紧急停机', checked: true }
                         ]
                     }
                 ],
@@ -6687,9 +6874,7 @@
                     {
                         categoryKey: 'fireCategoryChart',
                         fields: [
-                            { id: 'systemStatus', nameKey: 'chartFireSystemStatus', checked: true },
-                            { id: 'gasConcentration', nameKey: 'chartFireGasConcentration', checked: true },
-                            { id: 'alarmHistory', nameKey: 'chartFireAlarmRecords', checked: true }
+                            { id: 'systemStatus', nameKey: 'chartFireSystemStatus', checked: true }
                         ]
                     }
                 ]
@@ -6859,38 +7044,6 @@
                             <text x="10" y="12" font-size="8" fill="var(--text-secondary)">系统状态</text>
                         </svg>
                     `;
-                case 'gasConcentration':
-                    return `
-                        <svg width="100%" height="100%" viewBox="0 0 200 80" style="position: absolute; top: 0; left: 0;">
-                            ${gridDefs}
-                            <rect width="200" height="80" fill="url(#grid)"/>
-                            <path d="M10,60 Q30,55 50,50 T90,45 Q110,40 130,42 T170,45 Q190,50 190,48" 
-                                  fill="none" stroke="#dc2626" stroke-width="2" opacity="0.8"/>
-                            <path d="M10,65 Q30,62 50,58 T90,55 Q110,52 130,54 T170,56 Q190,60 190,58" 
-                                  fill="none" stroke="#6b7280" stroke-width="2" opacity="0.6"/>
-                            <circle cx="50" cy="50" r="2" fill="#dc2626"/>
-                            <circle cx="90" cy="45" r="2" fill="#dc2626"/>
-                            <circle cx="130" cy="42" r="2" fill="#dc2626"/>
-                            <text x="10" y="12" font-size="8" fill="var(--text-secondary)">气体浓度</text>
-                        </svg>
-                    `;
-                case 'alarmHistory':
-                    return `
-                        <svg width="100%" height="100%" viewBox="0 0 200 80" style="position: absolute; top: 0; left: 0;">
-                            ${gridDefs}
-                            <rect width="200" height="80" fill="url(#grid)"/>
-                            <rect x="20" y="45" width="15" height="20" fill="#6b7280" opacity="0.8"/>
-                            <rect x="40" y="50" width="15" height="15" fill="#f59e0b" opacity="0.8"/>
-                            <rect x="60" y="40" width="15" height="25" fill="#dc2626" opacity="0.8"/>
-                            <rect x="80" y="55" width="15" height="10" fill="#6b7280" opacity="0.8"/>
-                            <rect x="100" y="48" width="15" height="17" fill="#f59e0b" opacity="0.8"/>
-                            <rect x="120" y="52" width="15" height="13" fill="#dc2626" opacity="0.8"/>
-                            <rect x="140" y="58" width="15" height="7" fill="#6b7280" opacity="0.8"/>
-                            <rect x="160" y="46" width="15" height="19" fill="#f59e0b" opacity="0.8"/>
-                            <text x="10" y="12" font-size="8" fill="var(--text-secondary)">告警记录</text>
-                        </svg>
-                    `;
-                
                 default:
                     return `
                         <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); font-size: 12px;">
@@ -6913,7 +7066,7 @@
                 'bms': 'bms',
                 'battery': 'battery',
                 'meter': 'meter',
-                'thermal': 'thermal',
+                'thermalMgmt': 'thermalMgmt',
                 'fire': 'fire'
             };
 
@@ -6935,7 +7088,7 @@
                     'bms': 'BMS',
                     'battery': '电池',
                     'meter': '电表',
-                    'thermal': '温控',
+                    'thermalMgmt': '热管理',
                     'fire': '消防'
                 };
                 const componentName = componentNames[component] || component;
@@ -7290,7 +7443,7 @@
                 pcs: 'cabinetTabPCS',
                 bms: 'cabinetTabBMS',
                 meter: 'cabinetTabMeter',
-                thermal: 'cabinetTabThermal',
+                thermalMgmt: 'cabinetTabThermalMgmt',
                 fire: 'cabinetTabFire'
             };
             const key = keyMap[component];
@@ -7314,9 +7467,119 @@
             return true;
         }
 
+        // 当前选中的PCS ID
+        let currentPCSId = 1;
+
+        // PCS模拟数据（多个PCS）
+        const pcsDataList = [
+            { id: 1, online: true, charging: true, power: 58.5 },
+            { id: 2, online: true, charging: false, power: 62.3 },
+            { id: 3, online: false, charging: false, power: 0 }
+        ];
+
+        // 切换PCS
+        function switchPCS(pcsId) {
+            currentPCSId = pcsId;
+            // 重新渲染整个PCS区域以更新选中样式
+            updateComponentData('pcs');
+        }
+
         // 生成PCS专用HTML - 三相数据合并显示
         function generatePCSHTML() {
-            // 生成单个PCS的HTML
+            // 生成PCS选择卡片HTML
+            function generatePCSCardsHTML() {
+                let cardsHtml = `
+                    <div class="metrics-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">PCS 状态概览</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="upgrade-btn" onclick="openUpgradeModal()" title="升级设备" style="padding: 4px 12px; font-size: 12px;">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>升级</span>
+                                    <span class="upgrade-badge">定制</span>
+                                </button>
+                                <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
+                                    <i class="fas fa-cog"></i>
+                                    <span>字段设置</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;">
+                `;
+
+                pcsDataList.forEach((pcs, index) => {
+                    const isActive = pcs.id === currentPCSId;
+                    const statusColor = pcs.online ? '#10b981' : '#ef4444';
+                    const statusBg = pcs.online ? '#10b98120' : '#ef444420';
+                    const statusText = pcs.online ? '在线' : '离线';
+                    const statusIcon = pcs.online ? 'fa-check-circle' : 'fa-times-circle';
+
+                    let runningStatus = '--';
+                    let runningColor = '#94a3b8';
+                    let runningBg = '#94a3b820';
+                    if (pcs.online) {
+                        runningStatus = pcs.charging ? '充电中' : '放电中';
+                        runningColor = pcs.charging ? '#10b981' : '#3b82f6';
+                        runningBg = pcs.charging ? '#10b98120' : '#3b82f620';
+                    }
+
+                    cardsHtml += `
+                        <div class="pcs-card ${isActive ? 'active' : ''}"
+                             data-pcs-id="${pcs.id}"
+                             onclick="switchPCS(${pcs.id})"
+                             style="
+                                background: ${isActive ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05))' : 'var(--bg-secondary)'};
+                                border: 2px solid ${isActive ? '#3b82f6' : 'var(--border-color)'};
+                                border-radius: 12px;
+                                padding: 16px;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                ${isActive ? 'box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); transform: translateY(-2px);' : ''}
+                                ${!pcs.online ? 'opacity: 0.6;' : ''}
+                             ">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="font-size: 16px; font-weight: 700; color: ${isActive ? '#3b82f6' : 'var(--text-primary)'};">PCS${pcs.id}</span>
+                                <span style="display: inline-flex; align-items: center; padding: 3px 10px; background: ${statusBg}; color: ${statusColor}; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                    <i class="fas ${statusIcon}" style="margin-right: 4px; font-size: 10px;"></i>${statusText}
+                                </span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: var(--text-secondary);">运行状态</span>
+                                    <span style="padding: 3px 10px; background: ${runningBg}; color: ${runningColor}; border-radius: 4px; font-size: 12px; font-weight: 600;">${runningStatus}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-color);">
+                                    <span style="font-size: 13px; color: var(--text-secondary);">功率</span>
+                                    <span style="font-size: 20px; font-weight: 700; color: ${isActive ? '#3b82f6' : 'var(--text-primary)'};">${pcs.power.toFixed(1)} <span style="font-size: 12px; font-weight: 400; color: var(--text-secondary);">kW</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                cardsHtml += `
+                        </div>
+                    </div>
+                `;
+                return cardsHtml;
+            }
+
+            // 生成单个PCS的详情HTML
+            function generateSinglePCSDetailHTML(pcsId) {
+                // 模拟数据生成
+                const baseVoltage = 385 + Math.random() * 5;
+                const baseCurrent = 90 + Math.random() * 20;
+                const basePower = 55 + Math.random() * 10;
+                const dcVoltage = 750 + Math.random() * 30;
+                const dcCurrent = 180 + Math.random() * 40;
+
+                return generatePCSDetailContent(pcsId, baseVoltage, baseCurrent, basePower, dcVoltage, dcCurrent);
+            }
+
+            // 将详情生成函数暴露到全局
+            window.generateSinglePCSDetailHTML = generateSinglePCSDetailHTML;
+
+            // 生成单个PCS的HTML（旧函数保留兼容）
             function generateSinglePCSHTML(pcsId) {
                 // 模拟数据生成
                 const baseVoltage = 385 + Math.random() * 5;
@@ -7325,53 +7588,26 @@
                 const dcVoltage = 750 + Math.random() * 30;
                 const dcCurrent = 180 + Math.random() * 40;
 
+                return generatePCSDetailContent(pcsId, baseVoltage, baseCurrent, basePower, dcVoltage, dcCurrent);
+            }
+
+            // PCS详情内容生成（不含通讯状态和运行状态，已在卡片显示）
+            function generatePCSDetailContent(pcsId, baseVoltage, baseCurrent, basePower, dcVoltage, dcCurrent) {
                 return `
-                    <!-- PCS 系统状态 -->
-                    <div class="metrics-section">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">PCS 系统状态</h3>
-                            ${pcsId === 1 ? `
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="upgrade-btn" onclick="openUpgradeModal()" title="升级设备" style="padding: 4px 12px; font-size: 12px;">
-                                        <i class="fas fa-arrow-up"></i>
-                                        <span>升级</span>
-                                        <span class="upgrade-badge">定制</span>
-                                    </button>
-                                    <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
-                                        <i class="fas fa-cog"></i>
-                                        <span>字段设置</span>
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="metrics-grid">
-                            <div class="metric-card">
-                                <div class="metric-label">通讯状态</div>
-                                <div class="metric-value">
-                                    <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #10b98120; color: #10b981; border-radius: 6px; font-size: 14px; font-weight: 500;">
-                                        <i class="fas fa-check-circle" style="margin-right: 6px;"></i>在线
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-label">运行状态</div>
-                                <div class="metric-value">
-                                    <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #3b82f620; color: #3b82f6; border-radius: 6px; font-size: 14px; font-weight: 500;">
-                                        <i class="fas fa-bolt" style="margin-right: 6px;"></i>运行中
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-label">内部温度</div>
-                                <div class="metric-value">${(45 + Math.random() * 20).toFixed(1)} <span class="metric-unit">°C</span></div>
-                                <div style="font-size: 12px; color: #10b981; margin-top: 4px;">温度正常</div>
-                            </div>
-                        </div>
+                    <!-- 详情区域标题 -->
+                    <div style="display: flex; align-items: center; gap: 12px; margin: 24px 0 16px 0; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                        <div style="width: 4px; height: 20px; background: var(--accent-color); border-radius: 2px;"></div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: var(--text-primary);">
+                            PCS${pcsId} 详细参数
+                        </h3>
+                        <span style="font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px;">
+                            实时数据
+                        </span>
                     </div>
 
                     <!-- PCS 直流侧参数 -->
                     <div class="metrics-section">
-                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">PCS 直流侧参数</h3>
+                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">直流侧参数</h3>
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <div class="metric-label">直流电压</div>
@@ -7391,9 +7627,9 @@
                         </div>
                     </div>
 
-                    <!-- PCS交流侧参数 -->
+                    <!-- 交流侧参数 -->
                     <div class="metrics-section">
-                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">PCS交流侧参数</h3>
+                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">交流侧参数</h3>
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                             <!-- 总功率卡片 -->
                             <div class="metric-card" style="padding: 20px;">
@@ -7542,10 +7778,15 @@
                 `;
             }
 
-            let html = '';
+            // 组合卡片概览和详情区域
+            let html = generatePCSCardsHTML();
 
-            // 只生成PCS的数据
-            html += generateSinglePCSHTML(1);
+            // 添加详情容器
+            html += `
+                <div id="pcs-detail-content">
+                    ${generateSinglePCSDetailHTML(currentPCSId)}
+                </div>
+            `;
 
             return html;
         }
@@ -7556,27 +7797,6 @@
 
             // 系统状态 section
             let systemStatusFields = '';
-            if (shouldShowField('bms', 'realtime', 'communicationStatus')) {
-                systemStatusFields += '<div class="metric-card">' +
-                    '<div class="metric-label">通讯状态</div>' +
-                    '<div class="metric-value">' +
-                        '<span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #10b98120; color: #10b981; border-radius: 6px; font-size: 14px; font-weight: 500;">' +
-                            '<i class="fas fa-check-circle" style="margin-right: 6px;"></i>在线' +
-                        '</span>' +
-                    '</div>' +
-                '</div>';
-            }
-            if (shouldShowField('bms', 'realtime', 'runningStatus')) {
-                systemStatusFields += '<div class="metric-card">' +
-                    '<div class="metric-label">运行状态</div>' +
-                    '<div class="metric-value">' +
-                        '<span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #3b82f620; color: #3b82f6; border-radius: 6px; font-size: 14px; font-weight: 500;">' +
-                            '<i class="fas fa-bolt" style="margin-right: 6px;"></i>放电中' +
-                        '</span>' +
-                    '</div>' +
-                    '<div style="font-size: 12px; color: #3b82f6; margin-top: 4px;">功率 141.6kW</div>' +
-                '</div>';
-            }
             if (shouldShowField('bms', 'realtime', 'totalVoltage')) {
                 systemStatusFields += '<div class="metric-card">' +
                     '<div class="metric-label">总压</div>' +
@@ -8377,13 +8597,19 @@
                     <div class="metrics-grid">
                         <div class="metric-card">
                             <div class="metric-label">通讯状态</div>
-                            <div class="metric-value" style="color: #10b981;">正常</div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">在线</div>
+                            <div class="metric-value">
+                                <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #10b98120; color: #10b981; border-radius: 6px; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i>在线
+                                </span>
+                            </div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">运行状态</div>
-                            <div class="metric-value" style="color: #10b981;">运行中</div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">制冷模式</div>
+                            <div class="metric-value">
+                                <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #3b82f620; color: #3b82f6; border-radius: 6px; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-snowflake" style="margin-right: 6px;"></i>制冷中
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -8410,6 +8636,167 @@
                         <div class="metric-card">
                             <div class="metric-label">温差</div>
                             <div class="metric-value">${(parseFloat(inletTemp) - parseFloat(outletTemp)).toFixed(1)} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 压力与流量参数
+            const outletPressure = (2.5 + Math.random() * 0.5).toFixed(2);
+            const inletPressure = (2.2 + Math.random() * 0.3).toFixed(2);
+            const pumpSpeed = (1200 + Math.random() * 300).toFixed(0);
+
+            html += `
+                <div class="metrics-section">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">压力与流量</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">出水压力</div>
+                            <div class="metric-value">${outletPressure} <span class="metric-unit">bar</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">进水压力</div>
+                            <div class="metric-value">${inletPressure} <span class="metric-unit">bar</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">水泵转速</div>
+                            <div class="metric-value">${pumpSpeed} <span class="metric-unit">RPM</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        // 生成热管理HTML（合并温度和液冷机组）
+        function generateThermalMgmtHTML() {
+            let html = '';
+
+            // 系统状态
+            html += `
+                <div class="metrics-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">系统状态</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="upgrade-btn" onclick="openUpgradeModal()" title="升级设备" style="padding: 4px 12px; font-size: 12px;">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>升级</span>
+                                <span class="upgrade-badge">定制</span>
+                            </button>
+                            <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
+                                <i class="fas fa-cog"></i>
+                                <span>字段设置</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">通讯状态</div>
+                            <div class="metric-value">
+                                <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #10b98120; color: #10b981; border-radius: 6px; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i>在线
+                                </span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">运行状态</div>
+                            <div class="metric-value">
+                                <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #3b82f620; color: #3b82f6; border-radius: 6px; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-snowflake" style="margin-right: 6px;"></i>制冷中
+                                </span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">运行模式</div>
+                            <div class="metric-value">
+                                <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #8b5cf620; color: #8b5cf6; border-radius: 6px; font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-cogs" style="margin-right: 6px;"></i>自动
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 温度监测
+            const cabinetTemp = (25 + Math.random() * 5).toFixed(1);
+            const battMaxTemp = (26 + Math.random() * 8).toFixed(1);
+            const battMinTemp = (22 + Math.random() * 5).toFixed(1);
+            const battAvgTemp = ((parseFloat(battMaxTemp) + parseFloat(battMinTemp)) / 2).toFixed(1);
+            const battTempDiff = (parseFloat(battMaxTemp) - parseFloat(battMinTemp)).toFixed(1);
+            const humidity = (45 + Math.random() * 20).toFixed(1);
+
+            html += `
+                <div class="metrics-section">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">温度监测</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">储能柜温度</div>
+                            <div class="metric-value">${cabinetTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">电池包最高温度</div>
+                            <div class="metric-value">${battMaxTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">电池包最低温度</div>
+                            <div class="metric-value">${battMinTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">电池包平均温度</div>
+                            <div class="metric-value">${battAvgTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">电池包温差</div>
+                            <div class="metric-value">${battTempDiff} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: ${parseFloat(battTempDiff) <= 5 ? '#10b981' : '#f59e0b'}; margin-top: 4px;">${parseFloat(battTempDiff) <= 5 ? '正常' : '偏高'}</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">相对湿度</div>
+                            <div class="metric-value">${humidity} <span class="metric-unit">%RH</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 液冷参数
+            const outletWaterTemp = (18 + Math.random() * 2).toFixed(1);
+            const inletWaterTemp = (22 + Math.random() * 2).toFixed(1);
+            const waterTempDiff = (parseFloat(inletWaterTemp) - parseFloat(outletWaterTemp)).toFixed(1);
+            const coolantTemp = (20 + Math.random() * 3).toFixed(1);
+
+            html += `
+                <div class="metrics-section">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary);">液冷参数</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">出水温度</div>
+                            <div class="metric-value">${outletWaterTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">进水温度</div>
+                            <div class="metric-value">${inletWaterTemp} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">水温温差</div>
+                            <div class="metric-value">${waterTempDiff} <span class="metric-unit">°C</span></div>
+                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">冷却液温度</div>
+                            <div class="metric-value">${coolantTemp} <span class="metric-unit">°C</span></div>
                             <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                     </div>
@@ -8547,7 +8934,7 @@
                     pcs: 'PCS',
                     bms: 'BMS',
                     meter: '电表',
-                    thermal: '温度',
+                    thermalMgmt: '热管理',
                     fire: '消防'
                 };
                 const displayName = componentNames[componentName] || componentName;
@@ -8591,6 +8978,96 @@
             `;
         }
 
+        // 生成PCS历史数据HTML（带选择器）
+        function generatePCSHistoryHTML() {
+            let html = `
+                <!-- PCS选择器 -->
+                <div class="metrics-section" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">选择 PCS 查看历史数据</h3>
+                        <button class="settings-btn" onclick="openFieldSettings()" title="字段设置" style="margin-bottom: 0; padding: 4px 12px; font-size: 12px;">
+                            <i class="fas fa-cog"></i>
+                            <span>字段设置</span>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            `;
+
+            pcsDataList.forEach((pcs) => {
+                const isActive = pcs.id === currentPCSId;
+                const statusColor = pcs.online ? '#10b981' : '#ef4444';
+                const statusText = pcs.online ? '在线' : '离线';
+
+                html += `
+                    <div onclick="switchPCSHistory(${pcs.id})"
+                         class="pcs-history-tab"
+                         data-pcs-id="${pcs.id}"
+                         style="
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            padding: 10px 20px;
+                            background: ${isActive ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05))' : 'var(--bg-secondary)'};
+                            border: 2px solid ${isActive ? '#3b82f6' : 'var(--border-color)'};
+                            border-radius: 8px;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            ${isActive ? 'box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);' : ''}
+                            ${!pcs.online ? 'opacity: 0.6;' : ''}
+                         ">
+                        <span style="font-size: 14px; font-weight: 600; color: ${isActive ? '#3b82f6' : 'var(--text-primary)'};">PCS${pcs.id}</span>
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: ${statusColor};"></span>
+                        <span style="font-size: 12px; color: ${statusColor};">${statusText}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+
+                <!-- 当前选中PCS标题 -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                    <div style="width: 4px; height: 20px; background: var(--accent-color); border-radius: 2px;"></div>
+                    <h3 style="font-size: 18px; font-weight: 600; margin: 0; color: var(--text-primary);">
+                        PCS${currentPCSId} 历史数据
+                    </h3>
+                    <span style="font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); padding: 2px 8px; border-radius: 4px;">
+                        趋势分析
+                    </span>
+                </div>
+            `;
+
+            // 添加图表区域
+            const categories = fieldConfigs['pcs']?.history;
+            if (categories) {
+                categories.forEach((category) => {
+                    const visibleFields = category.fields.filter(field => shouldShowField('pcs', 'history', field.id));
+                    if (visibleFields.length === 0) return;
+
+                    const isChartCategory = category.categoryKey && category.categoryKey.includes('CategoryChart');
+                    if (isChartCategory) {
+                        visibleFields.forEach(field => {
+                            html += getHistoryFieldHTML('pcs', field.id);
+                        });
+                    }
+                });
+            }
+
+            return html;
+        }
+
+        // 切换PCS历史数据
+        function switchPCSHistory(pcsId) {
+            currentPCSId = pcsId;
+            // 重新渲染历史数据区域
+            document.getElementById('historyData').innerHTML = generatePCSHistoryHTML();
+            // 重新初始化图表
+            setTimeout(() => {
+                initPCSHistoryCharts();
+            }, 100);
+        }
+
         // 生成组件历史数据HTML的通用函数
         function generateHistoryHTML(componentName) {
             // EMS组件特殊处理：显示开发中信息
@@ -8605,7 +9082,12 @@
                     </div>
                 `;
             }
-            
+
+            // PCS组件特殊处理：添加PCS选择器
+            if (componentName === 'pcs') {
+                return generatePCSHistoryHTML();
+            }
+
             // BMS组件特殊处理：显示三个图表
             if (componentName === 'bms') {
                 return `
@@ -8791,57 +9273,28 @@
                     'socBalance': { title: getTranslation('chartBmsSocBalance'), canvasId: 'bmsBalanceChart' },
                     'tempDistribution': { title: getTranslation('chartBmsTempDistribution'), canvasId: 'bmsTempChart' }
                 },
-                'thermal': {
-                    'tempDistribution': {
-                        title: getTranslation('chartThermalTempHistory'),
-                        canvasId: 'thermalTempChart',
+                'thermalMgmt': {
+                    'tempTrend': {
+                        title: '温度趋势',
+                        canvasId: 'thermalMgmtTempChart',
                         controls: `<input type="date"
-                                          id="thermal-temp-date"
+                                          id="thermalMgmt-temp-date"
                                           value="2025-08-11"
-                                          onchange="changeThermalChartDate('thermal-temp', this.value)"
                                           style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
                     },
-                    'coolingSystem': {
-                        title: getTranslation('chartThermalCoolingSystem'),
-                        canvasId: 'thermalCoolingChart',
+                    'coolingEfficiency': {
+                        title: '冷却效率',
+                        canvasId: 'thermalMgmtCoolingChart',
                         controls: `<input type="date"
-                                          id="thermal-cooling-date"
-                                          value="2025-08-11"
-                                          onchange="changeThermalChartDate('thermal-cooling', this.value)"
-                                          style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
-                    },
-                    'heatMap': {
-                        title: getTranslation('chartThermalFanSpeed'),
-                        canvasId: 'thermalHeatMapChart',
-                        controls: `<input type="date"
-                                          id="thermal-heatmap-date"
-                                          value="2025-08-11"
-                                          onchange="changeThermalChartDate('thermal-heatmap', this.value)"
-                                          style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
-                    }
-                },
-                'cooling': {
-                    'tempHistory': {
-                        title: '温度历史',
-                        canvasId: 'coolingTempChart',
-                        controls: `<input type="date"
-                                          id="cooling-temp-date"
+                                          id="thermalMgmt-cooling-date"
                                           value="2025-08-11"
                                           style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
                     },
                     'pressureHistory': {
                         title: '压力历史',
-                        canvasId: 'coolingPressureChart',
+                        canvasId: 'thermalMgmtPressureChart',
                         controls: `<input type="date"
-                                          id="cooling-pressure-date"
-                                          value="2025-08-11"
-                                          style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
-                    },
-                    'pumpSpeedHistory': {
-                        title: '水泵转速历史',
-                        canvasId: 'coolingPumpChart',
-                        controls: `<input type="date"
-                                          id="cooling-pump-date"
+                                          id="thermalMgmt-pressure-date"
                                           value="2025-08-11"
                                           style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
                     }
@@ -8855,24 +9308,6 @@
                                           value="2025-08-11"
                                           onchange="changeFireChartDate('fire-system', this.value)"
                                           style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
-                    },
-                    'gasConcentration': {
-                        title: getTranslation('chartFireGasConcentration'),
-                        canvasId: 'fireGasChart',
-                        controls: `<input type="date"
-                                          id="fire-gas-date"
-                                          value="2025-08-11"
-                                          onchange="changeFireChartDate('fire-gas', this.value)"
-                                          style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
-                    },
-                    'alarmHistory': {
-                        title: getTranslation('chartFireAlarmRecords'),
-                        canvasId: 'fireAlarmChart',
-                        controls: `<input type="date"
-                                          id="fire-alarm-date"
-                                          value="2025-08-11"
-                                          onchange="changeFireChartDate('fire-alarm', this.value)"
-                                          style="padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px;">`
                     }
                 }
             };
@@ -8884,11 +9319,8 @@
         function getFieldData(component, fieldId) {
             const fieldDataMap = {
                 'overall': {
-                    // 策略调度参数
-                    'currentStrategy': { label: getTranslation('cabinetCurrentStrategy'), value: `<span style="font-size: 16px; color: #2563eb;">${getTranslation('cabinetStrategyPeakValley')}</span>`, status: getTranslation('cabinetStrategyAutoRunning'), statusTranslationKey: 'cabinetStrategyAutoRunning', statusColor: '#666' },
-                    'dispatchCommand': { label: getTranslation('cabinetScheduleCmd'), value: `<span style="font-size: 16px; color: #10b981;">${getTranslation('cabinetCmdCharge')}</span>`, status: `${getTranslation('cabinetTargetPower')}125kW`, statusColor: '#10b981' },
-                    'targetSOC': { label: getTranslation('cabinetTargetSOC'), value: '<span id="overall-target-soc">91.0</span>', unit: '%', status: '', statusColor: '#666' },
-                    'maxPower': { label: getTranslation('cabinetMaxPower'), value: '<span id="overall-max-power">284.0</span>', unit: 'kW', status: '', statusColor: '#666' },
+                    // 调度参数
+                    'dispatchCommand': { label: getTranslation('cabinetScheduleCmd'), value: `<span style="font-size: 16px; color: #10b981;">手动充电</span>`, status: '', statusColor: '#10b981' },
 
                     // 核心运行参数
                     'soc': { label: 'SOC', value: '<span id="overall-soc">73.2</span>', unit: '%', status: '', statusColor: '#666' },
@@ -8962,7 +9394,7 @@
                     'faultCode': { label: getTranslation('bmsFaultCode'), value: '<span id="bms-fault-code">0x0000</span>', unit: '', status: getTranslation('statusNoFault'), statusTranslationKey: 'statusNoFault', statusColor: '#10b981' },
                     'hardwareVersion': { label: getTranslation('bmsHardwareVersion'), value: '<span>V2.1.3</span>', unit: '', status: `${getTranslation('statusSoftwareVersion')}V1.8.5` }
                 },
-                'thermal': {
+                'thermalMgmt': {
                     // 运行状态
                     'cabinetTemp': { label: getTranslation('thermalCabinetTemp'), value: '<span id="cabinetTemp">30.9</span>', unit: '°C', status: getTranslation('statusTempNormal'), statusTranslationKey: 'statusTempNormal', statusColor: '#10b981' },
                     'runningMode': { label: getTranslation('thermalRunningMode'), value: `<span style="font-size: 16px; color: #2563eb;" data-translate="valueCooling">${getTranslation('valueCooling')}</span>`, status: '', statusColor: '#2563eb' },
@@ -8994,11 +9426,17 @@
                     'alarmStatus': { label: getTranslation('thermalAlarmStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueNoAlarm">${getTranslation('valueNoAlarm')}</span>`, status: '', statusColor: '#10b981' }
                 },
                 'fire': {
+                    // 探测系统
                     'smokeDetector': { label: getTranslation('fireSmokeDetector'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueDetectorNormal">${getTranslation('valueDetectorNormal')}</span>`, status: '', statusColor: '#10b981' },
+                    'tempDetector': { label: getTranslation('fireTempDetector'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueDetectorNormal">${getTranslation('valueDetectorNormal')}</span>`, status: '', statusColor: '#10b981' },
                     'fireAlarmStatus': { label: getTranslation('fireAlarmStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueFireAlarmNormal">${getTranslation('valueFireAlarmNormal')}</span>`, status: '', statusColor: '#10b981' },
+                    // 灭火装置
                     'extinguisherStatus': { label: getTranslation('fireExtinguisherStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueExtinguisherReady">${getTranslation('valueExtinguisherReady')}</span>`, status: '', statusColor: '#10b981' },
-                    'emergencyShutdown': { label: getTranslation('fireEmergencyShutdown'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNotTriggered">${getTranslation('statusNotTriggered')}</span>`, status: '', statusColor: '#10b981' },
-                    'alarmDevice': { label: getTranslation('fireAlarmDevice'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueAlarmNormal">${getTranslation('valueAlarmNormal')}</span>`, status: '', statusColor: '#10b981' }
+                    'extinguisherPressure': { label: getTranslation('fireExtinguisherPressure'), value: '<span id="fire-extinguisher-pressure">1.2</span>', unit: 'MPa', status: getTranslation('statusPressureNormal'), statusTranslationKey: 'statusPressureNormal', statusColor: '#10b981' },
+                    // 联动控制
+                    'exhaustFan': { label: getTranslation('fireExhaustFan'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueStandby">${getTranslation('valueStandby')}</span>`, status: '', statusColor: '#10b981' },
+                    'alarmDevice': { label: getTranslation('fireAlarmDevice'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueAlarmNormal">${getTranslation('valueAlarmNormal')}</span>`, status: '', statusColor: '#10b981' },
+                    'emergencyShutdown': { label: getTranslation('fireEmergencyShutdown'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNotTriggered">${getTranslation('statusNotTriggered')}</span>`, status: '', statusColor: '#10b981' }
                 },
                 'meter': {
                     'totalActivePower': { label: getTranslation('meterTotalActivePower'), value: '<span id="meter-total-active-power">184.4</span>', unit: 'kW', status: getTranslation('statusNormal'), statusTranslationKey: 'statusNormal', statusColor: '#10b981' },
