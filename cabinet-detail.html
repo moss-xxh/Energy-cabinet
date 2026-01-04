@@ -6597,16 +6597,11 @@
             overall: {
                 realtime: [
                     {
-                        category: '调度参数',
+                        categoryKey: 'overallCategoryCoreMetrics',
                         fields: [
                             { id: 'dispatchCommand', name: '调度指令', checked: true },
                             { id: 'power', name: '充放电功率', checked: true },
-                            { id: 'soc', name: 'SOC', checked: true }
-                        ]
-                    },
-                    {
-                        category: '核心运行参数',
-                        fields: [
+                            { id: 'soc', name: 'SOC', checked: true },
                             { id: 'soh', name: 'SOH', checked: true },
                             { id: 'temperature', name: '温度', checked: true },
                             { id: 'cycles', name: '循环次数', checked: true },
@@ -6615,7 +6610,7 @@
                         ]
                     },
                     {
-                        category: '运行统计',
+                        categoryKey: 'overallCategoryEnergyStats',
                         fields: [
                             { id: 'todayCharge', name: '今日充电量', checked: true },
                             { id: 'todayDischarge', name: '今日放电量', checked: true },
@@ -9357,8 +9352,8 @@
                     'soh': { label: getTranslation('cabinetChartLegendSOH'), value: '<span id="overall-soh">100.0</span>', unit: '%', status: getTranslation('cabinetSOHGood'), statusTranslationKey: 'cabinetSOHGood', statusColor: '#10b981' },
                     'temperature': { label: getTranslation('cabinetLabelTemp'), value: '<span id="overall-temperature">24.1</span>', unit: '°C', status: getTranslation('cabinetStatusTempNormal'), statusTranslationKey: 'cabinetStatusTempNormal', statusColor: '#10b981' },
                     'power': { label: getTranslation('cabinetLabelPower'), value: '<span id="overall-power">-119.3</span>', unit: 'kW', status: getTranslation('cabinetStatusCharging'), statusTranslationKey: 'cabinetStatusCharging', statusColor: '#10b981' },
-                    'current': { label: getTranslation('cabinetLabelBattCurrent'), value: '<span id="overall-current">179.7</span>', unit: 'A', status: getTranslation('cabinetStatusCurrentNormal'), statusTranslationKey: 'cabinetStatusCurrentNormal', statusColor: '#10b981' },
-                    'voltage': { label: getTranslation('cabinetLabelBattVoltage'), value: '<span id="overall-voltage">740.4</span>', unit: 'V', status: getTranslation('cabinetStatusVoltageStable'), statusTranslationKey: 'cabinetStatusVoltageStable', statusColor: '#10b981' },
+                    'current': { label: getTranslation('cabinetLabelBattCurrent'), value: '<span id="overall-current">179.7</span>', unit: 'A', status: '', statusColor: '#666' },
+                    'voltage': { label: getTranslation('cabinetLabelBattVoltage'), value: '<span id="overall-voltage">740.4</span>', unit: 'V', status: '', statusColor: '#666' },
                     
                     // 运行统计
                     'todayCharge': { label: getTranslation('cabinetLabelTodayCharge'), value: '<span id="overall-today-charge">720.9</span>', unit: 'kWh', status: '', statusColor: '#666' },
@@ -9367,7 +9362,7 @@
                     'totalDischarge': { label: getTranslation('cabinetTotalDischarge'), value: '<span id="overall-total-discharge">946</span>', unit: 'MWh', status: '', statusColor: '#666' },
 
                     // 其他参数
-                    'cycles': { label: getTranslation('cabinetCycleCount'), value: '<span id="overall-cycles">3769</span>', unit: getTranslation('times'), status: getTranslation('cabinetLifeNormal'), statusTranslationKey: 'cabinetLifeNormal', statusColor: '#10b981' }
+                    'cycles': { label: getTranslation('cabinetCycleCount'), value: '<span id="overall-cycles">3769</span>', unit: getTranslation('times'), status: '', statusColor: '#666' }
                 },
                 'ems': {
                     'cpuUsage': { label: getTranslation('emsCpuUsage'), value: '<span id="cpu-usage">35.3</span>', unit: '%', status: getTranslation('statusCpuStatus'), statusTranslationKey: 'statusCpuStatus' },

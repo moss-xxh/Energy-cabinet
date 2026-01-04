@@ -864,6 +864,10 @@ const translations = {
         alarmStatusProcessed: '已处理',
         alarmStatusUnprocessed: '未处理',
 
+        // === Overall Categories ===
+        overallCategoryCoreMetrics: '核心指标',
+        overallCategoryEnergyStats: '电量统计',
+
         // === Meter Real-time Data ===
         meterTotalActivePower: '总有功功率',
         meterTotalReactivePower: '总无功功率',
@@ -3115,6 +3119,10 @@ const translations = {
         alarm3MinAgo: '3 min ago',
         alarmStatusProcessed: 'Processed',
         alarmStatusUnprocessed: 'Unprocessed',
+
+        // === Overall Categories ===
+        overallCategoryCoreMetrics: 'Core Metrics',
+        overallCategoryEnergyStats: 'Energy Statistics',
 
         // === Meter Real-time Data ===
         meterTotalActivePower: 'Total Active Power',
