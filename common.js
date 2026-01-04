@@ -857,6 +857,13 @@ const translations = {
         chartFireSystemStatus: '系统状态历史',
         chartFireAlarmRecords: '告警记录分析',
 
+        // === Alarm Status ===
+        alarmTitle: '告警',
+        alarmBatteryTempHigh: '电池模组3温度偏高 (32.5°C)',
+        alarm3MinAgo: '3分钟前',
+        alarmStatusProcessed: '已处理',
+        alarmStatusUnprocessed: '未处理',
+
         // === Meter Real-time Data ===
         meterTotalActivePower: '总有功功率',
         meterTotalReactivePower: '总无功功率',
@@ -3101,6 +3108,13 @@ const translations = {
         // === Fire History Charts ===
         chartFireSystemStatus: 'System Status History',
         chartFireAlarmRecords: 'Alarm Records Analysis',
+
+        // === Alarm Status ===
+        alarmTitle: 'Alarm',
+        alarmBatteryTempHigh: 'Battery Module 3 Temp High (32.5°C)',
+        alarm3MinAgo: '3 min ago',
+        alarmStatusProcessed: 'Processed',
+        alarmStatusUnprocessed: 'Unprocessed',
 
         // === Meter Real-time Data ===
         meterTotalActivePower: 'Total Active Power',
