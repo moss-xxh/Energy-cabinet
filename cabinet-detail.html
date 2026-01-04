@@ -951,34 +951,34 @@
                 </div>
                 
                 <!-- 告警 -->
-                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100; max-width: 95%;">
-                    <div style="background: rgba(255, 255, 255, 0.95); padding: 12px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 16px; white-space: nowrap; min-width: max-content;">
+                <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 100;">
+                    <div style="background: rgba(255, 255, 255, 0.95); padding: 10px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: row; align-items: center; gap: 12px;">
                         <!-- 告警图标和标题 -->
-                        <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; flex-shrink: 0;">
-                            <div style="width: 32px; height: 32px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 14px; color: #f59e0b;"></i>
+                        <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; flex-shrink: 0;">
+                            <div style="width: 28px; height: 28px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 12px; color: #f59e0b;"></i>
                             </div>
-                            <span style="font-size: 13px; font-weight: 600; color: #1f2937;" data-translate="alarmTitle">告警</span>
+                            <span style="font-size: 12px; font-weight: 600; color: #1f2937;" data-translate="alarmTitle">告警</span>
                         </div>
 
                         <!-- 分隔线 -->
-                        <div style="width: 1px; height: 32px; background: #e5e7eb; flex-shrink: 0;"></div>
+                        <div style="width: 1px; height: 24px; background: #e5e7eb; flex-shrink: 0;"></div>
 
                         <!-- 告警内容 -->
-                        <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-                                <span style="font-size: 12px; color: #78350f; flex-shrink: 0;">•</span>
-                                <span style="font-size: 12px; color: #78350f;" data-translate="alarmBatteryTempHigh">电池模组3温度偏高 (32.5°C)</span>
+                        <div style="flex: 1; display: flex; flex-direction: row; align-items: center; gap: 8px; min-width: 0; overflow: hidden;">
+                            <div style="display: flex; align-items: center; gap: 4px; min-width: 0; flex: 1;">
+                                <span style="font-size: 11px; color: #78350f; flex-shrink: 0;">•</span>
+                                <span style="font-size: 11px; color: #78350f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" data-translate="alarmBatteryTempHigh">电池模组3温度偏高 (32.5°C)</span>
                             </div>
-                            <span style="font-size: 11px; color: #9ca3af; flex-shrink: 0;" data-translate="alarm3MinAgo">3分钟前</span>
+                            <span style="font-size: 10px; color: #9ca3af; flex-shrink: 0;" data-translate="alarm3MinAgo">3分钟前</span>
                         </div>
 
                         <!-- 分隔线 -->
-                        <div style="width: 1px; height: 32px; background: #e5e7eb; flex-shrink: 0;"></div>
+                        <div style="width: 1px; height: 24px; background: #e5e7eb; flex-shrink: 0;"></div>
 
                         <!-- 处理状态 -->
-                        <div id="alarm-status-container" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                            <span id="alarm-status-badge" style="padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; background: #fef2f2; color: #dc2626; cursor: pointer;" onclick="toggleAlarmStatus()" data-translate="alarmStatusUnprocessed">未处理</span>
+                        <div id="alarm-status-container" style="flex-shrink: 0;">
+                            <span id="alarm-status-badge" style="padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 500; background: #fef2f2; color: #dc2626; cursor: pointer;" onclick="toggleAlarmStatus()" data-translate="alarmStatusUnprocessed">未处理</span>
                         </div>
                     </div>
                 </div>
