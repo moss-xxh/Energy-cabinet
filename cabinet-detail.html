@@ -2649,7 +2649,7 @@
                                         <span id="gridFrequency">${(49.95 + Math.random() * 0.1).toFixed(3)}</span>
                                         <span class="metric-unit">Hz</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">频率稳定</div>
+                                    <div id="gridFrequencyStatus" style="font-size: 12px; color: #10b981; margin-top: 4px;">频率正常</div>
                                 </div>
                                 <div class="metric-card">
                                     <div class="metric-label">功率偏差</div>
@@ -2748,7 +2748,7 @@
                                         <span id="pcs-frequency">${(49.95 + Math.random() * 0.1).toFixed(2)}</span>
                                         <span class="metric-unit">Hz</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">频率稳定</div>
+                                    <div id="pcsFrequencyStatus" style="font-size: 12px; color: #10b981; margin-top: 4px;">频率正常</div>
                                 </div>
                             </div>
                         </div>
@@ -3105,7 +3105,6 @@
                                         <span id="battMaxTemp">${(26 + Math.random() * 8).toFixed(1)}</span>
                                         <span class="metric-unit">°C</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常范围</div>
                                 </div>
                                 <div class="metric-card">
                                     <div class="metric-label">电池包最低温度</div>
@@ -3113,7 +3112,6 @@
                                         <span id="battMinTemp">${(22 + Math.random() * 5).toFixed(1)}</span>
                                         <span class="metric-unit">°C</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常范围</div>
                                 </div>
                                 <div class="metric-card">
                                     <div class="metric-label">电池包平均温度</div>
@@ -3121,7 +3119,6 @@
                                         <span id="battAvgTemp">${(24 + Math.random() * 4).toFixed(1)}</span>
                                         <span class="metric-unit">°C</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常范围</div>
                                 </div>
                                 <div class="metric-card">
                                     <div class="metric-label">电池包温差</div>
@@ -3161,7 +3158,6 @@
                                         <span id="coolantTemp">${(18 + Math.random() * 8).toFixed(1)}</span>
                                         <span class="metric-unit">°C</span>
                                     </div>
-                                    <div style="font-size: 12px; color: #10b981; margin-top: 4px;">冷却正常</div>
                                 </div>
                             </div>
                         </div>
@@ -6526,11 +6522,49 @@
                     todayDischargeEl.textContent = (todayDischarge + 0.4).toFixed(1);
                 }
             }
-            
+
+            // 更新频率状态
+            updateFrequencyStatus();
+
             // 更新设备状态
             updateDeviceStatuses();
         }
-        
+
+        // 根据频率值计算状态
+        function getFrequencyStatus(frequency) {
+            const f = parseFloat(frequency);
+            if (f >= 49.5 && f <= 50.5) {
+                return { text: '频率正常', color: '#10b981' };
+            } else if (f >= 49.0 && f < 49.5) {
+                return { text: '频率偏低', color: '#f59e0b' };
+            } else if (f > 50.5 && f <= 51.0) {
+                return { text: '频率偏高', color: '#f59e0b' };
+            } else {
+                return { text: '频率异常', color: '#ef4444' };
+            }
+        }
+
+        // 更新频率状态显示
+        function updateFrequencyStatus() {
+            // 更新电网频率状态
+            const gridFreqEl = document.getElementById('gridFrequency');
+            const gridFreqStatusEl = document.getElementById('gridFrequencyStatus');
+            if (gridFreqEl && gridFreqStatusEl) {
+                const status = getFrequencyStatus(gridFreqEl.textContent);
+                gridFreqStatusEl.textContent = status.text;
+                gridFreqStatusEl.style.color = status.color;
+            }
+
+            // 更新PCS频率状态
+            const pcsFreqEl = document.getElementById('pcs-frequency');
+            const pcsFreqStatusEl = document.getElementById('pcsFrequencyStatus');
+            if (pcsFreqEl && pcsFreqStatusEl) {
+                const status = getFrequencyStatus(pcsFreqEl.textContent);
+                pcsFreqStatusEl.textContent = status.text;
+                pcsFreqStatusEl.style.color = status.color;
+            }
+        }
+
         // 更新设备状态显示
         function updateDeviceStatuses() {
             const devices = [
@@ -7637,17 +7671,14 @@
                             <div class="metric-card">
                                 <div class="metric-label">直流电压</div>
                                 <div class="metric-value">${dcVoltage.toFixed(1)} <span class="metric-unit">V</span></div>
-                                <div style="font-size: 12px; color: #10b981; margin-top: 4px;">电压稳定</div>
                             </div>
                             <div class="metric-card">
                                 <div class="metric-label">直流电流</div>
                                 <div class="metric-value">${dcCurrent.toFixed(1)} <span class="metric-unit">A</span></div>
-                                <div style="font-size: 12px; color: #10b981; margin-top: 4px;">电流正常</div>
                             </div>
                             <div class="metric-card">
                                 <div class="metric-label">直流功率</div>
                                 <div class="metric-value">${(dcVoltage * dcCurrent / 1000).toFixed(1)} <span class="metric-unit">kW</span></div>
-                                <div style="font-size: 12px; color: #10b981; margin-top: 4px;">功率稳定</div>
                             </div>
                         </div>
                     </div>
@@ -7826,21 +7857,18 @@
                 systemStatusFields += '<div class="metric-card">' +
                     '<div class="metric-label">总压</div>' +
                     '<div class="metric-value">766.0 <span class="metric-unit">V</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;">电压正常</div>' +
                 '</div>';
             }
             if (shouldShowField('bms', 'realtime', 'insulationResistancePos')) {
                 systemStatusFields += '<div class="metric-card">' +
                     '<div class="metric-label">绝缘电阻(正)</div>' +
                     '<div class="metric-value">852 <span class="metric-unit">kΩ</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;">绝缘良好</div>' +
                 '</div>';
             }
             if (shouldShowField('bms', 'realtime', 'insulationResistanceNeg')) {
                 systemStatusFields += '<div class="metric-card">' +
                     '<div class="metric-label">绝缘电阻(负)</div>' +
                     '<div class="metric-value">847 <span class="metric-unit">kΩ</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;">绝缘良好</div>' +
                 '</div>';
             }
             if (shouldShowField('bms', 'realtime', 'availableChargeCapacity')) {
@@ -7894,14 +7922,12 @@
                 coreMetricsFields += '<div class="metric-card">' +
                     '<div class="metric-label" data-translate="coreMetricsTotalCurrent">' + getTranslation('coreMetricsTotalCurrent') + '</div>' +
                     '<div class="metric-value">173.0 <span class="metric-unit">A</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;" data-translate="coreMetricsCurrentStable">' + getTranslation('coreMetricsCurrentStable') + '</div>' +
                 '</div>';
             }
             if (shouldShowField('bms', 'realtime', 'power')) {
                 coreMetricsFields += '<div class="metric-card">' +
                     '<div class="metric-label" data-translate="coreMetricsPower">' + getTranslation('coreMetricsPower') + '</div>' +
                     '<div class="metric-value">141.6 <span class="metric-unit">kW</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;" data-translate="coreMetricsPowerStable">' + getTranslation('coreMetricsPowerStable') + '</div>' +
                 '</div>';
             }
             if (shouldShowField('bms', 'realtime', 'soc')) {
@@ -7927,7 +7953,6 @@
                 coreMetricsFields += '<div class="metric-card">' +
                     '<div class="metric-label" data-translate="coreMetricsCycleCount">' + getTranslation('coreMetricsCycleCount') + '</div>' +
                     '<div class="metric-value">2786 <span class="metric-unit" data-translate="unitTimes">' + getTranslation('unitTimes') + '</span></div>' +
-                    '<div style="font-size: 12px; color: #10b981; margin-top: 4px;" data-translate="coreMetricsLifeNormal">' + getTranslation('coreMetricsLifeNormal') + '</div>' +
                 '</div>';
             }
 
@@ -8122,14 +8147,8 @@
                             '<div style="display: flex; align-items: center; gap: 8px;">' +
                                 '<span style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 0;">Pack' + pack.id + '</span>' +
                                 '<i class="fas fa-chevron-right" style="font-size: 12px; color: #3b82f6; opacity: 0.6;"></i>' +
-                            '</div>';
-
-                    // Pack状态字段可见时才显示
-                    if (showPackStatus) {
-                        html += '<span style="padding: 3px 10px; background: #10b98120; color: #10b981; border-radius: 4px; font-size: 13px; font-weight: 500;">' + pack.status + '</span>';
-                    }
-
-                    html += '</div>' +
+                            '</div>' +
+                        '</div>' +
                         '<div>' + packFieldsHtml + '</div>' +
                     '</div>';
                 }
@@ -8651,17 +8670,15 @@
                         <div class="metric-card">
                             <div class="metric-label">出水温度</div>
                             <div class="metric-value">${outletTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">进水温度</div>
                             <div class="metric-value">${inletTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">温差</div>
                             <div class="metric-value">${(parseFloat(inletTemp) - parseFloat(outletTemp)).toFixed(1)} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${Math.abs(parseFloat(inletTemp) - parseFloat(outletTemp)) <= 5 ? '#10b981' : '#f59e0b'}; margin-top: 4px;">${Math.abs(parseFloat(inletTemp) - parseFloat(outletTemp)) <= 5 ? '正常' : '偏高'}</div>
                         </div>
                     </div>
                 </div>
@@ -8679,17 +8696,16 @@
                         <div class="metric-card">
                             <div class="metric-label">出水压力</div>
                             <div class="metric-value">${outletPressure} <span class="metric-unit">bar</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${parseFloat(outletPressure) >= 2.0 && parseFloat(outletPressure) <= 4.0 ? '#10b981' : '#ef4444'}; margin-top: 4px;">${parseFloat(outletPressure) >= 2.0 && parseFloat(outletPressure) <= 4.0 ? '正常' : '异常'}</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">进水压力</div>
                             <div class="metric-value">${inletPressure} <span class="metric-unit">bar</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${parseFloat(inletPressure) >= 2.0 && parseFloat(inletPressure) <= 4.0 ? '#10b981' : '#ef4444'}; margin-top: 4px;">${parseFloat(inletPressure) >= 2.0 && parseFloat(inletPressure) <= 4.0 ? '正常' : '异常'}</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">水泵转速</div>
                             <div class="metric-value">${pumpSpeed} <span class="metric-unit">RPM</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                     </div>
                 </div>
@@ -8768,17 +8784,14 @@
                         <div class="metric-card">
                             <div class="metric-label">电池包最高温度</div>
                             <div class="metric-value">${battMaxTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">电池包最低温度</div>
                             <div class="metric-value">${battMinTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">电池包平均温度</div>
                             <div class="metric-value">${battAvgTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">电池包温差</div>
@@ -8807,22 +8820,19 @@
                         <div class="metric-card">
                             <div class="metric-label">出水温度</div>
                             <div class="metric-value">${outletWaterTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">进水温度</div>
                             <div class="metric-value">${inletWaterTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">水温温差</div>
                             <div class="metric-value">${waterTempDiff} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${parseFloat(waterTempDiff) <= 5 ? '#10b981' : '#f59e0b'}; margin-top: 4px;">${parseFloat(waterTempDiff) <= 5 ? '正常' : '偏高'}</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">冷却液温度</div>
                             <div class="metric-value">${coolantTemp} <span class="metric-unit">°C</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                     </div>
                 </div>
@@ -8840,17 +8850,16 @@
                         <div class="metric-card">
                             <div class="metric-label">出水压力</div>
                             <div class="metric-value">${outletPressure} <span class="metric-unit">bar</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${parseFloat(outletPressure) >= 2.0 && parseFloat(outletPressure) <= 4.0 ? '#10b981' : '#ef4444'}; margin-top: 4px;">${parseFloat(outletPressure) >= 2.0 && parseFloat(outletPressure) <= 4.0 ? '正常' : '异常'}</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">进水压力</div>
                             <div class="metric-value">${inletPressure} <span class="metric-unit">bar</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
+                            <div style="font-size: 12px; color: ${parseFloat(inletPressure) >= 2.0 && parseFloat(inletPressure) <= 4.0 ? '#10b981' : '#ef4444'}; margin-top: 4px;">${parseFloat(inletPressure) >= 2.0 && parseFloat(inletPressure) <= 4.0 ? '正常' : '异常'}</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">水泵转速</div>
                             <div class="metric-value">${pumpSpeed} <span class="metric-unit">RPM</span></div>
-                            <div style="font-size: 12px; color: #10b981; margin-top: 4px;">正常</div>
                         </div>
                     </div>
                 </div>
@@ -9365,7 +9374,7 @@
                     'cycles': { label: getTranslation('cabinetCycleCount'), value: '<span id="overall-cycles">3769</span>', unit: getTranslation('times'), status: '', statusColor: '#666' }
                 },
                 'ems': {
-                    'cpuUsage': { label: getTranslation('emsCpuUsage'), value: '<span id="cpu-usage">35.3</span>', unit: '%', status: getTranslation('statusCpuStatus'), statusTranslationKey: 'statusCpuStatus' },
+                    'cpuUsage': { label: getTranslation('emsCpuUsage'), value: '<span id="cpu-usage">35.3</span>', unit: '%', status: '', statusColor: '#666' },
                     'cpuTemp': { label: getTranslation('emsCpuTemp'), value: '<span id="cpu-temp">45.0</span>', unit: '°C', status: getTranslation('statusTempNormal'), statusTranslationKey: 'statusTempNormal', statusColor: '#10b981' },
                     'memoryUsage': { label: getTranslation('emsMemoryUsage'), value: '<span id="memory-usage">66.5</span>', unit: '%', status: '' },
                     'diskUsage': { label: getTranslation('emsDiskUsage'), value: '<span id="disk-usage">36.8</span>', unit: '%', status: '' },
@@ -9396,28 +9405,28 @@
                     'pcsTemp': { label: getTranslation('pcsTemp'), value: '<span id="pcs-temp">57.3</span>', unit: '°C', status: getTranslation('statusTempNormal'), statusTranslationKey: 'statusTempNormal', statusColor: '#10b981' }
                 },
                 'bms': {
-                    'totalVoltage': { label: getTranslation('bmsTotalVoltage'), value: `<span id="bms-total-voltage">${(720 + Math.random() * 60).toFixed(1)}</span>`, unit: 'V', status: getTranslation('statusVoltageNormal'), statusTranslationKey: 'statusVoltageNormal', statusColor: '#10b981' },
-                    'totalCurrent': { label: getTranslation('bmsTotalCurrent'), value: `<span id="bms-total-current">${(Math.random() > 0.5 ? '+' : '-')}${(120 + Math.random() * 80).toFixed(1)}</span>`, unit: 'A', status: getTranslation('statusCurrentCharging'), statusTranslationKey: 'statusCurrentCharging', statusColor: '#10b981' },
-                    'remainingCapacity': { label: getTranslation('bmsRemainingCapacity'), value: `<span id="bms-remaining-capacity">${(450 + Math.random() * 100).toFixed(1)}</span>`, unit: 'Ah', status: getTranslation('statusCapacityAvailable'), statusTranslationKey: 'statusCapacityAvailable' },
-                    'cycles': { label: getTranslation('bmsCycles'), value: `<span id="bms-cycles">${Math.floor(2800 + Math.random() * 500)}</span>`, unit: getTranslation('unitTimes'), status: getTranslation('statusCycleLifeGood'), statusTranslationKey: 'statusCycleLifeGood' },
-                    'internalResistance': { label: getTranslation('bmsInternalResistance'), value: `<span id="bms-internal-resistance">${(45 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mΩ', status: getTranslation('statusImpedanceNormal'), statusTranslationKey: 'statusImpedanceNormal', statusColor: '#10b981' },
-                    'insulation': { label: getTranslation('bmsInsulation'), value: `<span id="bms-insulation">${(850 + Math.random() * 300).toFixed(0)}</span>`, unit: 'kΩ', status: getTranslation('statusInsulationGood'), statusTranslationKey: 'statusInsulationGood', statusColor: '#10b981' },
-                    'maxCellVoltage': { label: getTranslation('bmsMaxCellVoltage'), value: `<span id="bms-max-cell-voltage">${(3.35 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: `${getTranslation('statusCellNumber')}: ${Math.floor(Math.random() * 280 + 1)}` },
-                    'minCellVoltage': { label: getTranslation('bmsMinCellVoltage'), value: `<span id="bms-min-cell-voltage">${(3.32 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: `${getTranslation('statusCellNumber')}: ${Math.floor(Math.random() * 280 + 1)}` },
-                    'voltageDiff': { label: getTranslation('bmsVoltageDiff'), value: `<span id="bms-voltage-diff">${(5 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mV', status: getTranslation('statusVoltageDiffGood'), statusTranslationKey: 'statusVoltageDiffGood', statusColor: '#10b981' },
-                    'consistency': { label: getTranslation('bmsConsistency'), value: `<span id="bms-consistency">${(96.5 + Math.random() * 2.5).toFixed(1)}</span>`, unit: '%', status: getTranslation('statusConsistencyExcellent'), statusTranslationKey: 'statusConsistencyExcellent', statusColor: '#10b981' },
-                    'abnormalCells': { label: getTranslation('bmsAbnormalCells'), value: '<span id="bms-abnormal-cells">0</span>', unit: getTranslation('unitPiece'), status: getTranslation('statusAllNormal'), statusTranslationKey: 'statusAllNormal', statusColor: '#10b981' },
-                    'balanceStatus': { label: getTranslation('bmsBalanceStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="${Math.random() > 0.7 ? 'valueBalancing' : 'valueNotBalancing'}">${Math.random() > 0.7 ? getTranslation('valueBalancing') : getTranslation('valueNotBalancing')}</span>`, status: getTranslation('statusActiveBalanceStrategy'), statusTranslationKey: 'statusActiveBalanceStrategy' },
-                    'totalCells': { label: getTranslation('bmsTotalCells'), value: '<span>280</span>', unit: getTranslation('unitPiece'), status: getTranslation('statusCellConfiguration'), statusTranslationKey: 'statusCellConfiguration' },
-                    'samplingAccuracy': { label: getTranslation('bmsSamplingAccuracy'), value: `<span id="bms-sampling-accuracy">${(99.5 + Math.random() * 0.4).toFixed(2)}</span>`, unit: '%', status: getTranslation('statusHighPrecisionSampling'), statusTranslationKey: 'statusHighPrecisionSampling', statusColor: '#10b981' },
-                    'overvoltageProtection': { label: getTranslation('bmsOvervoltageProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: `${getTranslation('statusThresholdPrefix')}3.65V` },
-                    'undervoltageProtection': { label: getTranslation('bmsUndervoltageProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: `${getTranslation('statusThresholdPrefix')}2.8V` },
-                    'overcurrentProtection': { label: getTranslation('bmsOvercurrentProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: `${getTranslation('statusThresholdPrefix')}300A` },
-                    'overtemperatureProtection': { label: getTranslation('bmsOvertemperatureProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: `${getTranslation('statusThresholdPrefix')}60°C` },
-                    'shortcircuitProtection': { label: getTranslation('bmsShortcircuitProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: getTranslation('statusNotTriggered'), statusTranslationKey: 'statusNotTriggered', statusColor: '#10b981' },
-                    'communicationStatus': { label: getTranslation('bmsCommunicationStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueOnline">${getTranslation('valueOnline')}</span>`, status: getTranslation('statusCanCommNormal'), statusTranslationKey: 'statusCanCommNormal', statusColor: '#10b981' },
-                    'faultCode': { label: getTranslation('bmsFaultCode'), value: '<span id="bms-fault-code">0x0000</span>', unit: '', status: getTranslation('statusNoFault'), statusTranslationKey: 'statusNoFault', statusColor: '#10b981' },
-                    'hardwareVersion': { label: getTranslation('bmsHardwareVersion'), value: '<span>V2.1.3</span>', unit: '', status: `${getTranslation('statusSoftwareVersion')}V1.8.5` }
+                    'totalVoltage': { label: getTranslation('bmsTotalVoltage'), value: `<span id="bms-total-voltage">${(720 + Math.random() * 60).toFixed(1)}</span>`, unit: 'V', status: '', statusColor: '#666' },
+                    'totalCurrent': { label: getTranslation('bmsTotalCurrent'), value: `<span id="bms-total-current">${(Math.random() > 0.5 ? '+' : '-')}${(120 + Math.random() * 80).toFixed(1)}</span>`, unit: 'A', status: '', statusColor: '#666' },
+                    'remainingCapacity': { label: getTranslation('bmsRemainingCapacity'), value: `<span id="bms-remaining-capacity">${(450 + Math.random() * 100).toFixed(1)}</span>`, unit: 'Ah', status: '', statusColor: '#666' },
+                    'cycles': { label: getTranslation('bmsCycles'), value: `<span id="bms-cycles">${Math.floor(2800 + Math.random() * 500)}</span>`, unit: getTranslation('unitTimes'), status: '', statusColor: '#666' },
+                    'internalResistance': { label: getTranslation('bmsInternalResistance'), value: `<span id="bms-internal-resistance">${(45 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mΩ', status: '', statusColor: '#666' },
+                    'insulation': { label: getTranslation('bmsInsulation'), value: `<span id="bms-insulation">${(850 + Math.random() * 300).toFixed(0)}</span>`, unit: 'kΩ', status: '', statusColor: '#666' },
+                    'maxCellVoltage': { label: getTranslation('bmsMaxCellVoltage'), value: `<span id="bms-max-cell-voltage">${(3.35 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: '', statusColor: '#666' },
+                    'minCellVoltage': { label: getTranslation('bmsMinCellVoltage'), value: `<span id="bms-min-cell-voltage">${(3.32 + Math.random() * 0.02).toFixed(3)}</span>`, unit: 'V', status: '', statusColor: '#666' },
+                    'voltageDiff': { label: getTranslation('bmsVoltageDiff'), value: `<span id="bms-voltage-diff">${(5 + Math.random() * 15).toFixed(1)}</span>`, unit: 'mV', status: '', statusColor: '#666' },
+                    'consistency': { label: getTranslation('bmsConsistency'), value: `<span id="bms-consistency">${(96.5 + Math.random() * 2.5).toFixed(1)}</span>`, unit: '%', status: '', statusColor: '#666' },
+                    'abnormalCells': { label: getTranslation('bmsAbnormalCells'), value: '<span id="bms-abnormal-cells">0</span>', unit: getTranslation('unitPiece'), status: '', statusColor: '#666' },
+                    'balanceStatus': { label: getTranslation('bmsBalanceStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="${Math.random() > 0.7 ? 'valueBalancing' : 'valueNotBalancing'}">${Math.random() > 0.7 ? getTranslation('valueBalancing') : getTranslation('valueNotBalancing')}</span>`, status: '', statusColor: '#666' },
+                    'totalCells': { label: getTranslation('bmsTotalCells'), value: '<span>280</span>', unit: getTranslation('unitPiece'), status: '', statusColor: '#666' },
+                    'samplingAccuracy': { label: getTranslation('bmsSamplingAccuracy'), value: `<span id="bms-sampling-accuracy">${(99.5 + Math.random() * 0.4).toFixed(2)}</span>`, unit: '%', status: '', statusColor: '#666' },
+                    'overvoltageProtection': { label: getTranslation('bmsOvervoltageProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: '', statusColor: '#666' },
+                    'undervoltageProtection': { label: getTranslation('bmsUndervoltageProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: '', statusColor: '#666' },
+                    'overcurrentProtection': { label: getTranslation('bmsOvercurrentProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: '', statusColor: '#666' },
+                    'overtemperatureProtection': { label: getTranslation('bmsOvertemperatureProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: '', statusColor: '#666' },
+                    'shortcircuitProtection': { label: getTranslation('bmsShortcircuitProtection'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="statusNormal">${getTranslation('statusNormal')}</span>`, status: '', statusColor: '#666' },
+                    'communicationStatus': { label: getTranslation('bmsCommunicationStatus'), value: `<span style="font-size: 16px; color: #10b981;" data-translate="valueOnline">${getTranslation('valueOnline')}</span>`, status: '', statusColor: '#666' },
+                    'faultCode': { label: getTranslation('bmsFaultCode'), value: '<span id="bms-fault-code">0x0000</span>', unit: '', status: '', statusColor: '#666' },
+                    'hardwareVersion': { label: getTranslation('bmsHardwareVersion'), value: '<span>V2.1.3</span>', unit: '', status: '', statusColor: '#666' }
                 },
                 'thermalMgmt': {
                     // 运行状态
