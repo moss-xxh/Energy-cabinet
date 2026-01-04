@@ -10034,6 +10034,13 @@
             // 如果值没变，直接返回
             if (oldValue === newValue) return;
 
+            // 这些控制项不需要确认弹窗，直接执行
+            const noConfirmControls = ['balanceControl', 'fanControl', 'tempProtection'];
+            if (noConfirmControls.includes(controlId)) {
+                confirmControlChange(controlId, newValue);
+                return;
+            }
+
             // 显示确认弹窗
             showControlConfirm(controlId, oldValue, newValue, config, selectEl);
         }
