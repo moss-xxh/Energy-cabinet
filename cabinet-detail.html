@@ -956,7 +956,7 @@
                         <!-- 告警图标和标题 -->
                         <div style="display: flex; flex-direction: row; align-items: center; gap: 6px; flex-shrink: 0;">
                             <div style="width: 28px; height: 28px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 12px; color: #f59e0b;"></i>
+                                <i class="fas fa-bell" style="font-size: 12px; color: #f59e0b;"></i>
                             </div>
                             <span style="font-size: 12px; font-weight: 600; color: #1f2937;" data-translate="alarmTitle">告警</span>
                         </div>
@@ -2038,7 +2038,7 @@
 
             // 图标颜色和样式
             const iconColors = {
-                warning: { bg: '#fee2e2', icon: '#ef4444', iconClass: 'fa-exclamation-triangle' },
+                warning: { bg: '#fef3c7', icon: '#f59e0b', iconClass: 'fa-bell' },
                 success: { bg: '#d1fae5', icon: '#10b981', iconClass: 'fa-check-circle' }
             };
             const config = iconColors[type] || iconColors.warning;
@@ -7258,8 +7258,8 @@
             };
             const icons = {
                 success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                warning: 'fa-exclamation-triangle',
+                error: 'fa-wrench',
+                warning: 'fa-bell',
                 info: 'fa-info-circle'
             };
 
@@ -7568,10 +7568,10 @@
 
                 pcsDataList.forEach((pcs, index) => {
                     const isActive = pcs.id === currentPCSId;
-                    const statusColor = pcs.online ? '#10b981' : '#ef4444';
-                    const statusBg = pcs.online ? '#10b98120' : '#ef444420';
+                    const statusColor = pcs.online ? '#10b981' : '#f59e0b';
+                    const statusBg = pcs.online ? '#10b98120' : '#f59e0b20';
                     const statusText = pcs.online ? '在线' : '离线';
-                    const statusIcon = pcs.online ? 'fa-check-circle' : 'fa-times-circle';
+                    const statusIcon = pcs.online ? 'fa-check-circle' : 'fa-minus-circle';
 
                     let runningStatus = '--';
                     let runningColor = '#94a3b8';
@@ -9029,7 +9029,7 @@
 
             pcsDataList.forEach((pcs) => {
                 const isActive = pcs.id === currentPCSId;
-                const statusColor = pcs.online ? '#10b981' : '#ef4444';
+                const statusColor = pcs.online ? '#10b981' : '#f59e0b';
                 const statusText = pcs.online ? '在线' : '离线';
 
                 html += `

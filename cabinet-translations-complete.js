@@ -107,6 +107,34 @@ const cabinetTranslationsZH = {
     cabinetUnitCelsius: '°C',
     cabinetUnitVolt: 'V',
     cabinetUnitAmpere: 'A',
+
+    // 消防系统 - 分类
+    fireCategoryDetection: '探测系统',
+    fireCategoryExtinguisher: '灭火装置',
+    fireCategoryLinkage: '联动控制',
+    fireCategoryChart: '历史图表',
+
+    // 消防系统 - 实时数据字段
+    fireSmokeDetector: '烟感探测器',
+    fireTempDetector: '温感探测器',
+    fireAlarmStatus: '火警状态',
+    fireExtinguisherStatus: '灭火装置状态',
+    fireExtinguisherPressure: '灭火剂压力',
+    fireExhaustFan: '排风扇',
+    fireAlarmDevice: '声光报警器',
+    fireEmergencyShutdown: '紧急停机',
+
+    // 消防系统 - 状态值
+    valueDetectorNormal: '正常',
+    valueFireAlarmNormal: '无告警',
+    valueExtinguisherReady: '待命',
+    valueAlarmNormal: '正常',
+    valueStandby: '待机',
+    statusPressureNormal: '压力正常',
+
+    // 消防系统 - 历史图表
+    chartFireSystemStatus: '系统状态历史',
+    chartFireAlarmRecords: '告警记录分析',
 };
 
 const cabinetTranslationsEN = {
@@ -215,6 +243,34 @@ const cabinetTranslationsEN = {
     cabinetUnitCelsius: '°C',
     cabinetUnitVolt: 'V',
     cabinetUnitAmpere: 'A',
+
+    // Fire System - Categories
+    fireCategoryDetection: 'Detection System',
+    fireCategoryExtinguisher: 'Extinguisher',
+    fireCategoryLinkage: 'Linkage Control',
+    fireCategoryChart: 'History Charts',
+
+    // Fire System - Realtime Data Fields
+    fireSmokeDetector: 'Smoke Detector',
+    fireTempDetector: 'Temperature Detector',
+    fireAlarmStatus: 'Fire Alarm Status',
+    fireExtinguisherStatus: 'Extinguisher Status',
+    fireExtinguisherPressure: 'Extinguisher Pressure',
+    fireExhaustFan: 'Exhaust Fan',
+    fireAlarmDevice: 'Alarm Device',
+    fireEmergencyShutdown: 'Emergency Shutdown',
+
+    // Fire System - Status Values
+    valueDetectorNormal: 'Normal',
+    valueFireAlarmNormal: 'No Alarm',
+    valueExtinguisherReady: 'Ready',
+    valueAlarmNormal: 'Normal',
+    valueStandby: 'Standby',
+    statusPressureNormal: 'Pressure Normal',
+
+    // Fire System - History Charts
+    chartFireSystemStatus: 'System Status History',
+    chartFireAlarmRecords: 'Alarm Records Analysis',
 };
 
 // 老王整理的总计：
