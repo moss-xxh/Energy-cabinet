@@ -631,6 +631,14 @@
                     <input type="text" class="date-input" id="startDate" placeholder="开始时间" readonly>
                     <span class="date-separator">至</span>
                     <input type="text" class="date-input" id="endDate" placeholder="结束时间" readonly>
+                    <span class="date-separator" style="margin-left: 16px;">颗粒度</span>
+                    <select class="date-input" id="intervalSelect" style="width: 120px;">
+                        <option value="5">5分钟</option>
+                        <option value="15">15分钟</option>
+                        <option value="30">30分钟</option>
+                        <option value="60">1小时</option>
+                        <option value="1440">1天</option>
+                    </select>
                 </div>
             </div>
 
@@ -647,7 +655,7 @@
                         <option value="inverter">逆变器</option>
                         <option value="bms">BMS</option>
                         <option value="meter">电表</option>
-                        <option value="temperature">温度</option>
+                        <option value="thermal">热管理</option>
                         <option value="fire">消防</option>
                     </select>
                 </div>
@@ -744,8 +752,7 @@
                     { id: 'todayCharge', label: '今日充电量 (kWh)', checked: false },
                     { id: 'todayDischarge', label: '今日放电量 (kWh)', checked: false },
                     { id: 'totalChargeEnergy', label: '累计充电量 (MWh)', checked: false },
-                    { id: 'totalDischargeEnergy', label: '累计放电量 (MWh)', checked: false },
-                    { id: 'efficiency', label: '系统效率 (%)', checked: false }
+                    { id: 'totalDischargeEnergy', label: '累计放电量 (MWh)', checked: false }
                 ]
             },
             // EMS指标 - 能量管理系统
@@ -909,40 +916,54 @@
                     { id: 'currentUnbalance', label: '电流不平衡度 (%)', checked: false }
                 ]
             },
-            // 温度指标 - 温控系统
-            temperature: {
+            // 热管理指标 - 温控与热管理系统
+            thermal: {
                 '基础信息': [
                     { id: 'timestamp', label: '时间戳', checked: true },
-                    { id: 'tempSystemId', label: '温控系统ID', checked: true },
-                    { id: 'sensorCount', label: '传感器数量', checked: false }
+                    { id: 'thermalSystemId', label: '热管理系统ID', checked: true },
+                    { id: 'thermalStatus', label: '热管理状态', checked: true }
                 ],
                 '环境温度': [
                     { id: 'outdoorTemp', label: '室外温度 (°C)', checked: true },
-                    { id: 'indoorTemp', label: '室内温度 (°C)', checked: true },
-                    { id: 'cabinetInletTemp', label: '柜体进风温度 (°C)', checked: true },
-                    { id: 'cabinetOutletTemp', label: '柜体出风温度 (°C)', checked: true }
+                    { id: 'indoorTemp', label: '柜内温度 (°C)', checked: true },
+                    { id: 'cabinetInletTemp', label: '进风口温度 (°C)', checked: true },
+                    { id: 'cabinetOutletTemp', label: '出风口温度 (°C)', checked: true }
                 ],
-                '电池温度': [
+                '电池热状态': [
                     { id: 'batteryMaxTemp', label: '电池最高温度 (°C)', checked: true },
                     { id: 'batteryMinTemp', label: '电池最低温度 (°C)', checked: true },
                     { id: 'batteryAvgTemp', label: '电池平均温度 (°C)', checked: true },
                     { id: 'batteryTempDiff', label: '电池温差 (°C)', checked: true }
                 ],
-                '空调系统': [
-                    { id: 'acStatus', label: '空调运行状态', checked: false },
-                    { id: 'acSetTemp', label: '空调设定温度 (°C)', checked: false },
-                    { id: 'acPower', label: '空调功率 (kW)', checked: false },
-                    { id: 'fanSpeed', label: '风机转速 (rpm)', checked: false }
+                '制冷系统': [
+                    { id: 'coolingMode', label: '制冷模式', checked: true },
+                    { id: 'coolingStatus', label: '制冷状态', checked: true },
+                    { id: 'coolingPower', label: '制冷功率 (kW)', checked: false },
+                    { id: 'compressorStatus', label: '压缩机状态', checked: false },
+                    { id: 'refrigerantPressure', label: '冷媒压力 (MPa)', checked: false }
                 ],
-                '热管理': [
-                    { id: 'heatingStatus', label: '加热状态', checked: false },
-                    { id: 'coolingStatus', label: '制冷状态', checked: false },
-                    { id: 'heatDissipation', label: '散热功率 (kW)', checked: false }
+                '加热系统': [
+                    { id: 'heatingMode', label: '加热模式', checked: true },
+                    { id: 'heatingStatus', label: '加热状态', checked: true },
+                    { id: 'heatingPower', label: '加热功率 (kW)', checked: false },
+                    { id: 'heaterTemp', label: '加热器温度 (°C)', checked: false }
                 ],
-                '告警阈值': [
-                    { id: 'highTempAlarm', label: '高温告警阈值 (°C)', checked: false },
-                    { id: 'lowTempAlarm', label: '低温告警阈值 (°C)', checked: false },
-                    { id: 'tempDiffAlarm', label: '温差告警阈值 (°C)', checked: false }
+                '风机系统': [
+                    { id: 'fanStatus', label: '风机状态', checked: true },
+                    { id: 'fanSpeed', label: '风机转速 (rpm)', checked: true },
+                    { id: 'fanPower', label: '风机功率 (W)', checked: false },
+                    { id: 'airFlowRate', label: '风量 (m³/h)', checked: false }
+                ],
+                '液冷系统': [
+                    { id: 'liquidCoolingStatus', label: '液冷状态', checked: false },
+                    { id: 'coolantTemp', label: '冷却液温度 (°C)', checked: false },
+                    { id: 'coolantFlowRate', label: '冷却液流量 (L/min)', checked: false },
+                    { id: 'coolantPressure', label: '冷却液压力 (kPa)', checked: false }
+                ],
+                '热管理能耗': [
+                    { id: 'totalThermalPower', label: '热管理总功率 (kW)', checked: false },
+                    { id: 'thermalEnergyConsumption', label: '热管理能耗 (kWh)', checked: false },
+                    { id: 'thermalEfficiency', label: '热管理效率 (%)', checked: false }
                 ]
             },
             // 消防指标 - 消防安全系统
@@ -1207,67 +1228,161 @@
             const data = [];
             const start = new Date(startDate);
             const end = new Date(endDate);
-            const interval = 5 * 60 * 1000; // 5分钟间隔
+
+            // 获取用户选择的颗粒度（分钟）
+            const intervalMinutes = parseInt(document.getElementById('intervalSelect').value) || 5;
+            const interval = intervalMinutes * 60 * 1000; // 转换为毫秒
+
+            // 基础累计值（模拟递增）
+            let baseChargeEnergy = 1250.5;
+            let baseDischargeEnergy = 1180.3;
+            let baseTodayCharge = 0;
+            let baseTodayDischarge = 0;
+            let lastDate = start.toDateString();
 
             for (let time = start.getTime(); time <= end.getTime(); time += interval) {
                 const row = {};
                 const timestamp = new Date(time);
 
+                // 检测日期变化，重置日统计
+                if (timestamp.toDateString() !== lastDate) {
+                    baseTodayCharge = 0;
+                    baseTodayDischarge = 0;
+                    lastDate = timestamp.toDateString();
+                }
+
+                // 模拟运行状态（基于时间段）
+                const hour = timestamp.getHours();
+                let isCharging = (hour >= 0 && hour < 7) || (hour >= 12 && hour < 14); // 谷电时段充电
+                let isDischarging = (hour >= 9 && hour < 12) || (hour >= 18 && hour < 22); // 峰电时段放电
+                const systemStatus = isCharging ? '充电' : (isDischarging ? '放电' : '待机');
+                const operationModes = ['削峰填谷', '需求响应', '备用电源', '自动模式'];
+                const operationMode = operationModes[Math.floor(hour / 6)];
+
+                // 功率计算（基于状态）
+                const basePower = isCharging ? (80 + Math.random() * 40) : (isDischarging ? -(60 + Math.random() * 50) : (Math.random() * 5 - 2.5));
+                const activePower = basePower;
+                const powerFactor = 0.92 + Math.random() * 0.06;
+                const apparentPower = Math.abs(activePower) / powerFactor;
+                const reactivePower = Math.sqrt(apparentPower * apparentPower - activePower * activePower) * (Math.random() > 0.5 ? 1 : -1);
+
+                // 累计能量（基于实际选择的颗粒度计算）
+                if (isCharging) {
+                    const chargeIncrement = Math.abs(activePower) * (intervalMinutes / 60); // 按颗粒度计算能量
+                    baseTodayCharge += chargeIncrement;
+                    baseChargeEnergy += chargeIncrement / 1000;
+                } else if (isDischarging) {
+                    const dischargeIncrement = Math.abs(activePower) * (intervalMinutes / 60);
+                    baseTodayDischarge += dischargeIncrement;
+                    baseDischargeEnergy += dischargeIncrement / 1000;
+                }
+
                 selectedIndicators.forEach(id => {
                     switch(id) {
+                        // ==================== 整机 - 基础信息 ====================
                         case 'timestamp':
-                            row['时间'] = formatDateTime(timestamp);
+                            row['时间戳'] = formatDateTime(timestamp);
                             break;
                         case 'cabinetId':
-                            row['储能柜ID'] = '1';
+                            row['储能柜ID'] = 'ESS-001';
                             break;
-                        case 'status':
-                            row['运行状态'] = Math.random() > 0.5 ? '充电' : '放电';
+                        case 'systemStatus':
+                            row['系统状态'] = systemStatus;
                             break;
+                        case 'operationMode':
+                            row['运行模式'] = operationMode;
+                            break;
+
+                        // ==================== 整机 - 功率数据 ====================
+                        case 'activePower':
+                            row['有功功率 (kW)'] = activePower.toFixed(2);
+                            break;
+                        case 'reactivePower':
+                            row['无功功率 (kVar)'] = reactivePower.toFixed(2);
+                            break;
+                        case 'apparentPower':
+                            row['视在功率 (kVA)'] = apparentPower.toFixed(2);
+                            break;
+                        case 'powerFactor':
+                            row['功率因数'] = powerFactor.toFixed(3);
+                            break;
+
+                        // ==================== 整机 - 电池状态 ====================
                         case 'soc':
-                            row['SOC (%)'] = (Math.random() * 20 + 75).toFixed(1);
+                            // SOC 根据充放电状态变化
+                            const baseSOC = 50 + Math.sin(time / (3600 * 1000) * Math.PI / 12) * 30;
+                            row['SOC (%)'] = Math.max(10, Math.min(95, baseSOC + Math.random() * 5)).toFixed(1);
                             break;
                         case 'soh':
-                            row['SOH (%)'] = (Math.random() * 5 + 95).toFixed(1);
+                            row['SOH (%)'] = (96.5 + Math.random() * 2).toFixed(1);
+                            break;
+                        case 'batteryVoltage':
+                            row['电池电压 (V)'] = (380 + Math.random() * 20).toFixed(1);
+                            break;
+                        case 'batteryCurrent':
+                            const batteryCurrent = isCharging ? (180 + Math.random() * 40) : (isDischarging ? -(150 + Math.random() * 50) : (Math.random() * 5 - 2.5));
+                            row['电池电流 (A)'] = batteryCurrent.toFixed(1);
+                            break;
+                        case 'batteryTemp':
+                            row['电池温度 (°C)'] = (25 + Math.random() * 8).toFixed(1);
+                            break;
+
+                        // ==================== 整机 - 能量统计 ====================
+                        case 'todayCharge':
+                            row['今日充电量 (kWh)'] = baseTodayCharge.toFixed(2);
+                            break;
+                        case 'todayDischarge':
+                            row['今日放电量 (kWh)'] = baseTodayDischarge.toFixed(2);
+                            break;
+                        case 'totalChargeEnergy':
+                            row['累计充电量 (MWh)'] = baseChargeEnergy.toFixed(3);
+                            break;
+                        case 'totalDischargeEnergy':
+                            row['累计放电量 (MWh)'] = baseDischargeEnergy.toFixed(3);
+                            break;
+
+                        // ==================== 兼容旧的指标ID ====================
+                        case 'status':
+                            row['运行状态'] = systemStatus;
                             break;
                         case 'voltage':
-                            row['电压 (V)'] = (Math.random() * 10 + 385).toFixed(1);
+                            row['电压 (V)'] = (380 + Math.random() * 20).toFixed(1);
                             break;
                         case 'current':
                             row['电流 (A)'] = (Math.random() * 50 - 25).toFixed(1);
                             break;
                         case 'power':
-                            row['功率 (kW)'] = (Math.random() * 100 - 50).toFixed(1);
+                            row['功率 (kW)'] = activePower.toFixed(2);
                             break;
                         case 'temperature':
-                            row['温度 (°C)'] = (Math.random() * 5 + 25).toFixed(1);
+                            row['温度 (°C)'] = (25 + Math.random() * 8).toFixed(1);
                             break;
                         case 'dailyCharge':
-                            row['日充电量 (kWh)'] = (Math.random() * 500 + 300).toFixed(1);
+                            row['日充电量 (kWh)'] = baseTodayCharge.toFixed(2);
                             break;
                         case 'dailyDischarge':
-                            row['日放电量 (kWh)'] = (Math.random() * 400 + 200).toFixed(1);
+                            row['日放电量 (kWh)'] = baseTodayDischarge.toFixed(2);
                             break;
                         case 'totalCharge':
-                            row['累计充电量 (MWh)'] = (Math.random() * 1000 + 500).toFixed(1);
+                            row['累计充电量 (MWh)'] = baseChargeEnergy.toFixed(3);
                             break;
                         case 'totalDischarge':
-                            row['累计放电量 (MWh)'] = (Math.random() * 900 + 400).toFixed(1);
+                            row['累计放电量 (MWh)'] = baseDischargeEnergy.toFixed(3);
                             break;
                         case 'packCount':
                             row['Pack数量'] = '4';
                             break;
                         case 'pack1Voltage':
-                            row['Pack1电压 (V)'] = (Math.random() * 10 + 190).toFixed(1);
+                            row['Pack1电压 (V)'] = (95 + Math.random() * 5).toFixed(1);
                             break;
                         case 'pack1Current':
-                            row['Pack1电流 (A)'] = (Math.random() * 10 + 40).toFixed(1);
+                            row['Pack1电流 (A)'] = (40 + Math.random() * 15).toFixed(1);
                             break;
                         case 'pack1Soc':
-                            row['Pack1 SOC (%)'] = (Math.random() * 15 + 85).toFixed(1);
+                            row['Pack1 SOC (%)'] = (80 + Math.random() * 15).toFixed(1);
                             break;
                         case 'pack1Temp':
-                            row['Pack1温度 (°C)'] = (Math.random() * 5 + 28).toFixed(1);
+                            row['Pack1温度 (°C)'] = (26 + Math.random() * 6).toFixed(1);
                             break;
                         case 'alarmCount':
                             row['告警数量'] = Math.floor(Math.random() * 3);
