@@ -3680,8 +3680,142 @@
                 return;
             }
 
-            // 关闭确认弹窗
-            document.querySelector('.modal').remove();
+            // 获取目标版本
+            let targetVersion = LATEST_VERSION;
+            if (upgradeMode.value === 'local' && selectedOTAFile) {
+                // 从本地文件名解析版本号（如果有的话）
+                const versionMatch = selectedOTAFile.name.match(/v?(\d+\.\d+\.\d+)/i);
+                if (versionMatch) {
+                    targetVersion = 'v' + versionMatch[1];
+                }
+            }
+
+            // 检查选中的设备版本关系
+            let sameVersionDevices = [];
+            let downgradeDevices = [];
+            let upgradeDevices = [];
+
+            selectedDevices.forEach(device => {
+                const fullDevice = devices.find(d => d.id == device.id);
+                if (fullDevice) {
+                    const comparison = compareVersion(fullDevice.version, targetVersion);
+                    if (comparison === 0) {
+                        sameVersionDevices.push({ ...device, version: fullDevice.version });
+                    } else if (comparison > 0) {
+                        downgradeDevices.push({ ...device, version: fullDevice.version });
+                    } else {
+                        upgradeDevices.push({ ...device, version: fullDevice.version });
+                    }
+                }
+            });
+
+            // 如果有需要二次确认的情况
+            if (sameVersionDevices.length > 0 || downgradeDevices.length > 0) {
+                showVersionConfirmModal(targetVersion, sameVersionDevices, downgradeDevices, upgradeDevices);
+                return;
+            }
+
+            // 正常升级流程
+            proceedWithUpgrade();
+        }
+
+        // 显示版本确认弹窗
+        function showVersionConfirmModal(targetVersion, sameVersionDevices, downgradeDevices, upgradeDevices) {
+            const existingModal = document.getElementById('versionConfirmModal');
+            if (existingModal) existingModal.remove();
+
+            let warningContent = '';
+
+            if (downgradeDevices.length > 0) {
+                warningContent += `
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 20px;"></i>
+                            <span style="font-size: 16px; font-weight: 600; color: #dc2626;">降级警告</span>
+                        </div>
+                        <p style="font-size: 14px; color: #991b1b; margin: 0 0 12px 0;">以下 ${downgradeDevices.length} 个设备的当前版本高于目标版本，确认降级安装？</p>
+                        <div style="max-height: 120px; overflow-y: auto; background: white; border-radius: 6px; padding: 8px;">
+                            ${downgradeDevices.map(d => `
+                                <div style="padding: 6px 0; font-size: 13px; color: #6b7280; border-bottom: 1px solid #f3f4f6;">
+                                    <span style="font-weight: 500; color: #374151;">${d.code}</span>
+                                    <span style="margin-left: 8px;">${d.version} → ${targetVersion}</span>
+                                    <span style="color: #ef4444; margin-left: 4px;">↓</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (sameVersionDevices.length > 0) {
+                warningContent += `
+                    <div style="background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <i class="fas fa-info-circle" style="color: #eab308; font-size: 20px;"></i>
+                            <span style="font-size: 16px; font-weight: 600; color: #a16207;">重刷确认</span>
+                        </div>
+                        <p style="font-size: 14px; color: #854d0e; margin: 0 0 12px 0;">以下 ${sameVersionDevices.length} 个设备当前已是最新版本，是否重新安装固件？</p>
+                        <div style="max-height: 120px; overflow-y: auto; background: white; border-radius: 6px; padding: 8px;">
+                            ${sameVersionDevices.map(d => `
+                                <div style="padding: 6px 0; font-size: 13px; color: #6b7280; border-bottom: 1px solid #f3f4f6;">
+                                    <span style="font-weight: 500; color: #374151;">${d.code}</span>
+                                    <span style="margin-left: 8px;">${d.version} = ${targetVersion}</span>
+                                    <span style="color: #eab308; margin-left: 4px;">●</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (upgradeDevices.length > 0) {
+                warningContent += `
+                    <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <i class="fas fa-check-circle" style="color: #22c55e; font-size: 20px;"></i>
+                            <span style="font-size: 16px; font-weight: 600; color: #15803d;">正常升级</span>
+                        </div>
+                        <p style="font-size: 14px; color: #166534; margin: 0;">另有 ${upgradeDevices.length} 个设备将正常升级</p>
+                    </div>
+                `;
+            }
+
+            const modal = document.createElement('div');
+            modal.id = 'versionConfirmModal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; width: 90%; max-width: 500px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin: 0;">
+                            <i class="fas fa-exclamation-circle" style="color: #f59e0b; margin-right: 8px;"></i>
+                            版本确认
+                        </h3>
+                        <button onclick="document.getElementById('versionConfirmModal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; padding: 4px; width: 32px; height: 32px; border-radius: 6px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div style="padding: 24px;">
+                        <p style="font-size: 14px; color: #64748b; margin: 0 0 16px 0;">目标版本: <span style="font-weight: 600; color: #1e293b;">${targetVersion}</span></p>
+                        ${warningContent}
+                    </div>
+                    <div style="padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button onclick="document.getElementById('versionConfirmModal').remove()" style="padding: 10px 20px; background: #f1f5f9; color: #64748b; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                            取消
+                        </button>
+                        <button onclick="document.getElementById('versionConfirmModal').remove(); proceedWithUpgrade();" style="padding: 10px 20px; background: ${downgradeDevices.length > 0 ? '#ef4444' : '#f59e0b'}; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                            ${downgradeDevices.length > 0 ? '确认降级安装' : '确认继续'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 执行升级流程
+        function proceedWithUpgrade() {
+            // 关闭升级配置弹窗
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
 
             // 显示右下角进度小弹窗
             showOTAProgressToast();
