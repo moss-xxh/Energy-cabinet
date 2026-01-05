@@ -2830,6 +2830,32 @@
         let sortOrder = 'asc';
         let filteredDevices = [...devices];
 
+        // 显示离线设备提示
+        function showOfflineDeviceToast() {
+            // 创建提示元素
+            let toast = document.getElementById('offlineDeviceToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'offlineDeviceToast';
+                toast.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #fef2f2; color: #dc2626; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; display: flex; align-items: center; gap: 8px; font-size: 14px; border: 1px solid #fecaca; transition: opacity 0.3s ease;';
+                toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> 设备离线，无法升级';
+                document.body.appendChild(toast);
+            }
+
+            // 显示提示
+            toast.style.opacity = '1';
+            toast.style.display = 'flex';
+
+            // 2秒后自动隐藏
+            clearTimeout(window.offlineToastTimer);
+            window.offlineToastTimer = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 2000);
+        }
+
         // 渲染表格
         function renderTable() {
             const tbody = document.getElementById('deviceTableBody');
@@ -2865,8 +2891,8 @@
                     : { text: '离线', color: '#6b7280', bgColor: '#f3f4f6', icon: 'fa-unlink' };
 
                 tr.innerHTML = `
-                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
-                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: ${isOnline ? 'pointer' : 'not-allowed'}; opacity: ${isOnline ? '1' : '0.5'};" ${isOnline ? '' : 'disabled'} title="${isOnline ? '' : '离线设备无法选择'}">
+                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation(); ${isOnline ? '' : 'showOfflineDeviceToast();'}">
+                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: ${isOnline ? 'pointer' : 'not-allowed'}; opacity: ${isOnline ? '1' : '0.4'}; filter: ${isOnline ? 'none' : 'grayscale(100%)'}; pointer-events: ${isOnline ? 'auto' : 'none'};" ${isOnline ? '' : 'disabled'} title="${isOnline ? '' : '设备离线，无法升级'}">
                     </td>
                     <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${device.code}</td>
                     <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${deviceName}</td>
