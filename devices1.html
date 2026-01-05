@@ -2185,8 +2185,13 @@
                         <i class="fas fa-search input-icon"></i>
                         <input type="text" id="searchInput" class="form-input" data-translate-placeholder="devicesSearchPlaceholder" placeholder="搜索设备..." style="width: 250px; height: 40px; padding-left: 40px;">
                     </div>
+                    <select id="deviceStatusFilter" class="form-input" style="width: 130px; height: 40px; padding-left: 12px;">
+                        <option value="">设备状态</option>
+                        <option value="online">在线</option>
+                        <option value="offline">离线</option>
+                    </select>
                     <select id="updateStatusFilter" class="form-input" style="width: 150px; height: 40px; padding-left: 12px;">
-                        <option value="">全部状态</option>
+                        <option value="">更新状态</option>
                         <option value="updatable">可更新</option>
                         <option value="latest">已是最新</option>
                     </select>
@@ -2230,7 +2235,8 @@
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="devicesTableName">设备名称</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="devicesTableSite">站点</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">版本</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">状态</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">设备状态</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">更新状态</th>
                         </tr>
                     </thead>
                     <tbody id="deviceTableBody">
@@ -2808,14 +2814,14 @@
 
         // 艹！模拟设备数据，添加中英文名称支持
         let devices = [
-            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.5.1', soc: 85, soh: 98, power: 125.5, status: 'charging', mode: 'auto-charge' },
-            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.5.1', soc: 92, soh: 97, power: -89.3, status: 'discharging', mode: 'auto-discharge' },
-            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.0', soc: 45, soh: 95, power: 0, status: 'standby', mode: 'standby' },
-            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.0', soc: 78, soh: 96, power: 156.8, status: 'charging', mode: 'standby' },
-            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, brand: '亿纬锂能', model: 'ESS-5000', version: 'v2.4.8', soc: 25, soh: 94, power: 0, status: 'standby', mode: 'standby' },
-            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, brand: '亿纬锂能', model: 'ESS-5000', version: 'v2.4.8', soc: 67, soh: 99, power: 98.7, status: 'charging', mode: 'manual-charge' },
-            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.4.5', soc: 88, soh: 93, power: -112.4, status: 'discharging', mode: 'manual-discharge' },
-            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.1', soc: 55, soh: 92, power: 0, status: 'standby', mode: 'waiting' }
+            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.5.1', soc: 85, soh: 98, power: 125.5, status: 'charging', mode: 'auto-charge', deviceStatus: 'online' },
+            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.5.1', soc: 92, soh: 97, power: -89.3, status: 'discharging', mode: 'auto-discharge', deviceStatus: 'online' },
+            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.0', soc: 45, soh: 95, power: 0, status: 'standby', mode: 'standby', deviceStatus: 'offline' },
+            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.0', soc: 78, soh: 96, power: 156.8, status: 'charging', mode: 'standby', deviceStatus: 'online' },
+            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, brand: '亿纬锂能', model: 'ESS-5000', version: 'v2.4.8', soc: 25, soh: 94, power: 0, status: 'standby', mode: 'standby', deviceStatus: 'online' },
+            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, brand: '亿纬锂能', model: 'ESS-5000', version: 'v2.4.8', soc: 67, soh: 99, power: 98.7, status: 'charging', mode: 'manual-charge', deviceStatus: 'offline' },
+            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, brand: '宁德时代', model: 'ESS-2500', version: 'v2.4.5', soc: 88, soh: 93, power: -112.4, status: 'discharging', mode: 'manual-discharge', deviceStatus: 'online' },
+            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, brand: '比亚迪', model: 'ESS-3000', version: 'v2.5.1', soc: 55, soh: 92, power: 0, status: 'standby', mode: 'waiting', deviceStatus: 'online' }
         ];
 
         let currentPage = 1;
@@ -2852,15 +2858,27 @@
                 // 获取更新状态
                 const updateStatus = getUpdateStatus(device.version);
 
+                // 获取设备在线/离线状态
+                const isOnline = device.deviceStatus === 'online';
+                const deviceStatusInfo = isOnline
+                    ? { text: '在线', color: '#10b981', bgColor: '#f0fdf4', icon: 'fa-circle' }
+                    : { text: '离线', color: '#6b7280', bgColor: '#f3f4f6', icon: 'fa-unlink' };
+
                 tr.innerHTML = `
                     <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
-                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: pointer;">
+                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: ${isOnline ? 'pointer' : 'not-allowed'}; opacity: ${isOnline ? '1' : '0.5'};" ${isOnline ? '' : 'disabled'} title="${isOnline ? '' : '离线设备无法选择'}">
                     </td>
-                    <td style="padding: 12px;">${device.code}</td>
-                    <td style="padding: 12px;">${deviceName}</td>
-                    <td style="padding: 12px;">${siteName || ''}</td>
-                    <td style="padding: 12px;">${device.version || '-'}</td>
+                    <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${device.code}</td>
+                    <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${deviceName}</td>
+                    <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${siteName || ''}</td>
+                    <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${device.version || '-'}</td>
                     <td style="padding: 12px;">
+                        <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: ${deviceStatusInfo.bgColor}; color: ${deviceStatusInfo.color}; border-radius: 12px; font-size: 13px; font-weight: 500;">
+                            <i class="fas ${deviceStatusInfo.icon}" style="font-size: 12px;"></i>
+                            ${deviceStatusInfo.text}
+                        </span>
+                    </td>
+                    <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">
                         <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: ${updateStatus.bgColor}; color: ${updateStatus.color}; border-radius: 12px; font-size: 13px; font-weight: 500;">
                             <i class="fas ${updateStatus.icon}" style="font-size: 12px;"></i>
                             ${updateStatus.text}
@@ -2985,6 +3003,7 @@
         // 搜索设备
         function searchDevices() {
             const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const deviceStatusFilter = document.getElementById('deviceStatusFilter').value;
             const updateStatusFilter = document.getElementById('updateStatusFilter').value;
 
             filteredDevices = devices.filter(device => {
@@ -2995,15 +3014,21 @@
                     device.code.toLowerCase().includes(searchText) ||
                     deviceName.toLowerCase().includes(searchText);
 
-                // 更新状态筛选
-                let matchStatus = true;
-                if (updateStatusFilter === 'updatable') {
-                    matchStatus = compareVersion(device.version, LATEST_VERSION) < 0;
-                } else if (updateStatusFilter === 'latest') {
-                    matchStatus = compareVersion(device.version, LATEST_VERSION) >= 0;
+                // 设备状态筛选（在线/离线）
+                let matchDeviceStatus = true;
+                if (deviceStatusFilter) {
+                    matchDeviceStatus = device.deviceStatus === deviceStatusFilter;
                 }
 
-                return matchSearch && matchStatus;
+                // 更新状态筛选
+                let matchUpdateStatus = true;
+                if (updateStatusFilter === 'updatable') {
+                    matchUpdateStatus = compareVersion(device.version, LATEST_VERSION) < 0;
+                } else if (updateStatusFilter === 'latest') {
+                    matchUpdateStatus = compareVersion(device.version, LATEST_VERSION) >= 0;
+                }
+
+                return matchSearch && matchDeviceStatus && matchUpdateStatus;
             });
 
             // 应用排序
@@ -3027,6 +3052,7 @@
         // 重置搜索
         function resetSearch() {
             document.getElementById('searchInput').value = '';
+            document.getElementById('deviceStatusFilter').value = '';
             document.getElementById('updateStatusFilter').value = '';
             filteredDevices = [...devices];
             currentPage = 1;
