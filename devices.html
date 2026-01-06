@@ -2837,17 +2837,72 @@
 
     <!-- 删除确认弹窗 -->
     <div id="deleteConfirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 12px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-            <div style="text-align: center; margin-bottom: 24px;">
+        <div style="background: var(--bg-primary, white); border-radius: 12px; padding: 24px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            <div style="text-align: center; margin-bottom: 20px;">
                 <div style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: #ef4444;"></i>
                 </div>
                 <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--text-primary);">确认删除</h3>
-                <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">您确定要删除设备 <span id="deleteDeviceName" style="font-weight: 600;"></span> 吗？此操作无法撤销。</p>
+                <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">您确定要删除设备 <span id="deleteDeviceName" style="font-weight: 600;"></span> 吗？</p>
+            </div>
+            <!-- 历史数据选项 -->
+            <div style="background: var(--bg-secondary, #f8fafc); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                <div style="font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 12px;">
+                    <i class="fas fa-database" style="margin-right: 8px; color: #3b82f6;"></i>历史数据处理
+                </div>
+                <label id="deleteOptionKeep" style="display: flex; align-items: center; padding: 10px 12px; background: var(--bg-primary, white); border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer; margin-bottom: 8px;" onclick="updateDeleteOptionStyle('keep')">
+                    <input type="radio" name="deleteDataOption" value="keep" checked style="width: 18px; height: 18px; margin-right: 10px; accent-color: #3b82f6;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 500; color: var(--text-primary);">保留历史数据</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">删除设备后仍可查询历史记录</div>
+                    </div>
+                </label>
+                <label id="deleteOptionClear" style="display: flex; align-items: center; padding: 10px 12px; background: var(--bg-primary, white); border: 1px solid var(--border-color, #e5e7eb); border-radius: 8px; cursor: pointer;" onclick="updateDeleteOptionStyle('clear')">
+                    <input type="radio" name="deleteDataOption" value="clear" style="width: 18px; height: 18px; margin-right: 10px; accent-color: #ef4444;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 500; color: var(--text-primary);">清除历史数据</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">彻底删除设备及所有历史记录</div>
+                    </div>
+                </label>
             </div>
             <div style="display: flex; gap: 12px;">
                 <button class="btn" onclick="closeDeleteConfirm()" style="flex: 1; height: 40px;">取消</button>
-                <button class="btn" onclick="confirmDelete()" style="flex: 1; height: 40px; background: #ef4444; color: white;">删除</button>
+                <button class="btn" onclick="confirmDelete()" style="flex: 1; height: 40px; background: #ef4444; color: white;">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更换站点确认弹窗 -->
+    <div id="changeSiteConfirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1001; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-primary, white); border-radius: 12px; padding: 24px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: #dbeafe; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                    <i class="fas fa-exchange-alt" style="font-size: 24px; color: #3b82f6;"></i>
+                </div>
+                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--text-primary);">设备站点变更</h3>
+                <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">
+                    设备 <span id="changeSiteDeviceName" style="font-weight: 600;"></span>
+                    将从 <span id="changeSiteOldSite" style="font-weight: 600; color: #ef4444;"></span>
+                    移至 <span id="changeSiteNewSite" style="font-weight: 600; color: #10b981;"></span>
+                </p>
+            </div>
+            <!-- 数据分割说明 -->
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: flex-start;">
+                    <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 10px; margin-top: 2px;"></i>
+                    <div style="font-size: 13px; color: #1e40af; line-height: 1.6;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">历史数据自动分割</div>
+                        <div>系统将按设备移动时间自动分割数据：</div>
+                        <div style="margin-top: 6px;">
+                            <div>• 移动前的数据 → 归属原站点</div>
+                            <div>• 移动后的数据 → 归属新站点</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn" onclick="closeChangeSiteConfirm()" style="flex: 1; height: 40px;">取消</button>
+                <button class="btn" onclick="confirmChangeSite()" style="flex: 1; height: 40px; background: #3b82f6; color: white;">确认变更</button>
             </div>
         </div>
     </div>
@@ -3287,6 +3342,8 @@
                 deleteDeviceId = id;
                 // 艹！修复name对象显示问题，使用getDeviceDisplayName获取正确的名称
                 document.getElementById('deleteDeviceName').textContent = getDeviceDisplayName(device);
+                // 重置为默认选项（保留历史数据）
+                document.querySelector('input[name="deleteDataOption"][value="keep"]').checked = true;
                 document.getElementById('deleteConfirmModal').style.display = 'flex';
             }
         }
@@ -3294,12 +3351,20 @@
         // 确认删除
         function confirmDelete() {
             if (deleteDeviceId) {
+                // 获取用户选择的历史数据处理方式
+                const deleteDataOption = document.querySelector('input[name="deleteDataOption"]:checked').value;
+                const keepHistory = deleteDataOption === 'keep';
+
                 devices = devices.filter(d => d.id !== deleteDeviceId);
                 searchDevices();
                 closeDeleteConfirm();
-                
-                // 显示成功提示
-                showToast('设备删除成功！', '#ef4444');
+
+                // 根据选择显示不同的提示
+                if (keepHistory) {
+                    showToast('设备已删除，历史数据已保留', '#10b981');
+                } else {
+                    showToast('设备及历史数据已彻底删除', '#ef4444');
+                }
             }
         }
 
@@ -3307,6 +3372,54 @@
         function closeDeleteConfirm() {
             document.getElementById('deleteConfirmModal').style.display = 'none';
             deleteDeviceId = null;
+        }
+
+        // 更新删除选项的边框样式
+        function updateDeleteOptionStyle(option) {
+            const keepLabel = document.getElementById('deleteOptionKeep');
+            const clearLabel = document.getElementById('deleteOptionClear');
+
+            if (option === 'keep') {
+                keepLabel.style.border = '2px solid #3b82f6';
+                clearLabel.style.border = '1px solid var(--border-color, #e5e7eb)';
+            } else {
+                keepLabel.style.border = '1px solid var(--border-color, #e5e7eb)';
+                clearLabel.style.border = '2px solid #ef4444';
+            }
+        }
+
+        // ========== 更换站点功能 ==========
+        let pendingChangeSite = null; // 保存待确认的站点变更信息
+
+        // 显示更换站点确认弹窗
+        function showChangeSiteConfirm(deviceId, deviceName, oldSite, oldSiteName, newSite, newSiteName) {
+            pendingChangeSite = { deviceId, oldSite, newSite, newSiteName };
+            document.getElementById('changeSiteDeviceName').textContent = deviceName;
+            document.getElementById('changeSiteOldSite').textContent = oldSiteName;
+            document.getElementById('changeSiteNewSite').textContent = newSiteName;
+            document.getElementById('changeSiteConfirmModal').style.display = 'flex';
+        }
+
+        // 确认更换站点
+        function confirmChangeSite() {
+            if (pendingChangeSite) {
+                const { deviceId, newSite, newSiteName } = pendingChangeSite;
+                const device = devices.find(d => d.id === parseInt(deviceId));
+                if (device) {
+                    device.site = newSite;
+                    device.siteName = newSiteName;
+                    searchDevices();
+                    closeChangeSiteConfirm();
+                    closeAddDeviceDrawer();
+                    showToast('设备站点已变更，历史数据已按时间分割', '#10b981');
+                }
+            }
+        }
+
+        // 关闭更换站点确认弹窗
+        function closeChangeSiteConfirm() {
+            document.getElementById('changeSiteConfirmModal').style.display = 'none';
+            pendingChangeSite = null;
         }
 
         // 显示添加设备抽屉
@@ -4106,17 +4219,35 @@
         // 处理添加/编辑设备表单提交
         document.getElementById('addDeviceForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(e.target);
             const deviceId = formData.get('deviceId');
             const code = formData.get('code');
             const name = formData.get('name');
             const site = formData.get('site');
-            
+
             if (deviceId) {
                 // 编辑模式
                 const device = devices.find(d => d.id === parseInt(deviceId));
                 if (device) {
+                    // 检查站点是否发生变更
+                    if (device.site && device.site !== site) {
+                        // 站点发生变更，显示确认弹窗
+                        const oldSiteName = typeof device.siteName === 'object' ? device.siteName[currentLang] : device.siteName;
+                        const newSiteOption = document.querySelector(`select[name="site"] option[value="${site}"]`);
+                        const newSiteName = newSiteOption ? newSiteOption.textContent : site;
+                        const deviceName = getDeviceDisplayName(device);
+
+                        // 先更新设备名称和编码（这些不需要确认）
+                        device.code = code;
+                        device.name = name;
+
+                        // 显示站点变更确认弹窗
+                        showChangeSiteConfirm(deviceId, deviceName, device.site, oldSiteName, site, newSiteName);
+                        return; // 等待用户确认
+                    }
+
+                    // 站点未变更，直接更新
                     device.code = code;
                     device.name = name;
                     device.site = site;
@@ -4128,7 +4259,7 @@
                 }
                 searchDevices();
                 closeAddDeviceDrawer();
-                
+
                 // 显示成功提示
                 showToast('设备编辑成功！', '#10b981');
             } else {
@@ -4136,7 +4267,7 @@
                 // 获取站点名称
                 const siteOption = document.querySelector(`select[name="site"] option[value="${site}"]`);
                 const siteName = siteOption ? siteOption.textContent : '';
-                
+
                 const newDevice = {
                     id: devices.length + 1,
                     code: code,
@@ -4149,11 +4280,11 @@
                     status: 'standby',
                     mode: 'standby'
                 };
-                
+
                 devices.push(newDevice);
                 searchDevices();
                 closeAddDeviceDrawer();
-                
+
                 // 显示成功提示
                 showToast('设备添加成功！', '#10b981');
             }
