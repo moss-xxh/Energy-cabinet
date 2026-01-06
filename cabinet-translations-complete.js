@@ -45,7 +45,7 @@ const cabinetTranslationsZH = {
     cabinetLabelSOC: 'SOC',
     cabinetLabelSOH: 'SOH',
     cabinetLabelTemp: '温度',
-    cabinetLabelPower: '充放电功率',
+    cabinetLabelPower: '实时功率',
     cabinetLabelBattVoltage: '电池电压',
     cabinetLabelBattCurrent: '电池电流',
 
@@ -181,7 +181,7 @@ const cabinetTranslationsEN = {
     cabinetLabelSOC: 'SOC',
     cabinetLabelSOH: 'SOH',
     cabinetLabelTemp: 'Temperature',
-    cabinetLabelPower: 'Charge/Discharge Power',
+    cabinetLabelPower: 'Real-time Power',
     cabinetLabelBattVoltage: 'Battery Voltage',
     cabinetLabelBattCurrent: 'Battery Current',
 

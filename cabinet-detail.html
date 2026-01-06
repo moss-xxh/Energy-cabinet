@@ -1051,7 +1051,7 @@
                                     <div class="metric-status good" id="tempStatus" data-translate="cabinetStatusTempNormal">温度正常</div>
                                 </div>
                                 <div class="metric-card">
-                                    <div class="metric-label" id="cabinetLabelPower" data-translate="cabinetLabelPower">充放电功率</div>
+                                    <div class="metric-label" id="cabinetLabelPower" data-translate="cabinetLabelPower">实时功率</div>
                                     <div class="metric-value">
                                         <span id="power" style="color: #10b981;">+118.2</span>
                                         <span class="metric-unit">kW</span>
@@ -2393,7 +2393,7 @@
                     if (shouldShowField('overall', 'realtime', 'power')) {
                         overallHtml += `
                             <div class="metric-card">
-                                <div class="metric-label">充放电功率</div>
+                                <div class="metric-label">实时功率</div>
                                 <div class="metric-value">
                                     <span id="power">+142.8</span>
                                     <span class="metric-unit">kW</span>
@@ -6634,7 +6634,7 @@
                         categoryKey: 'overallCategoryCoreMetrics',
                         fields: [
                             { id: 'dispatchCommand', name: '调度指令', checked: true },
-                            { id: 'power', name: '充放电功率', checked: true },
+                            { id: 'power', name: '实时功率', checked: true },
                             { id: 'soc', name: 'SOC', checked: true },
                             { id: 'soh', name: 'SOH', checked: true },
                             { id: 'temperature', name: '温度', checked: true },
