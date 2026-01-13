@@ -1161,16 +1161,10 @@
                     <!-- 1. 站点/设备 -->
                     <div class="filter-group has-tree">
                         <label class="filter-label">站点/设备</label>
-                        <input type="text" class="filter-input" id="siteSelection" placeholder="请选择站点或设备" value="全部站点" readonly onclick="toggleTreeView()">
+                        <input type="text" class="filter-input" id="siteSelection" placeholder="请选择站点或设备" value="北京朝阳站" readonly onclick="toggleTreeView()">
                         <div class="tree-view" id="treeView">
                             <div class="tree-node">
-                                <div class="tree-node-item selected" data-value="all" onclick="selectTreeNode(event, 'all', '全部站点')">
-                                    <span class="tree-node-label">全部站点</span>
-                                </div>
-                            </div>
-
-                            <div class="tree-node">
-                                <div class="tree-node-item expandable expanded" data-value="site1" onclick="handleSiteClick(event, 'site1', '北京朝阳站')">
+                                <div class="tree-node-item expandable expanded selected" data-value="site1" onclick="handleSiteClick(event, 'site1', '北京朝阳站')">
                                     <i class="fas fa-caret-right tree-expand-icon" onclick="toggleTreeNode(event)"></i>
                                     <span class="tree-node-label">北京朝阳站</span>
                                 </div>
@@ -1376,14 +1370,22 @@
                     <div class="chart-options">
                         <div class="metric-selector">
                             <label class="metric-label">分析指标：</label>
-                            <div class="radio-group">
+                            <!-- 日报指标：功率、SOC -->
+                            <div class="radio-group" id="dailyMetrics">
                                 <label class="radio-option">
                                     <input type="radio" name="metric" value="power" checked onchange="changeMetric('power')">
                                     <span>功率</span>
                                 </label>
-                                <label class="radio-option" id="socOption">
+                                <label class="radio-option">
                                     <input type="radio" name="metric" value="soc" onchange="changeMetric('soc')">
                                     <span>SOC</span>
+                                </label>
+                            </div>
+                            <!-- 月报/年报指标：电量 -->
+                            <div class="radio-group" id="periodMetrics" style="display: none;">
+                                <label class="radio-option">
+                                    <input type="radio" name="metric" value="energy" onchange="changeMetric('energy')">
+                                    <span>电量</span>
                                 </label>
                             </div>
                         </div>
@@ -1406,8 +1408,8 @@
     <script>
         // 全局查询参数
         let queryParams = {
-            selectedSite: 'all',
-            selectedLabel: '全部站点'
+            selectedSite: 'site1',
+            selectedLabel: '北京朝阳站'
         };
 
         // 分页参数
@@ -1571,23 +1573,32 @@
 
         // 更新指标选项显示/隐藏
         function updateMetricOptions(reportType) {
-            const socOption = document.getElementById('socOption');
-            const powerRadio = document.querySelector('input[name="metric"][value="power"]');
-            const socRadio = document.querySelector('input[name="metric"][value="soc"]');
+            const dailyMetrics = document.getElementById('dailyMetrics');
+            const periodMetrics = document.getElementById('periodMetrics');
             const energySplitSelector = document.getElementById('energySplitSelector');
+            const powerRadio = document.querySelector('input[name="metric"][value="power"]');
+            const energyRadio = document.querySelector('input[name="metric"][value="energy"]');
 
             if (reportType === 'monthly' || reportType === 'yearly') {
-                // 月报和年报：隐藏SOC选项
-                socOption.style.display = 'none';
-                // 如果当前选中的是SOC，自动切换到功率（但不触发数据更新）
-                if (socRadio.checked) {
-                    powerRadio.checked = true;
-                    // 只更新UI显示，不调用changeMetric避免触发图表更新
-                    energySplitSelector.style.display = 'flex';
+                // 月报和年报：显示电量指标
+                dailyMetrics.style.display = 'none';
+                periodMetrics.style.display = 'flex';
+                // 自动选中电量
+                if (energyRadio) {
+                    energyRadio.checked = true;
                 }
+                // 隐藏能量拆分选项（电量图表不需要）
+                energySplitSelector.style.display = 'none';
             } else {
-                // 日报：显示SOC选项
-                socOption.style.display = 'flex';
+                // 日报：显示功率、SOC指标
+                dailyMetrics.style.display = 'flex';
+                periodMetrics.style.display = 'none';
+                // 自动选中功率
+                if (powerRadio) {
+                    powerRadio.checked = true;
+                }
+                // 显示能量拆分选项
+                energySplitSelector.style.display = 'flex';
             }
         }
 
@@ -2140,10 +2151,14 @@
             const energySplitCheckbox = document.getElementById('energySplitCheckbox');
 
             if (metric === 'power') {
-                // 显示能量拆分选项
+                // 功率指标：显示能量拆分选项
                 energySplitSelector.style.display = 'flex';
-            } else {
-                // 隐藏能量拆分选项
+            } else if (metric === 'soc') {
+                // SOC指标：隐藏能量拆分选项
+                energySplitSelector.style.display = 'none';
+                energySplitCheckbox.checked = false;
+            } else if (metric === 'energy') {
+                // 电量指标：隐藏能量拆分选项
                 energySplitSelector.style.display = 'none';
                 energySplitCheckbox.checked = false;
             }
@@ -2378,50 +2393,9 @@
                     };
                 }
             }
-            // 月报模式:柱状图
+            // 月报模式:柱状图（电量指标）
             else if (currentDimension === 'monthly') {
-                if (selectedMetric === 'soc') {
-                    // 生成30天的SOC数据
-                    const labels = [];
-                    const socData = [];
-                    for (let day = 1; day <= 30; day++) {
-                        labels.push(`${day}日`);
-                        socData.push(Math.floor(Math.random() * 30 + 50)); // 50-80%
-                    }
-
-                    option = {
-                        tooltip: {
-                            trigger: 'axis',
-                            axisPointer: { type: 'shadow' }
-                        },
-                        legend: { data: ['SOC (%)'] },
-                        grid: {
-                            left: '3%',
-                            right: '4%',
-                            bottom: '3%',
-                            containLabel: true
-                        },
-                        xAxis: {
-                            type: 'category',
-                            data: labels
-                        },
-                        yAxis: {
-                            type: 'value',
-                            name: 'SOC (%)',
-                            min: 0,
-                            max: 100
-                        },
-                        series: [{
-                            name: 'SOC (%)',
-                            type: 'bar',
-                            barWidth: 20,
-                            data: socData,
-                            itemStyle: {
-                                color: 'rgba(59, 130, 246, 0.8)'
-                            }
-                        }]
-                    };
-                } else if (isEnergySplit) {
+                if (isEnergySplit) {
                     // 能量拆分:显示充电来源(光伏+市电)和放电
                     const monthlyData = generateMonthlyData();
                     const splitData = generateMonthlySplitData();
@@ -2533,49 +2507,9 @@
                     };
                 }
             }
-            // 年报模式:柱状图
+            // 年报模式:柱状图（电量指标）
             else if (currentDimension === 'yearly') {
-                if (selectedMetric === 'soc') {
-                    // 生成12个月的SOC数据
-                    const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-                    const socData = [];
-                    for (let month = 1; month <= 12; month++) {
-                        socData.push(Math.floor(Math.random() * 30 + 50)); // 50-80%
-                    }
-
-                    option = {
-                        tooltip: {
-                            trigger: 'axis',
-                            axisPointer: { type: 'shadow' }
-                        },
-                        legend: { data: ['SOC (%)'] },
-                        grid: {
-                            left: '3%',
-                            right: '4%',
-                            bottom: '3%',
-                            containLabel: true
-                        },
-                        xAxis: {
-                            type: 'category',
-                            data: labels
-                        },
-                        yAxis: {
-                            type: 'value',
-                            name: 'SOC (%)',
-                            min: 0,
-                            max: 100
-                        },
-                        series: [{
-                            name: 'SOC (%)',
-                            type: 'bar',
-                            barWidth: 30,
-                            data: socData,
-                            itemStyle: {
-                                color: 'rgba(59, 130, 246, 0.8)'
-                            }
-                        }]
-                    };
-                } else if (isEnergySplit) {
+                if (isEnergySplit) {
                     // 能量拆分:显示充电来源(光伏+市电)和放电
                     const yearlyData = generateYearlyData();
                     const splitData = generateYearlySplitData();

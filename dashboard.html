@@ -583,8 +583,12 @@
             color: #6b7280;
         }
 
-        .legend-icon-alarm {
+        .legend-icon-fault {
             color: #ef4444;
+        }
+
+        .legend-icon-alarm {
+            color: #f59e0b;
         }
 
         .legend-text {
@@ -1054,6 +1058,14 @@
                 <!-- 地图图例 -->
                 <div class="map-legend">
                     <div class="legend-item">
+                        <i class="fas fa-wrench legend-icon-fa legend-icon-fault"></i>
+                        <span class="legend-text" data-translate="dashboardLegendFault">故障</span>
+                    </div>
+                    <div class="legend-item">
+                        <i class="fas fa-exclamation-triangle legend-icon-fa legend-icon-alarm"></i>
+                        <span class="legend-text" data-translate="dashboardLegendAlarm">告警</span>
+                    </div>
+                    <div class="legend-item">
                         <svg class="legend-icon-svg legend-icon-offline" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 24C8 15.1634 15.1634 8 24 8C32.8366 8 40 15.1634 40 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M33 24C33 19.0294 28.9706 15 24 15C19.0294 15 15 19.0294 15 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1061,10 +1073,6 @@
                             <path d="M6 42L42 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                         </svg>
                         <span class="legend-text" data-translate="dashboardLegendOffline">离线</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="fas fa-tools legend-icon-fa legend-icon-alarm"></i>
-                        <span class="legend-text" data-translate="dashboardLegendAlarm">告警</span>
                     </div>
                 </div>
             </div>
@@ -3283,12 +3291,13 @@
                 capacity: '1850kWh',
                 cabinets: 7,
                 devicesOffline: 0,
-                devicesAlarm: 1,
+                devicesFault: 1,             // 未处理故障数
+                devicesAlarm: 1,             // 未处理告警数
                 status: 'online',
-                dailyCharge: '98.2kWh',      // 总充电486.3的20.2% (按容量比例)
-                dailyDischarge: '75.2kWh',   // 总放电372.5的20.2%
-                revenue: '¥319',             // 今日收益
-                yesterdayRevenue: '¥287'     // 昨日收益
+                dailyCharge: '98.2kWh',
+                dailyDischarge: '75.2kWh',
+                revenue: '¥319',
+                yesterdayRevenue: '¥287'
             },
             {
                 id: 'site2',
@@ -3298,12 +3307,13 @@
                 capacity: '2650kWh',
                 cabinets: 11,
                 devicesOffline: 1,
-                devicesAlarm: 0,
+                devicesFault: 0,
+                devicesAlarm: 2,
                 status: 'online',
-                dailyCharge: '140.5kWh',     // 总充电486.3的28.9% (按容量比例)
-                dailyDischarge: '107.6kWh',  // 总放电372.5的28.9%
-                revenue: '¥457',             // 今日收益
-                yesterdayRevenue: '¥425'     // 昨日收益
+                dailyCharge: '140.5kWh',
+                dailyDischarge: '107.6kWh',
+                revenue: '¥457',
+                yesterdayRevenue: '¥425'
             },
             {
                 id: 'site3',
@@ -3313,12 +3323,13 @@
                 capacity: '1720kWh',
                 cabinets: 8,
                 devicesOffline: 0,
+                devicesFault: 0,
                 devicesAlarm: 0,
                 status: 'online',
-                dailyCharge: '91.0kWh',      // 总充电486.3的18.7% (按容量比例)
-                dailyDischarge: '69.7kWh',   // 总放电372.5的18.7%
-                revenue: '¥295',             // 今日收益
-                yesterdayRevenue: '¥312'     // 昨日收益
+                dailyCharge: '91.0kWh',
+                dailyDischarge: '69.7kWh',
+                revenue: '¥295',
+                yesterdayRevenue: '¥312'
             },
             {
                 id: 'site4',
@@ -3328,12 +3339,13 @@
                 capacity: '1580kWh',
                 cabinets: 6,
                 devicesOffline: 0,
+                devicesFault: 2,
                 devicesAlarm: 1,
                 status: 'online',
-                dailyCharge: '83.6kWh',      // 总充电486.3的17.2% (按容量比例)
-                dailyDischarge: '64.1kWh',   // 总放电372.5的17.2%
-                revenue: '¥272',             // 今日收益
-                yesterdayRevenue: '¥298'     // 昨日收益
+                dailyCharge: '83.6kWh',
+                dailyDischarge: '64.1kWh',
+                revenue: '¥272',
+                yesterdayRevenue: '¥298'
             },
             {
                 id: 'site5',
@@ -3343,12 +3355,13 @@
                 capacity: '1380kWh',
                 cabinets: 6,
                 devicesOffline: 0,
+                devicesFault: 0,
                 devicesAlarm: 0,
                 status: 'online',
-                dailyCharge: '73.0kWh',      // 总充电486.3的15.0% (按容量比例)
-                dailyDischarge: '55.9kWh',   // 总放电372.5的15.0%
-                revenue: '¥237',             // 今日收益
-                yesterdayRevenue: '¥258'     // 昨日收益
+                dailyCharge: '73.0kWh',
+                dailyDischarge: '55.9kWh',
+                revenue: '¥237',
+                yesterdayRevenue: '¥258'
             }
         ];
 
@@ -3435,53 +3448,87 @@
         function addStationMarkers() {
             stationsData.forEach(station => {
                 // 创建储能柜自定义图标
-                // 确定角标图标和显示
-                let badgeHtml = '';
-                if (station.devicesAlarm > 0) {
-                    // 有告警，显示维修图标
-                    badgeHtml = `
+                // 生成多个状态徽章（按优先级：故障、告警、离线）
+                let badges = [];
+                let badgeIndex = 0;
+
+                // 故障徽章（红色，扳手图标）- 最左侧
+                if (station.devicesFault > 0) {
+                    badges.push(`
                         <div style="
                             position: absolute;
-                            top: -6px;
-                            right: -6px;
-                            width: 18px;
-                            height: 18px;
+                            top: -10px;
+                            left: ${-10 + badgeIndex * 22}px;
+                            width: 24px;
+                            height: 24px;
                             background: #ef4444;
                             border: 2px solid white;
                             border-radius: 50%;
-                            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.6);
+                            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.7);
                             display: flex;
                             align-items: center;
                             justify-content: center;
+                            z-index: ${10 - badgeIndex};
                         ">
-                            <i class="fas fa-tools" style="color: white; font-size: 8px;"></i>
+                            <i class="fas fa-wrench" style="color: white; font-size: 11px;"></i>
                         </div>
-                    `;
-                } else if (station.devicesOffline > 0) {
-                    // 有离线，显示WiFi断开图标
-                    badgeHtml = `
+                    `);
+                    badgeIndex++;
+                }
+
+                // 告警徽章（黄色，警告图标）- 中间
+                if (station.devicesAlarm > 0) {
+                    badges.push(`
                         <div style="
                             position: absolute;
-                            top: -6px;
-                            right: -6px;
-                            width: 18px;
-                            height: 18px;
+                            top: -10px;
+                            left: ${-10 + badgeIndex * 22}px;
+                            width: 24px;
+                            height: 24px;
+                            background: #f59e0b;
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.7);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: ${10 - badgeIndex};
+                        ">
+                            <i class="fas fa-exclamation-triangle" style="color: white; font-size: 11px;"></i>
+                        </div>
+                    `);
+                    badgeIndex++;
+                }
+
+                // 离线徽章（灰色，WiFi断开图标）- 最右侧
+                if (station.devicesOffline > 0) {
+                    badges.push(`
+                        <div style="
+                            position: absolute;
+                            top: -10px;
+                            left: ${-10 + badgeIndex * 22}px;
+                            width: 24px;
+                            height: 24px;
                             background: #6b7280;
                             border: 2px solid white;
                             border-radius: 50%;
-                            box-shadow: 0 2px 6px rgba(107, 114, 128, 0.6);
+                            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.7);
                             display: flex;
                             align-items: center;
                             justify-content: center;
+                            z-index: ${10 - badgeIndex};
                         ">
-                            <svg style="width: 10px; height: 10px; color: white;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg style="width: 14px; height: 14px; color: white;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8 24C8 15.1634 15.1634 8 24 8C32.8366 8 40 15.1634 40 24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
                                 <path d="M15 24C15 19.0294 19.0294 15 24 15C28.9706 15 33 19.0294 33 24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
                                 <path d="M6 42L42 6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
                             </svg>
                         </div>
-                    `;
+                    `);
+                    badgeIndex++;
                 }
+
+                const badgeHtml = badges.join('');
 
                 const customIcon = L.divIcon({
                     className: 'custom-marker',
@@ -3560,7 +3607,7 @@
                     <div class="station-info-divider"></div>
                     <div class="station-info-section">
                         <div class="station-info-section-title">${getText('dashboardDeviceStatus', '设备状态')}</div>
-                        <div class="station-devices-grid">
+                        <div class="station-devices-grid" style="grid-template-columns: repeat(4, 1fr);">
                             <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'all')">
                                 <span class="device-stat-label">${getText('dashboardDeviceTotal', '总数')}</span>
                                 <span class="device-stat-value" style="color: #3b82f6;">${station.cabinets}</span>
@@ -3569,9 +3616,13 @@
                                 <span class="device-stat-label">${getText('dashboardDeviceOffline', '离线')}</span>
                                 <span class="device-stat-value" style="color: #6b7280;">${station.devicesOffline}</span>
                             </div>
+                            <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'fault')">
+                                <span class="device-stat-label">${getText('dashboardDeviceFault', '故障')}</span>
+                                <span class="device-stat-value" style="color: #ef4444;">${station.devicesFault}</span>
+                            </div>
                             <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'alarm')">
                                 <span class="device-stat-label">${getText('dashboardDeviceAlarm', '告警')}</span>
-                                <span class="device-stat-value" style="color: #ef4444;">${station.devicesAlarm}</span>
+                                <span class="device-stat-value" style="color: #f59e0b;">${station.devicesAlarm}</span>
                             </div>
                         </div>
                     </div>

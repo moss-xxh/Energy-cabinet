@@ -168,10 +168,12 @@ const translations = {
         dashboardDeviceStatus: '设备状态',
         dashboardDeviceTotal: '总数',
         dashboardDeviceOffline: '离线',
+        dashboardDeviceFault: '故障',
         dashboardDeviceAlarm: '告警',
 
         // Dashboard 地图图例
         dashboardLegendOffline: '离线',
+        dashboardLegendFault: '故障',
         dashboardLegendAlarm: '告警',
 
         // Dashboard 能量图设置翻译
@@ -1828,7 +1830,7 @@ const translations = {
         personnelLabelAccount: '账号',
         personnelPlaceholderEmail: '请输入邮箱作为账号',
         personnelLabelRole: '角色',
-        personnelLabelDevicePermission: '设备权限',
+        personnelLabelSitePermission: '站点权限',
         personnelLabelStatus: '状态',
         personnelBtnCancel: '取消',
         personnelBtnSave: '保存',
@@ -2701,10 +2703,12 @@ const translations = {
         dashboardDeviceStatus: 'Device Status',
         dashboardDeviceTotal: 'Total',
         dashboardDeviceOffline: 'Offline',
+        dashboardDeviceFault: 'Fault',
         dashboardDeviceAlarm: 'Alarm',
 
         // Dashboard Map Legend
         dashboardLegendOffline: 'Offline',
+        dashboardLegendFault: 'Fault',
         dashboardLegendAlarm: 'Alarm',
 
         // Dashboard Energy Flow Settings Translations
@@ -4361,7 +4365,7 @@ const translations = {
         personnelLabelAccount: 'Account',
         personnelPlaceholderEmail: 'Please enter email as account',
         personnelLabelRole: 'Role',
-        personnelLabelDevicePermission: 'Device Permission',
+        personnelLabelSitePermission: 'Site Permission',
         personnelLabelStatus: 'Status',
         personnelBtnCancel: 'Cancel',
         personnelBtnSave: 'Save',

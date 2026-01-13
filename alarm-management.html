@@ -2006,16 +2006,42 @@
                 return;
             }
 
+            let successCount = 0;  // 成功解决的数量
+            let skippedCount = 0;  // 已解决跳过的数量
+            let failedCount = 0;   // 失败的数量
+
             checkboxes.forEach(checkbox => {
                 const alarm = alarmData.find(a => a.id === checkbox.value);
-                if (alarm && alarm.status !== 'resolved') {
+                if (!alarm) {
+                    // 找不到记录，算失败
+                    failedCount++;
+                } else if (alarm.status === 'resolved') {
+                    // 已经是已解决状态，跳过
+                    skippedCount++;
+                } else {
+                    // 解决成功
                     alarm.status = 'resolved';
+                    successCount++;
                 }
             });
 
             // 重新应用筛选以更新当前 tab
             applyFilters(tabType);
-            showNotification(`已批量解决 ${checkboxes.length} 条消息`, 'success');
+
+            // 根据结果显示不同提示（大厂简洁风格）
+            if (successCount === 0 && failedCount === 0) {
+                // 全部已解决，无需处理
+                showNotification('所选消息均已处理', 'info');
+            } else if (failedCount === 0) {
+                // 无失败，只显示成功数
+                showNotification(`已解决 ${successCount} 条`, 'success');
+            } else if (successCount === 0) {
+                // 全部失败
+                showNotification(`操作失败，${failedCount} 条处理异常`, 'error');
+            } else {
+                // 有成功有失败
+                showNotification(`成功 ${successCount} 条，失败 ${failedCount} 条`, 'warning');
+            }
         }
 
         // 全选/取消全选 - 支持独立的 tab
@@ -2204,18 +2230,44 @@
                 return;
             }
 
-            let count = 0;
+            let successCount = 0;  // 成功标记的数量
+            let skippedCount = 0;  // 已读跳过的数量
+            let failedCount = 0;   // 失败的数量
+
             checkboxes.forEach(checkbox => {
                 const alarm = alarmData.find(a => a.id === checkbox.value);
-                // 只处理通知类型且未解决的消息
-                if (alarm && alarm.level === 'notice' && alarm.status !== 'resolved') {
+                if (!alarm) {
+                    // 找不到记录，算失败
+                    failedCount++;
+                } else if (alarm.level !== 'notice') {
+                    // 不是通知类型，算失败
+                    failedCount++;
+                } else if (alarm.status === 'resolved') {
+                    // 已经是已读状态，跳过
+                    skippedCount++;
+                } else {
+                    // 标记成功
                     alarm.status = 'resolved';
-                    count++;
+                    successCount++;
                 }
             });
 
             applyFilters(tabType);
-            showNotification(`已标记 ${count} 条通知为已读`, 'success');
+
+            // 根据结果显示不同提示（大厂简洁风格）
+            if (successCount === 0 && failedCount === 0) {
+                // 全部已读，无需处理
+                showNotification('所选通知均已读', 'info');
+            } else if (failedCount === 0) {
+                // 无失败，只显示成功数
+                showNotification(`已标记 ${successCount} 条为已读`, 'success');
+            } else if (successCount === 0) {
+                // 全部失败
+                showNotification(`操作失败，${failedCount} 条处理异常`, 'error');
+            } else {
+                // 有成功有失败
+                showNotification(`成功 ${successCount} 条，失败 ${failedCount} 条`, 'warning');
+            }
         }
 
         // 导出告警

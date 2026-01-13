@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数据导出 - 储能柜管理系统</title>
+    <title id="exportPageTitle">数据导出 - 储能柜管理系统</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="common.js"></script>
     <style>
         /* ==================== 全局重置 ==================== */
         * {
@@ -609,11 +610,11 @@
     <div class="top-bar">
         <div class="page-title">
             <i class="fas fa-download"></i>
-            <span>数据导出</span>
+            <span id="exportTitle">数据导出</span>
         </div>
         <button class="back-btn" onclick="goBack()">
             <i class="fas fa-arrow-left"></i>
-            <span>返回</span>
+            <span id="exportBtnBack">返回</span>
         </button>
     </div>
 
@@ -625,19 +626,19 @@
             <div class="time-section">
                 <div class="section-title">
                     <i class="fas fa-calendar-alt"></i>
-                    <span>选择时间范围</span>
+                    <span id="exportSelectTimeRange">选择时间范围</span>
                 </div>
                 <div class="date-range-selector">
-                    <input type="text" class="date-input" id="startDate" placeholder="开始时间" readonly>
+                    <input type="text" class="date-input" id="startDate" data-translate-placeholder="exportStartTime" placeholder="开始时间" readonly>
                     <span class="date-separator">至</span>
-                    <input type="text" class="date-input" id="endDate" placeholder="结束时间" readonly>
-                    <span class="date-separator" style="margin-left: 16px;">颗粒度</span>
+                    <input type="text" class="date-input" id="endDate" data-translate-placeholder="exportEndTime" placeholder="结束时间" readonly>
+                    <span class="date-separator" style="margin-left: 16px;" id="exportGranularity">颗粒度</span>
                     <select class="date-input" id="intervalSelect" style="width: 120px;">
-                        <option value="5">5分钟</option>
-                        <option value="15">15分钟</option>
-                        <option value="30">30分钟</option>
-                        <option value="60">1小时</option>
-                        <option value="1440">1天</option>
+                        <option value="5" data-translate="exportGranularity5min">5分钟</option>
+                        <option value="15" data-translate="exportGranularity15min">15分钟</option>
+                        <option value="30" data-translate="exportGranularity30min">30分钟</option>
+                        <option value="60" data-translate="exportGranularity1hour">1小时</option>
+                        <option value="1440" data-translate="exportGranularity1day">1天</option>
                     </select>
                 </div>
             </div>
@@ -646,17 +647,17 @@
             <div class="component-section">
                 <div class="section-title">
                     <i class="fas fa-cube"></i>
-                    <span>选择组件类型</span>
+                    <span id="exportSelectComponent">选择组件类型</span>
                 </div>
                 <div class="component-selector">
                     <select class="component-select" id="componentSelect" onchange="handleComponentChange()">
-                        <option value="overall">整机</option>
+                        <option value="overall" data-translate="exportComponentOverall">整机</option>
                         <option value="ems">EMS</option>
-                        <option value="inverter">逆变器</option>
+                        <option value="inverter" data-translate="exportComponentInverter">逆变器</option>
                         <option value="bms">BMS</option>
-                        <option value="meter">电表</option>
-                        <option value="thermal">热管理</option>
-                        <option value="fire">消防</option>
+                        <option value="meter" data-translate="exportComponentMeter">电表</option>
+                        <option value="thermal" data-translate="exportComponentThermal">热管理</option>
+                        <option value="fire" data-translate="exportComponentFire">消防</option>
                     </select>
                 </div>
             </div>
@@ -665,7 +666,7 @@
             <div class="indicators-section">
                 <div class="section-title">
                     <i class="fas fa-check-square"></i>
-                    <span>选择查询指标</span>
+                    <span id="exportSelectIndicators">选择查询指标</span>
                 </div>
                 <div class="indicator-groups" id="indicatorGroups">
                     <!-- 动态生成指标组 -->
@@ -675,16 +676,16 @@
             <!-- 底部操作栏 -->
             <div class="action-bar">
                 <div class="selection-info">
-                    已选择 <span class="selection-count" id="selectionCount">0</span> 项指标
+                    <span id="exportSelectedIndicators">已选择</span> <span class="selection-count" id="selectionCount">0</span> <span id="exportIndicatorsUnit">项指标</span>
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="resetSelection()">
                         <i class="fas fa-undo"></i>
-                        <span>重置</span>
+                        <span id="exportBtnReset">重置</span>
                     </button>
                     <button class="btn btn-primary" id="queryBtn" onclick="handleQuery()" disabled>
                         <i class="fas fa-search"></i>
-                        <span>查询</span>
+                        <span id="exportBtnQuery">查询</span>
                     </button>
                 </div>
             </div>
@@ -696,13 +697,13 @@
                 <div>
                     <span class="table-title">
                         <i class="fas fa-table"></i>
-                        查询结果
+                        <span id="exportQueryResult">查询结果</span>
                     </span>
-                    <span class="data-count" id="dataCount">共 0 条数据</span>
+                    <span class="data-count" id="dataCount"><span id="exportTotalData">共</span> 0 <span id="exportDataUnit">条数据</span></span>
                 </div>
                 <button class="export-btn" onclick="handleExport()">
                     <i class="fas fa-download"></i>
-                    <span>导出数据</span>
+                    <span id="exportBtnExport">导出数据</span>
                 </button>
             </div>
             <div class="table-wrapper">
@@ -718,7 +719,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <div class="loading-text" id="loadingText">正在查询数据...</div>
+            <div class="loading-text" id="exportLoading">正在查询数据...</div>
         </div>
     </div>
 
@@ -1021,12 +1022,258 @@
         let currentData = [];
         let currentComponent = 'overall'; // 当前选中的组件
 
+        // ==================== 指标翻译映射 ====================
+        // 分组名称翻译映射
+        const groupNameTranslations = {
+            '基础信息': 'exportGroupBasicInfo',
+            '功率数据': 'exportGroupPowerData',
+            '电池状态': 'exportGroupBatteryStatus',
+            '能量统计': 'exportGroupEnergyStats',
+            '调度指令': 'exportGroupDispatchCmd',
+            '功率控制': 'exportGroupPowerControl',
+            '运行策略': 'exportGroupOperationStrategy',
+            '经济数据': 'exportGroupEconomicData',
+            '直流侧参数': 'exportGroupDCSide',
+            '交流侧参数': 'exportGroupACSide',
+            '功率参数': 'exportGroupPowerParams',
+            '性能与保护': 'exportGroupPerformanceProtection',
+            '整体电气参数': 'exportGroupElectricalParams',
+            '单体电压': 'exportGroupCellVoltage',
+            '温度监测': 'exportGroupTempMonitor',
+            'Pack簇信息': 'exportGroupPackInfo',
+            '保护状态': 'exportGroupProtectionStatus',
+            '三相电压': 'exportGroupThreePhaseVoltage',
+            '三相电流': 'exportGroupThreePhaseCurrent',
+            '电能数据': 'exportGroupEnergyData',
+            '电能质量': 'exportGroupPowerQuality',
+            '环境温度': 'exportGroupEnvironmentTemp',
+            '电池热状态': 'exportGroupBatteryThermal',
+            '制冷系统': 'exportGroupCoolingSystem',
+            '加热系统': 'exportGroupHeatingSystem',
+            '风机系统': 'exportGroupFanSystem',
+            '液冷系统': 'exportGroupLiquidCooling',
+            '热管理能耗': 'exportGroupThermalEnergy',
+            '烟感探测': 'exportGroupSmokeDetection',
+            '温感探测': 'exportGroupTempDetection',
+            '气体监测': 'exportGroupGasMonitor',
+            '告警信息': 'exportGroupAlarmInfo',
+            '灭火系统': 'exportGroupExtinguishingSystem',
+            '联动控制': 'exportGroupLinkageControl'
+        };
+
+        // 指标标签翻译映射
+        const indicatorLabelTranslations = {
+            '时间戳': 'exportTimestamp',
+            '储能柜ID': 'exportCabinetId',
+            '系统状态': 'exportSystemStatus',
+            '运行模式': 'exportOperationMode',
+            '有功功率 (kW)': 'exportActivePower',
+            '无功功率 (kVar)': 'exportReactivePower',
+            '视在功率 (kVA)': 'exportApparentPower',
+            '功率因数': 'exportPowerFactor',
+            'SOC (%)': 'exportSOC',
+            'SOH (%)': 'exportSOH',
+            '电池电压 (V)': 'exportBatteryVoltage',
+            '电池电流 (A)': 'exportBatteryCurrent',
+            '电池温度 (°C)': 'exportBatteryTemp',
+            '今日充电量 (kWh)': 'exportTodayCharge',
+            '今日放电量 (kWh)': 'exportTodayDischarge',
+            '累计充电量 (MWh)': 'exportTotalChargeEnergy',
+            '累计放电量 (MWh)': 'exportTotalDischargeEnergy',
+            'EMS设备ID': 'exportEmsId',
+            'EMS运行状态': 'exportEmsStatus',
+            '通信状态': 'exportCommStatus',
+            '调度模式': 'exportDispatchMode',
+            '目标功率 (kW)': 'exportTargetPower',
+            '目标SOC (%)': 'exportTargetSOC',
+            '功率限制 (kW)': 'exportPowerLimit',
+            '充电功率 (kW)': 'exportChargePower',
+            '放电功率 (kW)': 'exportDischargePower',
+            '电网功率 (kW)': 'exportGridPower',
+            '光伏功率 (kW)': 'exportPvPower',
+            '负载功率 (kW)': 'exportLoadPower',
+            '控制策略': 'exportControlStrategy',
+            '削峰填谷状态': 'exportPeakShavingStatus',
+            '需求响应': 'exportDemandResponse',
+            '调频服务': 'exportFrequencyRegulation',
+            '当前电价 (元/kWh)': 'exportElectricityPrice',
+            '今日收益 (元)': 'exportTodayRevenue',
+            '累计收益 (元)': 'exportTotalRevenue',
+            'PCS设备ID': 'exportPcsId',
+            'PCS运行状态': 'exportPcsStatus',
+            '故障代码': 'exportFaultCode',
+            'DC电压 (V)': 'exportDcVoltage',
+            'DC电流 (A)': 'exportDcCurrent',
+            'DC功率 (kW)': 'exportDcPower',
+            'AC电压-A相 (V)': 'exportAcVoltageA',
+            'AC电压-B相 (V)': 'exportAcVoltageB',
+            'AC电压-C相 (V)': 'exportAcVoltageC',
+            'AC电流-A相 (A)': 'exportAcCurrentA',
+            'AC电流-B相 (A)': 'exportAcCurrentB',
+            'AC电流-C相 (A)': 'exportAcCurrentC',
+            '频率 (Hz)': 'exportFrequency',
+            '转换效率 (%)': 'exportEfficiency',
+            'IGBT温度 (°C)': 'exportIgbtTemp',
+            '电感温度 (°C)': 'exportInductorTemp',
+            '环境温度 (°C)': 'exportAmbientTemp',
+            'BMS设备ID': 'exportBmsId',
+            'BMS运行状态': 'exportBmsStatus',
+            '故障等级': 'exportFaultLevel',
+            '总电压 (V)': 'exportTotalVoltage',
+            '总电流 (A)': 'exportTotalCurrent',
+            '循环次数': 'exportCycleCount',
+            '剩余容量 (Ah)': 'exportRemainCapacity',
+            '最高单体电压 (V)': 'exportMaxCellVoltage',
+            '最低单体电压 (V)': 'exportMinCellVoltage',
+            '平均单体电压 (V)': 'exportAvgCellVoltage',
+            '压差 (mV)': 'exportVoltageDiff',
+            '最高电压单体号': 'exportMaxCellNum',
+            '最低电压单体号': 'exportMinCellNum',
+            '最高温度 (°C)': 'exportMaxTemp',
+            '最低温度 (°C)': 'exportMinTemp',
+            '平均温度 (°C)': 'exportAvgTemp',
+            '温差 (°C)': 'exportTempDiff',
+            '最高温度探头号': 'exportMaxTempNum',
+            '最低温度探头号': 'exportMinTempNum',
+            'Pack簇数量': 'exportPackCount',
+            'Pack1电压 (V)': 'exportPack1Voltage',
+            'Pack1电流 (A)': 'exportPack1Current',
+            'Pack1 SOC (%)': 'exportPack1Soc',
+            'Pack1最高温度 (°C)': 'exportPack1MaxTemp',
+            '充电过压保护': 'exportChargeOverVoltage',
+            '放电欠压保护': 'exportDischargeUnderVoltage',
+            '充电过流保护': 'exportChargeOverCurrent',
+            '放电过流保护': 'exportDischargeOverCurrent',
+            '过温保护': 'exportOverTemp',
+            '低温保护': 'exportUnderTemp',
+            '电表设备ID': 'exportMeterId',
+            '电表类型': 'exportMeterType',
+            'A相电压 (V)': 'exportVoltageA',
+            'B相电压 (V)': 'exportVoltageB',
+            'C相电压 (V)': 'exportVoltageC',
+            'AB线电压 (V)': 'exportVoltageAB',
+            'BC线电压 (V)': 'exportVoltageBC',
+            'CA线电压 (V)': 'exportVoltageCA',
+            'A相电流 (A)': 'exportCurrentA',
+            'B相电流 (A)': 'exportCurrentB',
+            'C相电流 (A)': 'exportCurrentC',
+            '零线电流 (A)': 'exportCurrentN',
+            '总有功功率 (kW)': 'exportTotalActivePower',
+            '总无功功率 (kVar)': 'exportTotalReactivePower',
+            '总视在功率 (kVA)': 'exportTotalApparentPower',
+            'A相有功功率 (kW)': 'exportActivePowerA',
+            'B相有功功率 (kW)': 'exportActivePowerB',
+            'C相有功功率 (kW)': 'exportActivePowerC',
+            '正向有功总电能 (kWh)': 'exportPositiveActiveEnergy',
+            '反向有功总电能 (kWh)': 'exportReverseActiveEnergy',
+            '正向无功总电能 (kVarh)': 'exportPositiveReactiveEnergy',
+            '反向无功总电能 (kVarh)': 'exportReverseReactiveEnergy',
+            '总功率因数': 'exportTotalPowerFactor',
+            'A相功率因数': 'exportPowerFactorA',
+            'B相功率因数': 'exportPowerFactorB',
+            'C相功率因数': 'exportPowerFactorC',
+            '电压不平衡度 (%)': 'exportVoltageUnbalance',
+            '电流不平衡度 (%)': 'exportCurrentUnbalance',
+            '热管理系统ID': 'exportThermalSystemId',
+            '热管理状态': 'exportThermalStatus',
+            '室外温度 (°C)': 'exportOutdoorTemp',
+            '柜内温度 (°C)': 'exportIndoorTemp',
+            '进风口温度 (°C)': 'exportCabinetInletTemp',
+            '出风口温度 (°C)': 'exportCabinetOutletTemp',
+            '电池最高温度 (°C)': 'exportBatteryMaxTemp',
+            '电池最低温度 (°C)': 'exportBatteryMinTemp',
+            '电池平均温度 (°C)': 'exportBatteryAvgTemp',
+            '电池温差 (°C)': 'exportBatteryTempDiff',
+            '制冷模式': 'exportCoolingMode',
+            '制冷状态': 'exportCoolingStatus',
+            '制冷功率 (kW)': 'exportCoolingPower',
+            '压缩机状态': 'exportCompressorStatus',
+            '冷媒压力 (MPa)': 'exportRefrigerantPressure',
+            '加热模式': 'exportHeatingMode',
+            '加热状态': 'exportHeatingStatus',
+            '加热功率 (kW)': 'exportHeatingPower',
+            '加热器温度 (°C)': 'exportHeaterTemp',
+            '风机状态': 'exportFanStatus',
+            '风机转速 (rpm)': 'exportFanSpeed',
+            '风机功率 (W)': 'exportFanPower',
+            '风量 (m³/h)': 'exportAirFlowRate',
+            '液冷状态': 'exportLiquidCoolingStatus',
+            '冷却液温度 (°C)': 'exportCoolantTemp',
+            '冷却液流量 (L/min)': 'exportCoolantFlowRate',
+            '冷却液压力 (kPa)': 'exportCoolantPressure',
+            '热管理总功率 (kW)': 'exportTotalThermalPower',
+            '热管理能耗 (kWh)': 'exportThermalEnergyConsumption',
+            '热管理效率 (%)': 'exportThermalEfficiency',
+            '消防系统ID': 'exportFireSystemId',
+            '系统运行状态': 'exportFireSystemStatus',
+            '自检状态': 'exportSelfCheckStatus',
+            '1号烟感探测器': 'exportSmokeDetector1',
+            '2号烟感探测器': 'exportSmokeDetector2',
+            '3号烟感探测器': 'exportSmokeDetector3',
+            '烟雾浓度 (ppm)': 'exportSmokeConcentration',
+            '1号温感探测器 (°C)': 'exportTempDetector1',
+            '2号温感探测器 (°C)': 'exportTempDetector2',
+            '3号温感探测器 (°C)': 'exportTempDetector3',
+            '温升速率 (°C/min)': 'exportTempRiseRate',
+            'H₂浓度 (ppm)': 'exportH2Concentration',
+            'CO浓度 (ppm)': 'exportCoConcentration',
+            'CO₂浓度 (ppm)': 'exportCo2Concentration',
+            '气体告警等级': 'exportGasAlarmLevel',
+            '火灾报警状态': 'exportFireAlarmStatus',
+            '告警级别': 'exportAlarmLevel',
+            '告警类型': 'exportAlarmType',
+            '告警位置': 'exportAlarmPosition',
+            '灭火模式': 'exportExtinguishingMode',
+            '喷淋状态': 'exportSprayStatus',
+            '气体灭火状态': 'exportGasExtinguisherStatus',
+            '灭火剂压力 (MPa)': 'exportExtinguisherPressure',
+            '灭火剂重量 (kg)': 'exportExtinguisherWeight',
+            '喷头状态': 'exportNozzleStatus',
+            '紧急停机': 'exportEmergencyStop',
+            '电源切断': 'exportPowerCutoff',
+            '通风系统状态': 'exportVentilationStatus',
+            '门禁状态': 'exportDoorLockStatus',
+            // 兼容旧的指标ID
+            '运行状态': 'exportSystemStatus',
+            '电压 (V)': 'exportBatteryVoltage',
+            '电流 (A)': 'exportBatteryCurrent',
+            '功率 (kW)': 'exportActivePower',
+            '温度 (°C)': 'exportBatteryTemp',
+            '日充电量 (kWh)': 'exportTodayCharge',
+            '日放电量 (kWh)': 'exportTodayDischarge',
+            '告警数量': 'exportAlarmCount'
+        };
+
+        // 获取翻译后的分组名称
+        function getTranslatedGroupName(groupName) {
+            const key = groupNameTranslations[groupName];
+            if (key && typeof getTranslation === 'function') {
+                return getTranslation(key);
+            }
+            return groupName;
+        }
+
+        // 获取翻译后的指标标签
+        function getTranslatedLabel(label) {
+            const key = indicatorLabelTranslations[label];
+            if (key && typeof getTranslation === 'function') {
+                return getTranslation(key);
+            }
+            return label;
+        }
+
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
             initComponent(); // 初始化组件选择
             initDatePickers();
             renderIndicatorGroups();
             updateSelectionCount();
+
+            // 监听语言切换事件
+            window.addEventListener('languageChanged', function() {
+                renderIndicatorGroups();
+                updateDatePickerLocale();
+            });
         });
 
         // 初始化组件选择（从URL参数读取）
@@ -1065,6 +1312,21 @@
             });
         }
 
+        // 更新日期选择器的语言
+        function updateDatePickerLocale() {
+            const currentLang = localStorage.getItem('language') || 'zh';
+            const locale = currentLang === 'zh' ? flatpickr.l10ns.zh : flatpickr.l10ns.default;
+
+            if (startDatePicker) {
+                startDatePicker.set('locale', locale);
+                startDatePicker.redraw();
+            }
+            if (endDatePicker) {
+                endDatePicker.set('locale', locale);
+                endDatePicker.redraw();
+            }
+        }
+
         // 处理组件切换
         function handleComponentChange() {
             const select = document.getElementById('componentSelect');
@@ -1093,16 +1355,22 @@
                 return;
             }
 
+            // 获取全选按钮翻译
+            const selectAllText = typeof getTranslation === 'function' ? getTranslation('selectAll') || '全选' : '全选';
+
             Object.entries(indicatorConfig).forEach(([groupName, indicators]) => {
+                // 获取翻译后的分组名称和指标标签
+                const translatedGroupName = getTranslatedGroupName(groupName);
+
                 const groupHtml = `
                     <div class="indicator-group">
                         <div class="group-header" onclick="toggleGroup(this)">
                             <div class="group-title">
                                 <i class="fas fa-folder"></i>
-                                <span>${groupName}</span>
+                                <span>${translatedGroupName}</span>
                             </div>
                             <div class="group-actions">
-                                <span class="select-all-btn" onclick="selectAllInGroup(event, '${groupName}')">全选</span>
+                                <span class="select-all-btn" onclick="selectAllInGroup(event, '${groupName}')">${selectAllText}</span>
                                 <i class="fas fa-chevron-down expand-icon"></i>
                             </div>
                         </div>
@@ -1113,7 +1381,7 @@
                                            id="${ind.id}"
                                            ${ind.checked ? 'checked' : ''}
                                            onchange="handleCheckboxChange('${ind.id}')">
-                                    <label for="${ind.id}">${ind.label}</label>
+                                    <label for="${ind.id}">${getTranslatedLabel(ind.label)}</label>
                                 </div>
                             `).join('')}
                         </div>
@@ -1185,7 +1453,8 @@
             updateSelectionCount();
             // 隐藏数据表格
             document.getElementById('dataTableContainer').classList.remove('show');
-            showNotification('已重置选择', 'info');
+            const msg = typeof getTranslation === 'function' ? getTranslation('exportMsgResetDone') : '已重置选择';
+            showNotification(msg, 'info');
         }
 
         // 查询数据
@@ -1194,21 +1463,25 @@
             const endDate = document.getElementById('endDate').value;
 
             if (!startDate || !endDate) {
-                showNotification('请选择时间范围', 'warning');
+                const msg = typeof getTranslation === 'function' ? getTranslation('exportMsgSelectTimeRange') : '请选择时间范围';
+                showNotification(msg, 'warning');
                 return;
             }
 
             if (new Date(startDate) > new Date(endDate)) {
-                showNotification('开始时间不能晚于结束时间', 'warning');
+                const msg = typeof getTranslation === 'function' ? getTranslation('exportMsgStartBeforeEnd') : '开始时间不能晚于结束时间';
+                showNotification(msg, 'warning');
                 return;
             }
 
             if (selectedIndicators.size === 0) {
-                showNotification('请至少选择一个查询指标', 'warning');
+                const msg = typeof getTranslation === 'function' ? getTranslation('exportMsgSelectIndicator') : '请至少选择一个查询指标';
+                showNotification(msg, 'warning');
                 return;
             }
 
-            showLoading('正在查询数据...');
+            const loadingMsg = typeof getTranslation === 'function' ? getTranslation('exportLoading') : '正在查询数据...';
+            showLoading(loadingMsg);
 
             // 模拟数据查询
             setTimeout(() => {
@@ -1216,7 +1489,9 @@
                 renderDataTable(currentData);
                 document.getElementById('dataTableContainer').classList.add('show');
                 hideLoading();
-                showNotification(`查询成功！共 ${currentData.length} 条数据`, 'success');
+                let successMsg = typeof getTranslation === 'function' ? getTranslation('exportMsgQuerySuccess') : '查询成功！共 {count} 条数据';
+                successMsg = successMsg.replace('{count}', currentData.length);
+                showNotification(successMsg, 'success');
 
                 // 滚动到表格位置
                 document.getElementById('dataTableContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1281,119 +1556,119 @@
                     switch(id) {
                         // ==================== 整机 - 基础信息 ====================
                         case 'timestamp':
-                            row['时间戳'] = formatDateTime(timestamp);
+                            row[getTranslatedLabel('时间戳')] = formatDateTime(timestamp);
                             break;
                         case 'cabinetId':
-                            row['储能柜ID'] = 'ESS-001';
+                            row[getTranslatedLabel('储能柜ID')] = 'ESS-001';
                             break;
                         case 'systemStatus':
-                            row['系统状态'] = systemStatus;
+                            row[getTranslatedLabel('系统状态')] = systemStatus;
                             break;
                         case 'operationMode':
-                            row['运行模式'] = operationMode;
+                            row[getTranslatedLabel('运行模式')] = operationMode;
                             break;
 
                         // ==================== 整机 - 功率数据 ====================
                         case 'activePower':
-                            row['有功功率 (kW)'] = activePower.toFixed(2);
+                            row[getTranslatedLabel('有功功率 (kW)')] = activePower.toFixed(2);
                             break;
                         case 'reactivePower':
-                            row['无功功率 (kVar)'] = reactivePower.toFixed(2);
+                            row[getTranslatedLabel('无功功率 (kVar)')] = reactivePower.toFixed(2);
                             break;
                         case 'apparentPower':
-                            row['视在功率 (kVA)'] = apparentPower.toFixed(2);
+                            row[getTranslatedLabel('视在功率 (kVA)')] = apparentPower.toFixed(2);
                             break;
                         case 'powerFactor':
-                            row['功率因数'] = powerFactor.toFixed(3);
+                            row[getTranslatedLabel('功率因数')] = powerFactor.toFixed(3);
                             break;
 
                         // ==================== 整机 - 电池状态 ====================
                         case 'soc':
                             // SOC 根据充放电状态变化
                             const baseSOC = 50 + Math.sin(time / (3600 * 1000) * Math.PI / 12) * 30;
-                            row['SOC (%)'] = Math.max(10, Math.min(95, baseSOC + Math.random() * 5)).toFixed(1);
+                            row[getTranslatedLabel('SOC (%)')] = Math.max(10, Math.min(95, baseSOC + Math.random() * 5)).toFixed(1);
                             break;
                         case 'soh':
-                            row['SOH (%)'] = (96.5 + Math.random() * 2).toFixed(1);
+                            row[getTranslatedLabel('SOH (%)')] = (96.5 + Math.random() * 2).toFixed(1);
                             break;
                         case 'batteryVoltage':
-                            row['电池电压 (V)'] = (380 + Math.random() * 20).toFixed(1);
+                            row[getTranslatedLabel('电池电压 (V)')] = (380 + Math.random() * 20).toFixed(1);
                             break;
                         case 'batteryCurrent':
                             const batteryCurrent = isCharging ? (180 + Math.random() * 40) : (isDischarging ? -(150 + Math.random() * 50) : (Math.random() * 5 - 2.5));
-                            row['电池电流 (A)'] = batteryCurrent.toFixed(1);
+                            row[getTranslatedLabel('电池电流 (A)')] = batteryCurrent.toFixed(1);
                             break;
                         case 'batteryTemp':
-                            row['电池温度 (°C)'] = (25 + Math.random() * 8).toFixed(1);
+                            row[getTranslatedLabel('电池温度 (°C)')] = (25 + Math.random() * 8).toFixed(1);
                             break;
 
                         // ==================== 整机 - 能量统计 ====================
                         case 'todayCharge':
-                            row['今日充电量 (kWh)'] = baseTodayCharge.toFixed(2);
+                            row[getTranslatedLabel('今日充电量 (kWh)')] = baseTodayCharge.toFixed(2);
                             break;
                         case 'todayDischarge':
-                            row['今日放电量 (kWh)'] = baseTodayDischarge.toFixed(2);
+                            row[getTranslatedLabel('今日放电量 (kWh)')] = baseTodayDischarge.toFixed(2);
                             break;
                         case 'totalChargeEnergy':
-                            row['累计充电量 (MWh)'] = baseChargeEnergy.toFixed(3);
+                            row[getTranslatedLabel('累计充电量 (MWh)')] = baseChargeEnergy.toFixed(3);
                             break;
                         case 'totalDischargeEnergy':
-                            row['累计放电量 (MWh)'] = baseDischargeEnergy.toFixed(3);
+                            row[getTranslatedLabel('累计放电量 (MWh)')] = baseDischargeEnergy.toFixed(3);
                             break;
 
                         // ==================== 兼容旧的指标ID ====================
                         case 'status':
-                            row['运行状态'] = systemStatus;
+                            row[getTranslatedLabel('运行状态')] = systemStatus;
                             break;
                         case 'voltage':
-                            row['电压 (V)'] = (380 + Math.random() * 20).toFixed(1);
+                            row[getTranslatedLabel('电压 (V)')] = (380 + Math.random() * 20).toFixed(1);
                             break;
                         case 'current':
-                            row['电流 (A)'] = (Math.random() * 50 - 25).toFixed(1);
+                            row[getTranslatedLabel('电流 (A)')] = (Math.random() * 50 - 25).toFixed(1);
                             break;
                         case 'power':
-                            row['功率 (kW)'] = activePower.toFixed(2);
+                            row[getTranslatedLabel('功率 (kW)')] = activePower.toFixed(2);
                             break;
                         case 'temperature':
-                            row['温度 (°C)'] = (25 + Math.random() * 8).toFixed(1);
+                            row[getTranslatedLabel('温度 (°C)')] = (25 + Math.random() * 8).toFixed(1);
                             break;
                         case 'dailyCharge':
-                            row['日充电量 (kWh)'] = baseTodayCharge.toFixed(2);
+                            row[getTranslatedLabel('日充电量 (kWh)')] = baseTodayCharge.toFixed(2);
                             break;
                         case 'dailyDischarge':
-                            row['日放电量 (kWh)'] = baseTodayDischarge.toFixed(2);
+                            row[getTranslatedLabel('日放电量 (kWh)')] = baseTodayDischarge.toFixed(2);
                             break;
                         case 'totalCharge':
-                            row['累计充电量 (MWh)'] = baseChargeEnergy.toFixed(3);
+                            row[getTranslatedLabel('累计充电量 (MWh)')] = baseChargeEnergy.toFixed(3);
                             break;
                         case 'totalDischarge':
-                            row['累计放电量 (MWh)'] = baseDischargeEnergy.toFixed(3);
+                            row[getTranslatedLabel('累计放电量 (MWh)')] = baseDischargeEnergy.toFixed(3);
                             break;
                         case 'packCount':
-                            row['Pack数量'] = '4';
+                            row[getTranslatedLabel('Pack簇数量')] = '4';
                             break;
                         case 'pack1Voltage':
-                            row['Pack1电压 (V)'] = (95 + Math.random() * 5).toFixed(1);
+                            row[getTranslatedLabel('Pack1电压 (V)')] = (95 + Math.random() * 5).toFixed(1);
                             break;
                         case 'pack1Current':
-                            row['Pack1电流 (A)'] = (40 + Math.random() * 15).toFixed(1);
+                            row[getTranslatedLabel('Pack1电流 (A)')] = (40 + Math.random() * 15).toFixed(1);
                             break;
                         case 'pack1Soc':
-                            row['Pack1 SOC (%)'] = (80 + Math.random() * 15).toFixed(1);
+                            row[getTranslatedLabel('Pack1 SOC (%)')] = (80 + Math.random() * 15).toFixed(1);
                             break;
                         case 'pack1Temp':
-                            row['Pack1温度 (°C)'] = (26 + Math.random() * 6).toFixed(1);
+                            row[getTranslatedLabel('Pack1最高温度 (°C)')] = (26 + Math.random() * 6).toFixed(1);
                             break;
                         case 'alarmCount':
-                            row['告警数量'] = Math.floor(Math.random() * 3);
+                            row[getTranslatedLabel('告警数量')] = Math.floor(Math.random() * 3);
                             break;
                         case 'alarmLevel':
                             const levels = ['正常', '警告', '严重'];
-                            row['告警级别'] = levels[Math.floor(Math.random() * levels.length)];
+                            row[getTranslatedLabel('告警级别')] = levels[Math.floor(Math.random() * levels.length)];
                             break;
                         case 'alarmType':
                             const types = ['无', '温度告警', '电压告警', '通信告警'];
-                            row['告警类型'] = types[Math.floor(Math.random() * types.length)];
+                            row[getTranslatedLabel('告警类型')] = types[Math.floor(Math.random() * types.length)];
                             break;
                     }
                 });
@@ -1413,13 +1688,13 @@
                         <td colspan="100%" style="text-align: center; padding: 60px 20px;">
                             <div class="empty-data">
                                 <i class="fas fa-inbox"></i>
-                                <div class="empty-data-text">暂无数据</div>
-                                <div class="empty-data-hint">请调整查询条件后重试</div>
+                                <div class="empty-data-text">${typeof getTranslation === 'function' ? getTranslation('exportNoData') : '暂无数据'}</div>
+                                <div class="empty-data-hint">${typeof getTranslation === 'function' ? getTranslation('exportNoDataDesc') : '请先选择时间范围和指标进行查询'}</div>
                             </div>
                         </td>
                     </tr>
                 `;
-                document.getElementById('dataCount').textContent = '共 0 条数据';
+                updateDataCount(0);
                 return;
             }
 
@@ -1435,24 +1710,35 @@
             document.getElementById('tableBody').innerHTML = tbodyHtml;
 
             // 更新数据计数
-            document.getElementById('dataCount').textContent = `共 ${data.length} 条数据`;
+            updateDataCount(data.length);
+        }
+
+        // 更新数据计数显示
+        function updateDataCount(count) {
+            const totalText = typeof getTranslation === 'function' ? getTranslation('exportTotalData') : '共';
+            const unitText = typeof getTranslation === 'function' ? getTranslation('exportDataUnit') : '条数据';
+            document.getElementById('dataCount').innerHTML = `<span id="exportTotalData">${totalText}</span> ${count} <span id="exportDataUnit">${unitText}</span>`;
         }
 
         // 导出数据
         function handleExport() {
             if (currentData.length === 0) {
-                showNotification('暂无数据可导出', 'warning');
+                const msg = typeof getTranslation === 'function' ? getTranslation('exportMsgNoDataToExport') : '暂无数据可导出';
+                showNotification(msg, 'warning');
                 return;
             }
 
-            showLoading('正在导出数据...');
+            const loadingMsg = typeof getTranslation === 'function' ? getTranslation('exportLoadingExport') : '正在导出数据...';
+            showLoading(loadingMsg);
 
             setTimeout(() => {
                 const startDate = document.getElementById('startDate').value;
                 const endDate = document.getElementById('endDate').value;
                 exportToCSV(currentData, startDate, endDate);
                 hideLoading();
-                showNotification(`成功导出 ${currentData.length} 条数据！`, 'success');
+                let successMsg = typeof getTranslation === 'function' ? getTranslation('exportMsgExportSuccess') : '成功导出 {count} 条数据！';
+                successMsg = successMsg.replace('{count}', currentData.length);
+                showNotification(successMsg, 'success');
             }, 500);
         }
 

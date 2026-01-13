@@ -541,9 +541,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label" id="personnelLabelDevicePermission" data-translate="personnelLabelDevicePermission">设备权限</label>
+                        <label class="form-label" id="personnelLabelSitePermission" data-translate="personnelLabelSitePermission">站点权限</label>
                         <div class="permission-tree" id="sitePermissionTree">
-                            <!-- 站点权限树将通过JavaScript动态生成 -->
+                            <!-- 站点权限列表将通过JavaScript动态生成 -->
                         </div>
                     </div>
                     
@@ -690,157 +690,63 @@
 
         }
         
-        // 站点权限树数据
+        // 站点权限数据（站点级别，不含设备层级）
         const sitePermissionData = [
-            {
-                id: 'site1',
-                name: '北京数据中心',
-                nameKey: 'siteBeijingDataCenter',
-                devices: [
-                    { id: 'device1', name: '储能柜-001', nameKey: 'deviceCabinet001' },
-                    { id: 'device2', name: '储能柜-002', nameKey: 'deviceCabinet002' },
-                    { id: 'device3', name: '储能柜-003', nameKey: 'deviceCabinet003' }
-                ]
-            },
-            {
-                id: 'site2',
-                name: '上海工业园区',
-                nameKey: 'siteShanghaiIndustrialPark',
-                devices: [
-                    { id: 'device4', name: '储能柜-004', nameKey: 'deviceCabinet004' },
-                    { id: 'device5', name: '储能柜-005', nameKey: 'deviceCabinet005' }
-                ]
-            },
-            {
-                id: 'site3',
-                name: '深圳科技园',
-                nameKey: 'siteShenzhenTechPark',
-                devices: [
-                    { id: 'device6', name: '储能柜-006', nameKey: 'deviceCabinet006' },
-                    { id: 'device7', name: '储能柜-007', nameKey: 'deviceCabinet007' },
-                    { id: 'device8', name: '储能柜-008', nameKey: 'deviceCabinet008' },
-                    { id: 'device9', name: '储能柜-009', nameKey: 'deviceCabinet009' }
-                ]
-            },
-            {
-                id: 'site4',
-                name: '广州商业中心',
-                nameKey: 'siteGuangzhouBusinessCenter',
-                devices: [
-                    { id: 'device10', name: '储能柜-010', nameKey: 'deviceCabinet010' }
-                ]
-            },
-            {
-                id: 'site5',
-                name: '成都物流基地',
-                nameKey: 'siteChengduLogisticsBase',
-                devices: [
-                    { id: 'device11', name: '储能柜-011', nameKey: 'deviceCabinet011' },
-                    { id: 'device12', name: '储能柜-012', nameKey: 'deviceCabinet012' }
-                ]
-            }
+            { id: 'site1', name: '北京数据中心', nameKey: 'siteBeijingDataCenter' },
+            { id: 'site2', name: '上海工业园区', nameKey: 'siteShanghaiIndustrialPark' },
+            { id: 'site3', name: '深圳科技园', nameKey: 'siteShenzhenTechPark' },
+            { id: 'site4', name: '广州商业中心', nameKey: 'siteGuangzhouBusinessCenter' },
+            { id: 'site5', name: '成都物流基地', nameKey: 'siteChengduLogisticsBase' }
         ];
         
-        // 渲染站点权限树
+        // 渲染站点权限列表（站点级别）
         function renderSitePermissionTree(selectedSites = []) {
             const container = document.getElementById('sitePermissionTree');
             container.innerHTML = '';
-            container.style.cssText = 'max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;';
+            container.style.cssText = 'max-height: 250px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;';
 
             const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             sitePermissionData.forEach(site => {
-                const siteDiv = document.createElement('div');
-                siteDiv.style.marginBottom = '12px';
-
                 // 站点复选框
                 const siteLabel = document.createElement('label');
-                siteLabel.style.cssText = 'display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; margin-bottom: 8px;';
+                siteLabel.style.cssText = 'display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; margin-bottom: 4px; border-radius: 6px; transition: background 0.2s;';
+                siteLabel.onmouseover = function() { this.style.background = '#f8fafc'; };
+                siteLabel.onmouseout = function() { this.style.background = 'transparent'; };
 
                 const siteCheckbox = document.createElement('input');
                 siteCheckbox.type = 'checkbox';
                 siteCheckbox.id = site.id;
-                siteCheckbox.style.cssText = 'width: 16px; height: 16px; cursor: pointer;';
-                siteCheckbox.onchange = function() {
-                    // 选中/取消站点时，同步所有设备
-                    const deviceCheckboxes = siteDiv.querySelectorAll('.device-checkbox');
-                    deviceCheckboxes.forEach(cb => cb.checked = this.checked);
-                };
+                siteCheckbox.className = 'site-checkbox';
+                siteCheckbox.value = site.name;
+                siteCheckbox.style.cssText = 'width: 16px; height: 16px; cursor: pointer; accent-color: #3b82f6;';
 
                 // 检查是否已选中
                 if (selectedSites.includes(site.name)) {
                     siteCheckbox.checked = true;
                 }
 
-                const expandIcon = document.createElement('span');
-                expandIcon.innerHTML = '▶';
-                expandIcon.style.cssText = 'font-size: 12px; transition: transform 0.2s; cursor: pointer;';
-                expandIcon.onclick = function(e) {
-                    e.preventDefault();
-                    const devicesDiv = siteDiv.querySelector('.devices-container');
-                    if (devicesDiv.style.display === 'none') {
-                        devicesDiv.style.display = 'block';
-                        expandIcon.style.transform = 'rotate(90deg)';
-                    } else {
-                        devicesDiv.style.display = 'none';
-                        expandIcon.style.transform = 'rotate(0deg)';
-                    }
-                };
-
                 // 获取翻译后的站点名称
                 const siteName = site.nameKey && translations[lang][site.nameKey]
                     ? translations[lang][site.nameKey]
                     : site.name;
 
-                siteLabel.appendChild(expandIcon);
+                const siteNameSpan = document.createElement('span');
+                siteNameSpan.style.cssText = 'font-size: 14px; color: #374151;';
+                siteNameSpan.textContent = siteName;
+
                 siteLabel.appendChild(siteCheckbox);
-                siteLabel.appendChild(document.createTextNode(siteName));
-                siteDiv.appendChild(siteLabel);
-                
-                // 设备容器
-                const devicesDiv = document.createElement('div');
-                devicesDiv.className = 'devices-container';
-                devicesDiv.style.cssText = 'margin-left: 32px; display: none;';
-                
-                site.devices.forEach(device => {
-                    const deviceLabel = document.createElement('label');
-                    deviceLabel.style.cssText = 'display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 6px; font-size: 14px; color: #6b7280;';
-
-                    const deviceCheckbox = document.createElement('input');
-                    deviceCheckbox.type = 'checkbox';
-                    deviceCheckbox.className = 'device-checkbox';
-                    deviceCheckbox.value = device.id;
-                    deviceCheckbox.style.cssText = 'width: 14px; height: 14px; cursor: pointer;';
-                    deviceCheckbox.onchange = function() {
-                        // 检查是否所有设备都被选中
-                        const allDeviceCheckboxes = siteDiv.querySelectorAll('.device-checkbox');
-                        const checkedDevices = siteDiv.querySelectorAll('.device-checkbox:checked');
-                        siteCheckbox.checked = allDeviceCheckboxes.length === checkedDevices.length;
-                    };
-
-                    // 获取翻译后的设备名称
-                    const deviceName = device.nameKey && translations[lang][device.nameKey]
-                        ? translations[lang][device.nameKey]
-                        : device.name;
-
-                    deviceLabel.appendChild(deviceCheckbox);
-                    deviceLabel.appendChild(document.createTextNode(deviceName));
-                    devicesDiv.appendChild(deviceLabel);
-                });
-                
-                siteDiv.appendChild(devicesDiv);
-                container.appendChild(siteDiv);
+                siteLabel.appendChild(siteNameSpan);
+                container.appendChild(siteLabel);
             });
         }
         
         // 获取选中的站点
         function getSelectedSites() {
             const selectedSites = [];
-            sitePermissionData.forEach(site => {
-                const siteCheckbox = document.getElementById(site.id);
-                if (siteCheckbox && siteCheckbox.checked) {
-                    selectedSites.push(site.name);
-                }
+            const checkboxes = document.querySelectorAll('.site-checkbox:checked');
+            checkboxes.forEach(cb => {
+                selectedSites.push(cb.value);
             });
             return selectedSites;
         }
