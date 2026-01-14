@@ -1587,8 +1587,8 @@
                 if (energyRadio) {
                     energyRadio.checked = true;
                 }
-                // 隐藏能量拆分选项（电量图表不需要）
-                energySplitSelector.style.display = 'none';
+                // 月报/年报也显示能量拆分选项
+                energySplitSelector.style.display = 'flex';
             } else {
                 // 日报：显示功率、SOC指标
                 dailyMetrics.style.display = 'flex';
@@ -2158,9 +2158,8 @@
                 energySplitSelector.style.display = 'none';
                 energySplitCheckbox.checked = false;
             } else if (metric === 'energy') {
-                // 电量指标：隐藏能量拆分选项
-                energySplitSelector.style.display = 'none';
-                energySplitCheckbox.checked = false;
+                // 电量指标：显示能量拆分选项（月报/年报需要）
+                energySplitSelector.style.display = 'flex';
             }
 
             // 更新图表
