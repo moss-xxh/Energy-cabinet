@@ -904,7 +904,7 @@
                             </th>
                             <th style="padding: 16px 12px; text-align: center; font-weight: 600; color: var(--text-secondary); cursor: pointer; vertical-align: middle;" onclick="sortTable('installedPower')" data-sort="installedPower">
                                 <div style="display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                    <span id="tableHeaderInstalledPower">装机容量</span>
+                                    <span id="tableHeaderInstalledPower">电池容量</span>
                                     <span class="sort-arrows" style="display: inline-flex; flex-direction: column; align-items: center; line-height: 1;">
                                         <i class="fas fa-caret-up" style="font-size: 8px; cursor: pointer; color: #94a3b8;" onclick="event.stopPropagation(); sortTable('installedPower', 'asc')"></i>
                                         <i class="fas fa-caret-down" style="font-size: 8px; cursor: pointer; color: #94a3b8; margin-top: -1px;" onclick="event.stopPropagation(); sortTable('installedPower', 'desc')"></i>
@@ -1025,7 +1025,7 @@
                                 <span style="font-size: 12px; color: #666;">系统容量</span>
                                 <div style="text-align: right;">
                                     <div style="font-size: 16px; font-weight: 700; color: #333;"><span id="total-capacity">2.5</span> MWh</div>
-                                    <div style="font-size: 10px; color: #999;">总装机容量</div>
+                                    <div style="font-size: 10px; color: #999;">总电池容量</div>
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1974,11 +1974,7 @@
                             </div>
 
                             <!-- 第三排 -->
-                            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                                <div class="form-group">
-                                    <label class="form-label" id="installedPowerLabel">装机容量(kW)</label>
-                                    <input type="number" class="form-input" id="installed-power" data-translate-placeholder="installedPowerPlaceholder" placeholder="请输入装机容量">
-                                </div>
+                            <div class="form-grid" style="grid-template-columns: 1fr; gap: 1.5rem;">
                                 <div class="form-group">
                                     <label class="form-label" id="gridDateLabel">并网时间</label>
                                     <input type="date" class="form-input" id="grid-date">
@@ -2235,7 +2231,7 @@
                 tr.innerHTML = `
                     <td style="padding: 16px 12px;">${getTranslatedStationName(device.siteName)}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.cabinetCount || 0}${unitText}</td>
-                    <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.installedPower} kW</td>
+                    <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.installedPower} kWh</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${formatPowerWithStatus(device.realTimePower, currentLang)}</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.remainingEnergy} kWh</td>
                     <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">${device.soc}%</td>
