@@ -516,8 +516,14 @@
                         </label>
                         <input type="email" class="form-input" id="personEmail" data-translate-placeholder="personnelPlaceholderEmail" placeholder="请输入邮箱作为账号" required>
                     </div>
-                    
-                    
+
+                    <div class="form-group">
+                        <label class="form-label" for="personPassword" id="personnelLabelPassword" data-translate="personnelLabelPassword">
+                            密码
+                        </label>
+                        <input type="text" class="form-input" id="personPassword" value="EssCloud123!" readonly style="background-color: #f5f5f5; color: #666;">
+                    </div>
+
                     <div class="form-group">
                         <label class="form-label" id="personnelLabelRole" data-translate="personnelLabelRole">角色</label>
                         <div class="roles-container" style="display: flex; flex-direction: column; gap: 8px;">
@@ -692,6 +698,7 @@
         
         // 站点权限数据（站点级别，不含设备层级）
         const sitePermissionData = [
+            { id: 'allSites', name: '全部站点', nameKey: 'siteAllSites', isAllOption: true },
             { id: 'site1', name: '北京数据中心', nameKey: 'siteBeijingDataCenter' },
             { id: 'site2', name: '上海工业园区', nameKey: 'siteShanghaiIndustrialPark' },
             { id: 'site3', name: '深圳科技园', nameKey: 'siteShenzhenTechPark' },
@@ -707,7 +714,16 @@
 
             const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
-            sitePermissionData.forEach(site => {
+            // 获取所有非"全部站点"的站点
+            const otherSites = sitePermissionData.filter(s => !s.isAllOption);
+
+            // 计算选中状态：全选、不选、部分选择
+            const selectedOtherSites = otherSites.filter(s => selectedSites.includes(s.name));
+            const isAllSelected = selectedOtherSites.length === otherSites.length && otherSites.length > 0;
+            const isNoneSelected = selectedOtherSites.length === 0;
+            const isPartialSelected = !isAllSelected && !isNoneSelected;
+
+            sitePermissionData.forEach((site, index) => {
                 // 站点复选框
                 const siteLabel = document.createElement('label');
                 siteLabel.style.cssText = 'display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; margin-bottom: 4px; border-radius: 6px; transition: background 0.2s;';
@@ -721,9 +737,30 @@
                 siteCheckbox.value = site.name;
                 siteCheckbox.style.cssText = 'width: 16px; height: 16px; cursor: pointer; accent-color: #3b82f6;';
 
-                // 检查是否已选中
-                if (selectedSites.includes(site.name)) {
-                    siteCheckbox.checked = true;
+                // "全部站点"选项
+                if (site.isAllOption) {
+                    siteCheckbox.checked = isAllSelected;
+                    // 设置indeterminate状态（部分选择时显示"-"）
+                    siteCheckbox.indeterminate = isPartialSelected;
+
+                    siteCheckbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            // 选中全部站点：勾选所有站点
+                            const allSiteNames = otherSites.map(s => s.name);
+                            renderSitePermissionTree(allSiteNames);
+                        } else {
+                            // 取消全部站点：取消所有勾选
+                            renderSitePermissionTree([]);
+                        }
+                    });
+                } else {
+                    // 其他站点选项
+                    if (selectedSites.includes(site.name)) {
+                        siteCheckbox.checked = true;
+                    }
+                    siteCheckbox.addEventListener('change', function() {
+                        updateAllSitesCheckbox();
+                    });
                 }
 
                 // 获取翻译后的站点名称
@@ -735,10 +772,45 @@
                 siteNameSpan.style.cssText = 'font-size: 14px; color: #374151;';
                 siteNameSpan.textContent = siteName;
 
+                // "全部站点"选项特殊样式
+                if (site.isAllOption) {
+                    siteNameSpan.style.fontWeight = '600';
+                }
+
                 siteLabel.appendChild(siteCheckbox);
                 siteLabel.appendChild(siteNameSpan);
                 container.appendChild(siteLabel);
+
+                // 在"全部站点"后添加分隔线
+                if (site.isAllOption) {
+                    const divider = document.createElement('div');
+                    divider.style.cssText = 'height: 1px; background: #e2e8f0; margin: 8px 0;';
+                    container.appendChild(divider);
+                }
             });
+        }
+
+        // 更新"全部站点"复选框状态（三态：全选✓、不选□、部分选择-）
+        function updateAllSitesCheckbox() {
+            const otherSites = sitePermissionData.filter(s => !s.isAllOption);
+            const checkedCount = document.querySelectorAll('.site-checkbox:checked:not(#allSites)').length;
+            const allSitesCheckbox = document.getElementById('allSites');
+
+            if (allSitesCheckbox) {
+                if (checkedCount === 0) {
+                    // 没有选中任何站点
+                    allSitesCheckbox.checked = false;
+                    allSitesCheckbox.indeterminate = false;
+                } else if (checkedCount === otherSites.length) {
+                    // 全部选中
+                    allSitesCheckbox.checked = true;
+                    allSitesCheckbox.indeterminate = false;
+                } else {
+                    // 部分选中 - 显示为"-"
+                    allSitesCheckbox.checked = false;
+                    allSitesCheckbox.indeterminate = true;
+                }
+            }
         }
         
         // 获取选中的站点
@@ -902,6 +974,9 @@
             const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
             document.getElementById('personnelModalTitleAdd').textContent = translations[lang].personnelModalTitleAdd;
             document.getElementById('personForm').reset();
+            // 新增时密码显示明文默认值
+            document.getElementById('personPassword').value = 'EssCloud123!';
+            document.getElementById('personPassword').type = 'text';
             renderSitePermissionTree();
             document.getElementById('personModal').classList.add('show');
         }
@@ -917,6 +992,9 @@
             document.getElementById('personName').value = person.name;
             document.getElementById('personEmail').value = person.email;
             document.getElementById('personStatus').value = person.status;
+            // 编辑时密码显示为加密形式
+            document.getElementById('personPassword').value = '************';
+            document.getElementById('personPassword').type = 'password';
             
             
             // 设置角色（多选）
