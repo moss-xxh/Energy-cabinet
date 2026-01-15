@@ -151,24 +151,6 @@
             background: #f8fafc;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-inactive {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
         .table-actions {
             display: flex;
             gap: 8px;
@@ -602,7 +584,6 @@
                         <th id="rolesTableHeaderName">角色名称</th>
                         <th id="rolesTableHeaderDesc">角色描述</th>
                         <th id="rolesTableHeaderUserCount">用户数量</th>
-                        <th id="rolesTableHeaderStatus">状态</th>
                         <th id="rolesTableHeaderCreateTime">创建时间</th>
                         <th id="rolesTableHeaderActions">操作</th>
                     </tr>
@@ -658,15 +639,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="roleStatus">
-                            <span id="rolesLabelStatus" data-translate="rolesLabelStatus">状态</span>
-                        </label>
-                        <select class="form-select" id="roleStatus">
-                            <option value="active" id="rolesStatusActive">启用</option>
-                            <option value="inactive" id="rolesStatusInactive">禁用</option>
-                        </select>
-                    </div>
                 </form>
             </div>
             
@@ -803,20 +775,20 @@
         
         // 角色数据
         let rolesData = [
-            { id: 1, name: '超级管理员', nameKey: 'roleDataSuperAdmin', description: '拥有系统所有权限', descKey: 'roleDataSuperAdminDesc', userCount: 1, status: 'active', createTime: '2024-01-01 10:00:00', users: [
+            { id: 1, name: '超级管理员', nameKey: 'roleDataSuperAdmin', description: '拥有系统所有权限', descKey: 'roleDataSuperAdminDesc', userCount: 1, createTime: '2024-01-01 10:00:00', users: [
                 { id: 101, name: '张三', username: 'zhangsan', email: 'zhangsan@example.com' }
             ] },
-            { id: 2, name: '运维人员', nameKey: 'roleDataOperator', description: '负责设备维护和告警处理', descKey: 'roleDataOperatorDesc', userCount: 3, status: 'active', createTime: '2024-01-02 14:30:00', users: [
+            { id: 2, name: '运维人员', nameKey: 'roleDataOperator', description: '负责设备维护和告警处理', descKey: 'roleDataOperatorDesc', userCount: 3, createTime: '2024-01-02 14:30:00', users: [
                 { id: 102, name: '李四', username: 'lisi', email: 'lisi@example.com' },
                 { id: 104, name: '赵六', username: 'zhaoliu', email: 'zhaoliu@example.com' },
                 { id: 107, name: '周九', username: 'zhoujiu', email: 'zhoujiu@example.com' }
             ] },
-            { id: 3, name: '操作员', nameKey: 'roleDataUser', description: '负责日常操作和监控', descKey: 'roleDataUserDesc', userCount: 3, status: 'active', createTime: '2024-01-03 09:15:00', users: [
+            { id: 3, name: '操作员', nameKey: 'roleDataUser', description: '负责日常操作和监控', descKey: 'roleDataUserDesc', userCount: 3, createTime: '2024-01-03 09:15:00', users: [
                 { id: 103, name: '王五', username: 'wangwu', email: 'wangwu@example.com' },
                 { id: 105, name: '钱七', username: 'qianqi', email: 'qianqi@example.com' },
                 { id: 108, name: '吴十', username: 'wushi', email: 'wushi@example.com' }
             ] },
-            { id: 4, name: '访客', nameKey: 'roleDataGuest', description: '只能查看数据', descKey: 'roleDataGuestDesc', userCount: 1, status: 'inactive', createTime: '2024-01-05 16:20:00', users: [
+            { id: 4, name: '访客', nameKey: 'roleDataGuest', description: '只能查看数据', descKey: 'roleDataGuestDesc', userCount: 1, createTime: '2024-01-05 16:20:00', users: [
                 { id: 106, name: '孙八', username: 'sunba', email: 'sunba@example.com' }
             ] }
         ];
@@ -961,11 +933,6 @@
                         <td onclick="showUserDrawer(${role.id})">${roleName}</td>
                         <td onclick="showUserDrawer(${role.id})">${roleDesc}</td>
                         <td><span onclick="showUserDrawer(${role.id})" style="color: #3b82f6; cursor: pointer; font-weight: 500;">${role.userCount}</span></td>
-                        <td onclick="showUserDrawer(${role.id})">
-                            <span class="status-badge ${role.status === 'active' ? 'status-active' : 'status-inactive'}">
-                                ${role.status === 'active' ? translations[lang].rolesStatusActive : translations[lang].rolesStatusInactive}
-                            </span>
-                        </td>
                         <td onclick="showUserDrawer(${role.id})">${role.createTime}</td>
                         <td>
                             <div class="table-actions">
@@ -1168,7 +1135,6 @@
             modalTitle.textContent = translations[lang].rolesModalTitleEdit;
             document.getElementById('roleName').value = role.name;
             document.getElementById('roleDesc').value = role.description;
-            document.getElementById('roleStatus').value = role.status;
 
             // 渲染权限树
             renderPermissionTree();
@@ -1184,24 +1150,22 @@
         function saveRole() {
             const roleName = document.getElementById('roleName').value.trim();
             const roleDesc = document.getElementById('roleDesc').value.trim();
-            const roleStatus = document.getElementById('roleStatus').value;
             const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             if (!roleName) {
                 alert(translations[lang].rolesAlertRoleNameRequired);
                 return;
             }
-            
+
             // 获取选中的权限
             const selectedPerms = Array.from(document.querySelectorAll('#permissionTree input[type="checkbox"]:checked')).map(cb => cb.value);
-            
+
             if (currentEditingRole) {
                 // 更新角色
                 const role = rolesData.find(r => r.id === currentEditingRole);
                 if (role) {
                     role.name = roleName;
                     role.description = roleDesc;
-                    role.status = roleStatus;
                     role.permissions = selectedPerms;
                 }
             } else {
@@ -1211,12 +1175,13 @@
                     name: roleName,
                     description: roleDesc,
                     permissions: selectedPerms,
-                    status: roleStatus,
+                    userCount: 0,
+                    users: [],
                     createTime: new Date().toLocaleString('zh-CN')
                 };
                 rolesData.push(newRole);
             }
-            
+
             renderRolesTable();
             closeRoleModal();
         }
