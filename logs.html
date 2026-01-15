@@ -210,34 +210,6 @@
             background: #f8fafc;
         }
 
-        .log-type {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .log-type.info {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .log-type.warning {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .log-type.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .log-type.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
         /* 分页 */
         .pagination {
             display: flex;
@@ -483,11 +455,11 @@
             { time: '2024-01-20 10:25:30', user: { zh: '张三', en: 'Zhang San' }, module: '角色管理', type: 'update', content: { zh: '更新角色权限：运维人员', en: 'Update Role Permission: Operator' }, ip: '192.168.1.101', status: 'success' },
             { time: '2024-01-20 10:20:15', user: { zh: '李四', en: 'Li Si' }, module: '告警管理', type: 'query', content: { zh: '查询告警列表', en: 'Query Alarm List' }, ip: '192.168.1.102', status: 'success' },
             { time: '2024-01-20 10:15:00', user: { zh: '管理员', en: 'Administrator' }, module: '人员管理', type: 'delete', content: { zh: '删除用户：测试用户', en: 'Delete User: Test User' }, ip: '192.168.1.100', status: 'success' },
-            { time: '2024-01-20 10:10:45', user: { zh: '王五', en: 'Wang Wu' }, module: '设备管理', type: 'update', content: { zh: '更新设备参数：电池温度保护', en: 'Update Device Parameter: Battery Temperature Protection' }, ip: '192.168.1.103', status: 'warning' },
+            { time: '2024-01-20 10:10:45', user: { zh: '王五', en: 'Wang Wu' }, module: '设备管理', type: 'update', content: { zh: '更新设备参数：电池温度保护', en: 'Update Device Parameter: Battery Temperature Protection' }, ip: '192.168.1.103', status: 'failed' },
             { time: '2024-01-20 10:05:30', user: { zh: '管理员', en: 'Administrator' }, module: '菜单管理', type: 'create', content: { zh: '新增菜单：日志管理', en: 'Add Menu: Log Management' }, ip: '192.168.1.100', status: 'success' },
             { time: '2024-01-20 10:00:15', user: { zh: '张三', en: 'Zhang San' }, module: '站点管理', type: 'update', content: { zh: '更新站点信息：北京站', en: 'Update Site Information: Beijing Station' }, ip: '192.168.1.101', status: 'success' },
             { time: '2024-01-20 09:55:00', user: { zh: '李四', en: 'Li Si' }, module: '设备管理', type: 'query', content: { zh: '导出设备列表', en: 'Export Device List' }, ip: '192.168.1.102', status: 'success' },
-            { time: '2024-01-20 09:50:45', user: { zh: '管理员', en: 'Administrator' }, module: '系统设置', type: 'update', content: { zh: '更新系统配置', en: 'Update System Configuration' }, ip: '192.168.1.100', status: 'error' },
+            { time: '2024-01-20 09:50:45', user: { zh: '管理员', en: 'Administrator' }, module: '系统设置', type: 'update', content: { zh: '更新系统配置', en: 'Update System Configuration' }, ip: '192.168.1.100', status: 'failed' },
             { time: '2024-01-20 09:45:30', user: { zh: '王五', en: 'Wang Wu' }, module: '告警管理', type: 'update', content: { zh: '处理告警：电池温度过高', en: 'Handle Alarm: Battery Temperature Too High' }, ip: '192.168.1.103', status: 'success' }
         ];
 
@@ -660,11 +632,7 @@
                         </span>
                     </td>
                     <td>${contentText}</td>
-                    <td>
-                        <span class="log-type ${log.status}">
-                            ${getStatusText(log.status)}
-                        </span>
-                    </td>
+                    <td style="color: ${log.status === 'success' ? '#166534' : '#dc2626'}">${getStatusText(log.status)}</td>
                     <td>${userName}</td>
                     <td>${log.ip}</td>
                     <td>${log.time}</td>
@@ -727,11 +695,7 @@
                     <td>${methodText}</td>
                     <td>${log.browser}</td>
                     <td>${log.os}</td>
-                    <td>
-                        <span class="log-type ${log.status === 'success' ? 'success' : 'error'}">
-                            ${log.status === 'success' ? translations[lang].commonStatusSuccess : translations[lang].commonStatusError}
-                        </span>
-                    </td>
+                    <td style="color: ${log.status === 'success' ? '#166534' : '#dc2626'}">${log.status === 'success' ? translations[lang].commonStatusSuccess : translations[lang].commonStatusFailed}</td>
                     <td>${log.ip}</td>
                     <td>${log.time}</td>
                 </tr>
@@ -853,8 +817,7 @@
             const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
             switch(status) {
                 case 'success': return translations[lang].commonStatusSuccess;
-                case 'warning': return translations[lang].commonStatusWarning;
-                case 'error': return translations[lang].commonStatusError;
+                case 'failed': return translations[lang].commonStatusFailed;
                 default: return status;
             }
         }

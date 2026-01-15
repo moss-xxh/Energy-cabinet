@@ -1799,8 +1799,7 @@ const translations = {
 
         // === 通用状态翻译 ===
         commonStatusSuccess: '成功',
-        commonStatusWarning: '警告',
-        commonStatusError: '失败',
+        commonStatusFailed: '失败',
 
         // === 日志操作类型翻译 ===
         logsOperationTypeCreate: '新增',
@@ -4338,8 +4337,7 @@ const translations = {
 
         // === Common Status Translations ===
         commonStatusSuccess: 'Success',
-        commonStatusWarning: 'Warning',
-        commonStatusError: 'Failed',
+        commonStatusFailed: 'Failed',
 
         // === Logs Operation Type Translations ===
         logsOperationTypeCreate: 'Create',
