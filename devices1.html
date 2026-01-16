@@ -2186,14 +2186,14 @@
                         <input type="text" id="searchInput" class="form-input" data-translate-placeholder="devicesSearchPlaceholder" placeholder="搜索设备..." style="width: 250px; height: 40px; padding-left: 40px;">
                     </div>
                     <select id="deviceStatusFilter" class="form-input" style="width: 130px; height: 40px; padding-left: 12px;">
-                        <option value="">设备状态</option>
-                        <option value="online">在线</option>
-                        <option value="offline">离线</option>
+                        <option value="" data-translate="emsDeviceStatus">设备状态</option>
+                        <option value="online" data-translate="emsStatusOnline">在线</option>
+                        <option value="offline" data-translate="emsStatusOffline">离线</option>
                     </select>
                     <select id="updateStatusFilter" class="form-input" style="width: 150px; height: 40px; padding-left: 12px;">
-                        <option value="">更新状态</option>
-                        <option value="updatable">可更新</option>
-                        <option value="latest">已是最新</option>
+                        <option value="" data-translate="emsUpdateStatus">更新状态</option>
+                        <option value="updatable" data-translate="emsUpdatable">可更新</option>
+                        <option value="latest" data-translate="emsLatest">已是最新</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 12px;">
@@ -2212,7 +2212,7 @@
             <div style="margin-bottom: 20px; display: flex; gap: 12px; align-items: center;">
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; padding: 8px 12px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
                     <input type="checkbox" id="selectAllPagesDevices" onchange="toggleSelectAllPagesDevices()" style="width: 18px; height: 18px; cursor: pointer;">
-                    <span style="font-size: 14px; color: #64748b; font-weight: 500;">全部设备</span>
+                    <span style="font-size: 14px; color: #64748b; font-weight: 500;" data-translate="emsAllDevices">全部设备</span>
                 </label>
                 <div style="width: 1px; height: 24px; background: #e2e8f0;"></div>
                 <button class="btn btn-primary" onclick="showOTAUpgrade()" style="height: 40px; padding: 0 16px; width: auto; display: inline-block; background: #10b981;">
@@ -2221,7 +2221,7 @@
                 </button>
                 <button class="btn" onclick="showUpgradeProgress(true)" style="height: 40px; padding: 0 16px; width: auto; display: inline-block;">
                     <i class="fas fa-tasks"></i>
-                    <span>升级进度</span>
+                    <span data-translate="emsUpgradeProgress">升级进度</span>
                 </button>
             </div>
             <div style="overflow-x: auto;">
@@ -2234,9 +2234,9 @@
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="devicesTableCode">设备编码</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="devicesTableName">设备名称</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="devicesTableSite">站点</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">版本</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">设备状态</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;">更新状态</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="emsVersion">版本</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="emsDeviceStatus">设备状态</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--text-secondary); vertical-align: middle;" data-translate="emsUpdateStatus">更新状态</th>
                         </tr>
                     </thead>
                     <tbody id="deviceTableBody">
@@ -2795,16 +2795,17 @@
         // 获取更新状态
         function getUpdateStatus(currentVersion) {
             const comparison = compareVersion(currentVersion, LATEST_VERSION);
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
             if (comparison < 0) {
                 return {
-                    text: '可更新',
+                    text: translations[lang].emsUpdatable || '可更新',
                     color: '#3b82f6',
                     bgColor: '#eff6ff',
                     icon: 'fa-arrow-up'
                 };
             } else {
                 return {
-                    text: '已是最新',
+                    text: translations[lang].emsLatest || '已是最新',
                     color: '#10b981',
                     bgColor: '#f0fdf4',
                     icon: 'fa-check-circle'
@@ -2833,14 +2834,16 @@
         // 显示离线设备提示
         function showOfflineDeviceToast() {
             // 创建提示元素
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
+            const offlineMsg = translations[lang].emsDeviceOffline || '设备离线，无法升级';
             let toast = document.getElementById('offlineDeviceToast');
             if (!toast) {
                 toast = document.createElement('div');
                 toast.id = 'offlineDeviceToast';
                 toast.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #fef2f2; color: #dc2626; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; display: flex; align-items: center; gap: 8px; font-size: 14px; border: 1px solid #fecaca; transition: opacity 0.3s ease;';
-                toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> 设备离线，无法升级';
                 document.body.appendChild(toast);
             }
+            toast.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + offlineMsg;
 
             // 显示提示
             toast.style.opacity = '1';
@@ -2886,13 +2889,14 @@
 
                 // 获取设备在线/离线状态
                 const isOnline = device.deviceStatus === 'online';
+                const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
                 const deviceStatusInfo = isOnline
-                    ? { text: '在线', color: '#10b981', bgColor: '#f0fdf4', icon: 'fa-circle' }
-                    : { text: '离线', color: '#6b7280', bgColor: '#f3f4f6', icon: 'fa-unlink' };
+                    ? { text: translations[lang].emsStatusOnline || '在线', color: '#10b981', bgColor: '#f0fdf4', icon: 'fa-circle' }
+                    : { text: translations[lang].emsStatusOffline || '离线', color: '#6b7280', bgColor: '#f3f4f6', icon: 'fa-unlink' };
 
                 tr.innerHTML = `
                     <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation(); ${isOnline ? '' : 'showOfflineDeviceToast();'}">
-                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: ${isOnline ? 'pointer' : 'not-allowed'}; opacity: ${isOnline ? '1' : '0.4'}; filter: ${isOnline ? 'none' : 'grayscale(100%)'}; pointer-events: ${isOnline ? 'auto' : 'none'};" ${isOnline ? '' : 'disabled'} title="${isOnline ? '' : '设备离线，无法升级'}">
+                        <input type="checkbox" class="device-checkbox" data-device-id="${device.id}" data-device-code="${device.code}" data-device-name="${deviceName}" onchange="updateSelectedDevices()" style="width: 16px; height: 16px; cursor: ${isOnline ? 'pointer' : 'not-allowed'}; opacity: ${isOnline ? '1' : '0.4'}; filter: ${isOnline ? 'none' : 'grayscale(100%)'}; pointer-events: ${isOnline ? 'auto' : 'none'};" ${isOnline ? '' : 'disabled'} title="${isOnline ? '' : (translations[lang].emsDeviceOffline || '设备离线，无法升级')}">
                     </td>
                     <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${device.code}</td>
                     <td style="padding: 12px; ${!isOnline ? 'opacity: 0.6;' : ''}">${deviceName}</td>
@@ -3930,143 +3934,144 @@
 
         // 模拟升级进度数据（用于演示）
         function simulateUpgradeProgress() {
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
             otaUpgradeDetails = [
                 // 升级中 - 5个设备
                 {
                     id: 'demo1',
                     code: 'CAB-001',
-                    name: '储能柜#1',
-                    site: '科技园区站',
+                    name: { zh: '储能柜#1', en: 'ESS Cabinet #1' },
+                    site: { zh: '科技园区站', en: 'Tech Park Station' },
                     status: 'upgrading',
                     progress: 25,
-                    message: '正在下载固件...',
+                    message: { zh: '正在下载固件...', en: 'Downloading firmware...' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date().toLocaleTimeString('zh-CN', { hour12: false }),
-                    estimatedTime: '约5分钟'
+                    startTime: new Date().toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    estimatedTime: { zh: '约5分钟', en: 'About 5 min' }
                 },
                 {
                     id: 'demo2',
                     code: 'CAB-002',
-                    name: '储能柜#2',
-                    site: '科技园区站',
+                    name: { zh: '储能柜#2', en: 'ESS Cabinet #2' },
+                    site: { zh: '科技园区站', en: 'Tech Park Station' },
                     status: 'upgrading',
                     progress: 45,
-                    message: '正在验证固件...',
+                    message: { zh: '正在验证固件...', en: 'Verifying firmware...' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 120000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    estimatedTime: '约3分钟'
+                    startTime: new Date(Date.now() - 120000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    estimatedTime: { zh: '约3分钟', en: 'About 3 min' }
                 },
                 {
                     id: 'demo3',
                     code: 'CAB-003',
-                    name: '储能柜#3',
-                    site: '科技园区站',
+                    name: { zh: '储能柜#3', en: 'ESS Cabinet #3' },
+                    site: { zh: '科技园区站', en: 'Tech Park Station' },
                     status: 'upgrading',
                     progress: 68,
-                    message: '正在安装固件...',
+                    message: { zh: '正在安装固件...', en: 'Installing firmware...' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 200000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    estimatedTime: '约2分钟'
+                    startTime: new Date(Date.now() - 200000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    estimatedTime: { zh: '约2分钟', en: 'About 2 min' }
                 },
                 {
                     id: 'demo4',
                     code: 'CAB-004',
-                    name: '储能柜#4',
-                    site: '工业园区站',
+                    name: { zh: '储能柜#4', en: 'ESS Cabinet #4' },
+                    site: { zh: '工业园区站', en: 'Industrial Park Station' },
                     status: 'upgrading',
                     progress: 82,
-                    message: '正在安装固件...',
+                    message: { zh: '正在安装固件...', en: 'Installing firmware...' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 240000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    estimatedTime: '约1分钟'
+                    startTime: new Date(Date.now() - 240000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    estimatedTime: { zh: '约1分钟', en: 'About 1 min' }
                 },
                 {
                     id: 'demo5',
                     code: 'CAB-005',
-                    name: '储能柜#5',
-                    site: '工业园区站',
+                    name: { zh: '储能柜#5', en: 'ESS Cabinet #5' },
+                    site: { zh: '工业园区站', en: 'Industrial Park Station' },
                     status: 'upgrading',
                     progress: 92,
-                    message: '正在重启设备...',
+                    message: { zh: '正在重启设备...', en: 'Rebooting device...' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 280000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    estimatedTime: '约30秒'
+                    startTime: new Date(Date.now() - 280000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    estimatedTime: { zh: '约30秒', en: 'About 30 sec' }
                 },
 
                 // 成功 - 3个设备
                 {
                     id: 'demo6',
                     code: 'CAB-006',
-                    name: '储能柜#6',
-                    site: '高新园区站',
+                    name: { zh: '储能柜#6', en: 'ESS Cabinet #6' },
+                    site: { zh: '高新园区站', en: 'High-Tech Park Station' },
                     status: 'success',
                     progress: 100,
-                    message: '升级成功',
+                    message: { zh: '升级成功', en: 'Upgrade successful' },
                     currentVersion: LATEST_VERSION,
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 600000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    endTime: new Date(Date.now() - 300000).toLocaleTimeString('zh-CN', { hour12: false })
+                    startTime: new Date(Date.now() - 600000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    endTime: new Date(Date.now() - 300000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false })
                 },
                 {
                     id: 'demo7',
                     code: 'CAB-007',
-                    name: '储能柜#7',
-                    site: '高新园区站',
+                    name: { zh: '储能柜#7', en: 'ESS Cabinet #7' },
+                    site: { zh: '高新园区站', en: 'High-Tech Park Station' },
                     status: 'success',
                     progress: 100,
-                    message: '升级成功',
+                    message: { zh: '升级成功', en: 'Upgrade successful' },
                     currentVersion: LATEST_VERSION,
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 720000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    endTime: new Date(Date.now() - 420000).toLocaleTimeString('zh-CN', { hour12: false })
+                    startTime: new Date(Date.now() - 720000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    endTime: new Date(Date.now() - 420000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false })
                 },
                 {
                     id: 'demo8',
                     code: 'CAB-008',
-                    name: '储能柜#8',
-                    site: '商业园区站',
+                    name: { zh: '储能柜#8', en: 'ESS Cabinet #8' },
+                    site: { zh: '商业园区站', en: 'Business Park Station' },
                     status: 'success',
                     progress: 100,
-                    message: '升级成功',
+                    message: { zh: '升级成功', en: 'Upgrade successful' },
                     currentVersion: LATEST_VERSION,
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 900000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    endTime: new Date(Date.now() - 600000).toLocaleTimeString('zh-CN', { hour12: false })
+                    startTime: new Date(Date.now() - 900000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    endTime: new Date(Date.now() - 600000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false })
                 },
 
                 // 失败 - 2个设备
                 {
                     id: 'demo9',
                     code: 'CAB-009',
-                    name: '储能柜#9',
-                    site: '商业园区站',
+                    name: { zh: '储能柜#9', en: 'ESS Cabinet #9' },
+                    site: { zh: '商业园区站', en: 'Business Park Station' },
                     status: 'failed',
                     progress: 35,
-                    message: '固件验证失败，文件签名校验错误',
+                    message: { zh: '固件验证失败，文件签名校验错误', en: 'Firmware verification failed, signature error' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 480000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    endTime: new Date(Date.now() - 360000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    errorMessage: '固件签名验证失败，请联系技术支持'
+                    startTime: new Date(Date.now() - 480000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    endTime: new Date(Date.now() - 360000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    errorMessage: { zh: '固件签名验证失败，请联系技术支持', en: 'Firmware signature failed, please contact support' }
                 },
                 {
                     id: 'demo10',
                     code: 'CAB-010',
-                    name: '储能柜#10',
-                    site: '研发园区站',
+                    name: { zh: '储能柜#10', en: 'ESS Cabinet #10' },
+                    site: { zh: '研发园区站', en: 'R&D Park Station' },
                     status: 'failed',
                     progress: 58,
-                    message: '设备通信超时，升级中断',
+                    message: { zh: '设备通信超时，升级中断', en: 'Device timeout, upgrade interrupted' },
                     currentVersion: 'v2.4.8',
                     targetVersion: LATEST_VERSION,
-                    startTime: new Date(Date.now() - 540000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    endTime: new Date(Date.now() - 420000).toLocaleTimeString('zh-CN', { hour12: false }),
-                    errorMessage: '设备通信超时，请检查网络连接后重试'
+                    startTime: new Date(Date.now() - 540000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    endTime: new Date(Date.now() - 420000).toLocaleTimeString(lang === 'en' ? 'en-US' : 'zh-CN', { hour12: false }),
+                    errorMessage: { zh: '设备通信超时，请检查网络连接后重试', en: 'Device timeout, please check network and retry' }
                 }
             ];
 
@@ -4123,6 +4128,10 @@
                 simulateUpgradeProgress();
             }
 
+            // 获取当前语言
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
+            const t = translations[lang];
+
             // 创建抽屉遮罩
             const overlay = document.createElement('div');
             overlay.id = 'upgradeProgressOverlay';
@@ -4147,7 +4156,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1e293b;">
                                 <i class="fas fa-tasks" style="margin-right: 8px; color: #3b82f6;"></i>
-                                升级进度
+                                ${t.emsUpgradeProgress || '升级进度'}
                             </h3>
                             <button onclick="closeUpgradeProgress()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; padding: 4px; width: 32px; height: 32px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
                                 <i class="fas fa-times"></i>
@@ -4160,13 +4169,13 @@
                     <div style="padding: 0 24px; border-bottom: 1px solid #e2e8f0; flex-shrink: 0;">
                         <div style="display: flex; gap: 4px;">
                             <button class="upgrade-tab-btn" data-tab="upgrading" style="flex: 1; padding: 12px 16px; background: none; border: none; border-bottom: 2px solid #3b82f6; color: #3b82f6; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                                <i class="fas fa-spinner"></i> 升级中 (${upgradingCount})
+                                <i class="fas fa-spinner"></i> ${t.emsUpgrading || '升级中'} (${upgradingCount})
                             </button>
                             <button class="upgrade-tab-btn" data-tab="success" style="flex: 1; padding: 12px 16px; background: none; border: none; border-bottom: 2px solid transparent; color: #64748b; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                                <i class="fas fa-check-circle"></i> 成功 (${successCount})
+                                <i class="fas fa-check-circle"></i> ${t.emsUpgradeSuccess || '成功'} (${successCount})
                             </button>
                             <button class="upgrade-tab-btn" data-tab="failed" style="flex: 1; padding: 12px 16px; background: none; border: none; border-bottom: 2px solid transparent; color: #64748b; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                                <i class="fas fa-times-circle"></i> 失败 (${failCount})
+                                <i class="fas fa-times-circle"></i> ${t.emsUpgradeFailed || '失败'} (${failCount})
                             </button>
                         </div>
                     </div>
@@ -4180,32 +4189,33 @@
                                 let statusColor = '#94a3b8';
                                 let statusBg = '#f1f5f9';
                                 let statusIcon = 'fa-clock';
-                                let statusText = '等待升级';
+                                let statusText = t.emsWaitingUpgrade || '等待升级';
 
                                 if (device.status === 'upgrading') {
                                     statusColor = '#3b82f6';
                                     statusBg = '#eff6ff';
                                     statusIcon = 'fa-spinner fa-spin';
-                                    statusText = '升级中';
+                                    statusText = t.emsUpgrading || '升级中';
                                 } else if (device.status === 'success') {
                                     statusColor = '#10b981';
                                     statusBg = '#ecfdf5';
                                     statusIcon = 'fa-check-circle';
-                                    statusText = '升级成功';
+                                    statusText = t.emsUpgradeSuccessStatus || '升级成功';
                                 } else if (device.status === 'failed') {
                                     statusColor = '#ef4444';
                                     statusBg = '#fef2f2';
                                     statusIcon = 'fa-times-circle';
-                                    statusText = '升级失败';
+                                    statusText = t.emsUpgradeFailedStatus || '升级失败';
                                 }
 
+                                const deviceName = typeof device.name === 'object' ? device.name[lang] : device.name;
                                 return `
                                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                                         <!-- 设备信息和状态 -->
                                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                                             <div style="flex: 1;">
                                                 <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${device.code}</div>
-                                                <div style="font-size: 13px; color: #64748b;">${device.name}</div>
+                                                <div style="font-size: 13px; color: #64748b;">${deviceName}</div>
                                             </div>
                                             <div style="background: ${statusBg}; color: ${statusColor}; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
                                                 <i class="fas ${statusIcon}"></i>
@@ -4217,19 +4227,19 @@
                                         <div style="background: #f8fafc; border-radius: 8px; padding: 10px 12px;">
                                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
                                                 <div>
-                                                    <span style="color: #64748b;">当前版本:</span>
+                                                    <span style="color: #64748b;">${t.emsCurrentVersion || '当前版本'}:</span>
                                                     <span style="color: #1e293b; font-weight: 500; margin-left: 6px;">${device.currentVersion || 'v2.4.8'}</span>
                                                 </div>
                                                 <i class="fas fa-arrow-right" style="color: #cbd5e1;"></i>
                                                 <div>
-                                                    <span style="color: #64748b;">目标版本:</span>
+                                                    <span style="color: #64748b;">${t.emsTargetVersion || '目标版本'}:</span>
                                                     <span style="color: #3b82f6; font-weight: 600; margin-left: 6px;">${device.targetVersion || LATEST_VERSION}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 `;
-                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>暂无升级中的设备</div>'}
+                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>' + (t.emsNoUpgradingDevices || '暂无升级中的设备') + '</div>'}
                             </div>
 
                             <div class="upgrade-tab-panel" data-panel="success" style="display: none;">
@@ -4237,14 +4247,15 @@
                                 const statusColor = '#10b981';
                                 const statusBg = '#ecfdf5';
                                 const statusIcon = 'fa-check-circle';
-                                const statusText = '升级成功';
+                                const statusText = t.emsUpgradeSuccessStatus || '升级成功';
+                                const deviceName = typeof device.name === 'object' ? device.name[lang] : device.name;
 
                                 return `
                                     <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                                             <div style="flex: 1;">
                                                 <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${device.code}</div>
-                                                <div style="font-size: 13px; color: #64748b;">${device.name}</div>
+                                                <div style="font-size: 13px; color: #64748b;">${deviceName}</div>
                                             </div>
                                             <div style="background: ${statusBg}; color: ${statusColor}; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
                                                 <i class="fas ${statusIcon}"></i>
@@ -4254,21 +4265,21 @@
                                         <div style="background: #f8fafc; border-radius: 8px; padding: 10px 12px;">
                                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
                                                 <div>
-                                                    <span style="color: #64748b;">升级版本:</span>
+                                                    <span style="color: #64748b;">${t.emsUpgradeVersion || '升级版本'}:</span>
                                                     <span style="color: #3b82f6; font-weight: 600; margin-left: 6px;">${device.targetVersion || LATEST_VERSION}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 `;
-                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>暂无升级成功的设备</div>'}
+                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>' + (t.emsNoSuccessDevices || '暂无升级成功的设备') + '</div>'}
                             </div>
 
                             <div class="upgrade-tab-panel" data-panel="failed" style="display: none;">
                             ${otaUpgradeDetails.filter(d => d.status === 'failed').length > 0 ? `
                                 <div style="margin-bottom: 16px;">
                                     <button onclick="retryAllFailedInDrawer()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
-                                        <i class="fas fa-redo" style="margin-right: 6px;"></i>批量重新升级 (${otaUpgradeDetails.filter(d => d.status === 'failed').length})
+                                        <i class="fas fa-redo" style="margin-right: 6px;"></i>${t.emsBatchRetry || '批量重新升级'} (${otaUpgradeDetails.filter(d => d.status === 'failed').length})
                                     </button>
                                 </div>
                             ` : ''}
@@ -4276,14 +4287,16 @@
                                 const statusColor = '#ef4444';
                                 const statusBg = '#fef2f2';
                                 const statusIcon = 'fa-times-circle';
-                                const statusText = '升级失败';
+                                const statusText = t.emsUpgradeFailedStatus || '升级失败';
+                                const deviceName = typeof device.name === 'object' ? device.name[lang] : device.name;
+                                const deviceMessage = typeof device.message === 'object' ? device.message[lang] : device.message;
 
                                 return `
                                     <div style="background: white; border: 1px solid #fee2e2; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                                             <div style="flex: 1;">
                                                 <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${device.code}</div>
-                                                <div style="font-size: 13px; color: #64748b;">${device.name}</div>
+                                                <div style="font-size: 13px; color: #64748b;">${deviceName}</div>
                                             </div>
                                             <div style="background: ${statusBg}; color: ${statusColor}; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
                                                 <i class="fas ${statusIcon}"></i>
@@ -4293,21 +4306,21 @@
                                         <div style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
                                             <div style="font-size: 12px; color: #dc2626; display: flex; align-items: start; gap: 8px;">
                                                 <i class="fas fa-exclamation-triangle" style="margin-top: 2px;"></i>
-                                                <span style="flex: 1;">${device.message || '升级过程中发生错误'}</span>
+                                                <span style="flex: 1;">${deviceMessage || (t.emsUpgradeError || '升级过程中发生错误')}</span>
                                             </div>
                                         </div>
                                         <button onclick="retryUpgradeInDrawer('${device.id}')" style="padding: 6px 12px; background: white; color: #3b82f6; border: 1px solid #3b82f6; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='white'">
-                                            <i class="fas fa-redo" style="margin-right: 4px;"></i>重新升级
+                                            <i class="fas fa-redo" style="margin-right: 4px;"></i>${t.emsRetry || '重新升级'}
                                         </button>
                                     </div>
                                 `;
-                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>暂无升级失败的设备</div>'}
+                            }).join('') || '<div style="text-align: center; padding: 40px 20px; color: #94a3b8;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>' + (t.emsNoFailedDevices || '暂无升级失败的设备') + '</div>'}
                             </div>
                         ` : `
                             <div style="text-align: center; padding: 60px 20px;">
                                 <i class="fas fa-inbox" style="font-size: 64px; color: #cbd5e1; margin-bottom: 16px;"></i>
-                                <p style="font-size: 16px; color: #64748b; margin: 0;">暂无升级任务</p>
-                                <p style="font-size: 14px; color: #94a3b8; margin: 8px 0 0 0;">请先选择设备并开始EMS升级</p>
+                                <p style="font-size: 16px; color: #64748b; margin: 0;">${t.emsNoUpgradeTask || '暂无升级任务'}</p>
+                                <p style="font-size: 14px; color: #94a3b8; margin: 8px 0 0 0;">${t.emsSelectDeviceFirst || '请先选择设备并开始EMS升级'}</p>
                             </div>
                         `}
                     </div>

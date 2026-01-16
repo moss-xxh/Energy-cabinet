@@ -91,7 +91,7 @@ function createSidebar(currentPage = 'dashboard') {
                     </a>
                     <a href="devices1.html" class="menu-item submenu-item ${currentPage === 'devices1' ? 'active' : ''}">
                         <span style="font-size: 16px; margin-right: 10px;">🔄</span>
-                        <span>EMS升级</span>
+                        <span id="menuEmsUpgrade" data-translate="menuEmsUpgrade">EMS升级</span>
                     </a>
                 </div>
             </div>
@@ -288,6 +288,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const pageAttr = document.body.getAttribute('data-page');
     if (pageAttr) {
         initNavbar(pageAttr);
+        // 导航栏初始化后，延迟重新应用语言翻译（等待 common.js 加载完成）
+        setTimeout(function() {
+            if (typeof setLanguage === 'function' && typeof currentLang !== 'undefined') {
+                setLanguage(currentLang);
+            }
+        }, 100);
     }
 });
 

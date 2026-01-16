@@ -1304,12 +1304,12 @@
             <div class="stats-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-left: 3px solid #dc2626; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.3s;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="flex: 1;">
-                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;">故障消息策略</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;" data-translate="ruleStatsFault">故障消息策略</div>
                         <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px;">
                             <span id="faultCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
-                            <span style="font-size: 13px; color: #9ca3af;">条</span>
+                            <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsFault">
                             启用 3 个通知渠道
                         </div>
                     </div>
@@ -1323,12 +1323,12 @@
             <div class="stats-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-left: 3px solid #f59e0b; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.3s;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="flex: 1;">
-                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;">告警消息策略</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;" data-translate="ruleStatsWarning">告警消息策略</div>
                         <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px;">
                             <span id="warningCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
-                            <span style="font-size: 13px; color: #9ca3af;">条</span>
+                            <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsWarning">
                             启用 2 个通知渠道
                         </div>
                     </div>
@@ -1342,12 +1342,12 @@
             <div class="stats-card" style="background: #ffffff; border: 1px solid #e5e7eb; border-left: 3px solid #3b82f6; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.3s;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="flex: 1;">
-                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;">普通消息策略</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px; font-weight: 500;" data-translate="ruleStatsNotice">普通消息策略</div>
                         <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px;">
                             <span id="noticeCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
-                            <span style="font-size: 13px; color: #9ca3af;">条</span>
+                            <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsNotice">
                             启用 1 个通知渠道
                         </div>
                     </div>
@@ -1372,15 +1372,15 @@
                     <i class="fas fa-search rule-search-icon"></i>
                 </div>
                 <select class="filter-select" id="ruleAlarmLevelFilter" onchange="filterRules()">
-                    <option value="all">全部通知类型</option>
-                    <option value="fault">故障</option>
-                    <option value="warning">告警</option>
-                    <option value="notice">通知</option>
+                    <option value="all" data-translate="ruleFilterAllTypes">全部通知类型</option>
+                    <option value="fault" data-translate="ruleFilterFault">故障</option>
+                    <option value="warning" data-translate="ruleFilterWarning">告警</option>
+                    <option value="notice" data-translate="ruleFilterNotice">通知</option>
                 </select>
                 <select class="filter-select" id="ruleStatusFilter" onchange="filterRules()">
-                    <option value="all">全部状态</option>
-                    <option value="active">已启用</option>
-                    <option value="inactive">已禁用</option>
+                    <option value="all" data-translate="ruleFilterAllStatus">全部状态</option>
+                    <option value="active" data-translate="ruleFilterActive">已启用</option>
+                    <option value="inactive" data-translate="ruleFilterInactive">已禁用</option>
                 </select>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
                     <button class="btn btn-search" onclick="searchRules(document.getElementById('ruleSearchInput').value)">
@@ -1472,18 +1472,18 @@
                         <div class="policy-type-grid">
                             <div class="policy-type-card" onclick="selectPolicyType('fault')" data-type="fault">
                                 <div class="policy-type-icon" style="color: #dc2626;">⚠️</div>
-                                <div class="policy-type-name">故障</div>
-                                <div class="policy-type-desc">需要立即修复</div>
+                                <div class="policy-type-name" data-translate="rulePolicyTypeFault">故障</div>
+                                <div class="policy-type-desc" data-translate="rulePolicyTypeFaultDesc">需要立即修复</div>
                             </div>
                             <div class="policy-type-card" onclick="selectPolicyType('warning')" data-type="warning">
                                 <div class="policy-type-icon" style="color: #f59e0b;">⚡</div>
-                                <div class="policy-type-name">告警</div>
-                                <div class="policy-type-desc">需要查看关注</div>
+                                <div class="policy-type-name" data-translate="rulePolicyTypeWarning">告警</div>
+                                <div class="policy-type-desc" data-translate="rulePolicyTypeWarningDesc">需要查看关注</div>
                             </div>
                             <div class="policy-type-card" onclick="selectPolicyType('notice')" data-type="notice">
                                 <div class="policy-type-icon" style="color: #3b82f6;">ℹ️</div>
-                                <div class="policy-type-name">通知</div>
-                                <div class="policy-type-desc">知道就行</div>
+                                <div class="policy-type-name" data-translate="rulePolicyTypeNotice">通知</div>
+                                <div class="policy-type-desc" data-translate="rulePolicyTypeNoticeDesc">知道就行</div>
                             </div>
                         </div>
                         <input type="hidden" id="ruleType" name="ruleType" value="">
@@ -1496,12 +1496,12 @@
                                 <span data-translate="ruleNameLabel">策略名称</span>
                                 <span class="rule-form-required">*</span>
                             </label>
-                            <input type="text" class="form-input" id="ruleName" placeholder="请输入策略名称" required>
+                            <input type="text" class="form-input" id="ruleName" placeholder="请输入策略名称" data-translate-placeholder="ruleNamePlaceholder" required>
                         </div>
 
                         <div class="rule-form-group" style="margin-bottom: 0;">
                             <label class="rule-form-label" data-translate="ruleDescriptionLabel">策略描述</label>
-                            <input type="text" class="form-input" id="ruleDescription" placeholder="请输入策略描述">
+                            <input type="text" class="form-input" id="ruleDescription" placeholder="请输入策略描述" data-translate-placeholder="ruleDescPlaceholder">
                         </div>
                     </div>
 
@@ -1514,29 +1514,29 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                             <div>
                                 <select class="form-select" id="ruleParameter">
-                                    <option value="">选择监测参数</option>
-                                    <option value="temperature">温度</option>
-                                    <option value="soc">SOC</option>
-                                    <option value="voltage">电压</option>
-                                    <option value="current">电流</option>
-                                    <option value="power">功率</option>
+                                    <option value="" data-translate="ruleSelectParameter">选择监测参数</option>
+                                    <option value="temperature" data-translate="ruleParamTemp">温度</option>
+                                    <option value="soc" data-translate="ruleParamSOC">SOC</option>
+                                    <option value="voltage" data-translate="ruleParamVoltage">电压</option>
+                                    <option value="current" data-translate="ruleParamCurrent">电流</option>
+                                    <option value="power" data-translate="ruleParamPower">功率</option>
                                 </select>
                             </div>
                             <div>
                                 <select class="form-select" id="ruleOperator">
-                                    <option value="">选择条件</option>
-                                    <option value="gt">大于 (&gt;)</option>
-                                    <option value="lt">小于 (&lt;)</option>
-                                    <option value="gte">大于等于 (&gt;=)</option>
-                                    <option value="lte">小于等于 (&lt;=)</option>
-                                    <option value="eq">等于 (=)</option>
+                                    <option value="" data-translate="ruleSelectCondition">选择条件</option>
+                                    <option value="gt" data-translate="ruleOperatorGT">大于 (&gt;)</option>
+                                    <option value="lt" data-translate="ruleOperatorLT">小于 (&lt;)</option>
+                                    <option value="gte" data-translate="ruleOperatorGTE">大于等于 (&gt;=)</option>
+                                    <option value="lte" data-translate="ruleOperatorLTE">小于等于 (&lt;=)</option>
+                                    <option value="eq" data-translate="ruleOperatorEQ">等于 (=)</option>
                                 </select>
                             </div>
                             <div>
-                                <input type="number" class="form-input" id="ruleThreshold" placeholder="阈值">
+                                <input type="number" class="form-input" id="ruleThreshold" placeholder="阈值" data-translate-placeholder="ruleThresholdPlaceholder">
                             </div>
                             <div>
-                                <input type="number" class="form-input" id="ruleDuration" placeholder="持续时间(分钟)">
+                                <input type="number" class="form-input" id="ruleDuration" placeholder="持续时间(分钟)" data-translate-placeholder="ruleDurationPlaceholder">
                             </div>
                         </div>
                     </div>
@@ -1552,21 +1552,21 @@
                                 <input type="checkbox" id="notifyInApp" value="inapp" checked disabled>
                                 <span class="notification-checkbox-text">
                                     <i class="fas fa-bell" style="margin-right: 6px; color: #3b82f6;"></i>
-                                    站内信
+                                    <span data-translate="ruleNotifyInApp">站内信</span>
                                 </span>
                             </label>
                             <label class="notification-checkbox-label">
                                 <input type="checkbox" id="notifyEmail" value="email">
                                 <span class="notification-checkbox-text">
                                     <i class="fas fa-envelope" style="margin-right: 6px; color: #10b981;"></i>
-                                    邮件
+                                    <span data-translate="ruleNotifyEmail">邮件</span>
                                 </span>
                             </label>
                             <label class="notification-checkbox-label">
                                 <input type="checkbox" id="notifySms" value="sms">
                                 <span class="notification-checkbox-text">
                                     <i class="fas fa-mobile-alt" style="margin-right: 6px; color: #f59e0b;"></i>
-                                    短信
+                                    <span data-translate="ruleNotifySms">短信</span>
                                 </span>
                             </label>
                         </div>
@@ -1596,19 +1596,19 @@
                                 <div style="margin-bottom: 16px;">
                                     <label style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="ruleTimeWindow">时间窗口</label>
                                     <select class="form-select" id="noiseReductionWindow" style="max-width: 300px;">
-                                        <option value="5">5分钟</option>
-                                        <option value="10" selected>10分钟</option>
-                                        <option value="30">30分钟</option>
-                                        <option value="60">1小时</option>
-                                        <option value="120">2小时</option>
+                                        <option value="5" data-translate="ruleTime5Min">5分钟</option>
+                                        <option value="10" selected data-translate="ruleTime10Min">10分钟</option>
+                                        <option value="30" data-translate="ruleTime30Min">30分钟</option>
+                                        <option value="60" data-translate="ruleTime1Hour">1小时</option>
+                                        <option value="120" data-translate="ruleTime2Hour">2小时</option>
                                     </select>
                                 </div>
                                 <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; font-size: 13px; line-height: 1.6;">
                                     <div style="font-weight: 500; color: #1e40af; margin-bottom: 6px;">
                                         <i class="fas fa-info-circle" style="margin-right: 6px;"></i>
-                                        说明
+                                        <span data-translate="ruleInfoNote">说明</span>
                                     </div>
-                                    <div style="color: #1e3a8a;">
+                                    <div style="color: #1e3a8a;" data-translate="ruleDeduplicationNote">
                                         同一设备的相同消息在时间窗口内只保留一条，避免重复通知
                                     </div>
                                 </div>
@@ -1632,7 +1632,7 @@
                                 <div style="margin-bottom: 16px;">
                                     <label style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="ruleResolutionCondition">消除条件</label>
                                     <select class="form-select" id="autoResolutionCondition" style="max-width: 400px;">
-                                        <option value="normal" selected>参数恢复正常范围</option>
+                                        <option value="normal" selected data-translate="ruleResolutionNormal">参数恢复正常范围</option>
                                     </select>
                                     <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;" data-translate="ruleResolutionConditionHint">
                                         示例：温度>60℃消息 → 温度≤60℃自动消除
@@ -1642,7 +1642,7 @@
                                     <label style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;" data-translate="ruleResolutionDelay">消除延迟（防抖）</label>
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <input type="number" class="form-input" id="autoResolutionDelay" placeholder="5" value="5" min="0" max="60" style="max-width: 100px;">
-                                        <span style="font-size: 13px; color: var(--text-secondary);">分钟</span>
+                                        <span style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleUnitMinutes">分钟</span>
                                     </div>
                                     <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;" data-translate="ruleResolutionDelayHint">
                                         参数恢复正常并持续N分钟后才消除，避免频繁抖动
@@ -1682,8 +1682,8 @@
             <!-- 头部 -->
             <div class="rule-modal-header">
                 <div>
-                    <h2 class="rule-modal-title">添加设备</h2>
-                    <p class="rule-modal-subtitle">选择要下发规则的设备</p>
+                    <h2 class="rule-modal-title" data-translate="ruleAddDevice">添加设备</h2>
+                    <p class="rule-modal-subtitle" data-translate="ruleAddDeviceSubtitle">选择要下发规则的设备</p>
                 </div>
                 <button class="rule-modal-close-btn" onclick="closeAddDeviceModal()">
                     <i class="fas fa-times"></i>
@@ -1698,18 +1698,19 @@
                         type="text"
                         id="deviceSearchInput"
                         placeholder="搜索SN..."
+                        data-translate-placeholder="ruleSearchSNPlaceholder"
                         style="flex: 1; height: 40px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; color: var(--text-primary); transition: all 0.2s;"
                     />
                     <select id="deviceSiteFilter" style="flex: 1; height: 40px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; color: var(--text-primary); cursor: pointer;">
-                        <option value="">全部站点</option>
+                        <option value="" data-translate="ruleAllSites">全部站点</option>
                     </select>
                     <button class="btn btn-search" onclick="applyDeviceFilter()" style="height: 40px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 20px;">
                         <i class="fas fa-search"></i>
-                        查询
+                        <span data-translate="btnSearch">查询</span>
                     </button>
                     <button class="btn btn-reset" onclick="resetDeviceFilter()" style="height: 40px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 20px;">
                         <i class="fas fa-redo"></i>
-                        重置
+                        <span data-translate="btnReset">重置</span>
                     </button>
                 </div>
 
@@ -1726,10 +1727,10 @@
                                         style="width: 18px; height: 18px; cursor: pointer;"
                                     />
                                 </th>
-                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 35%;">设备名称</th>
-                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 25%;">SN</th>
-                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 25%;">站点</th>
-                                <th style="text-align: center; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 15%;">状态</th>
+                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 35%;" data-translate="ruleColDeviceName">设备名称</th>
+                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 25%;" data-translate="ruleColSN">SN</th>
+                                <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 25%;" data-translate="ruleColSite">站点</th>
+                                <th style="text-align: center; padding: 12px 16px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 15%;" data-translate="ruleColStatus">状态</th>
                             </tr>
                         </thead>
                         <tbody id="availableDeviceList">
@@ -1746,7 +1747,7 @@
                     onclick="closeAddDeviceModal()"
                     style="width: 100px; height: 40px; padding: 0; background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap;"
                 >
-                    取消
+                    <span data-translate="btnCancel">取消</span>
                 </button>
                 <button
                     class="btn btn-primary"
@@ -1754,7 +1755,7 @@
                     style="width: 120px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;"
                 >
                     <i class="fas fa-check"></i>
-                    确认添加
+                    <span data-translate="ruleConfirmAdd">确认添加</span>
                 </button>
             </div>
         </div>
@@ -1770,8 +1771,8 @@
                 <!-- 抽屉标题 -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <div>
-                        <h3 id="drawerTitle" style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: var(--text-primary);">已下发设备</h3>
-                        <p id="drawerSubtitle" style="margin: 0; font-size: 13px; color: var(--text-secondary);">规则"电池高温告警"已下发到 3 个设备</p>
+                        <h3 id="drawerTitle" style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: var(--text-primary);" data-translate="ruleDeployedDevices">已下发设备</h3>
+                        <p id="drawerSubtitle" style="margin: 0; font-size: 13px; color: var(--text-secondary);"></p>
                     </div>
                     <button onclick="closeDeviceDrawer()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
                 </div>
@@ -1783,21 +1784,22 @@
                             type="text"
                             id="snFilter"
                             placeholder="搜索设备SN..."
+                            data-translate-placeholder="ruleSearchSNPlaceholder"
                             style="flex: 1; height: 40px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; color: var(--text-primary);"
                         />
                         <select id="siteFilter" style="flex: 1; height: 40px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: white; color: var(--text-primary); cursor: pointer;">
-                            <option value="">全部站点</option>
+                            <option value="" data-translate="ruleAllSites">全部站点</option>
                         </select>
                         <button class="btn btn-search" onclick="filterDeployedDevices()" style="height: 40px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 20px;">
                             <i class="fas fa-search"></i>
-                            查询
+                            <span data-translate="btnSearch">查询</span>
                         </button>
                     </div>
                     <button class="btn btn-primary" onclick="openAddDeviceModal()" style="width: 100px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;">
-                        添加设备
+                        <span data-translate="ruleAddDevice">添加设备</span>
                     </button>
                     <button class="btn" onclick="batchRemoveDevices()" style="width: 100px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; margin-left: 8px; background: #ef4444; color: white;">
-                        批量移除
+                        <span data-translate="ruleBatchRemove">批量移除</span>
                     </button>
                 </div>
 
@@ -1809,9 +1811,9 @@
                                 <th style="text-align: center; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 50px;">
                                     <input type="checkbox" id="selectAllDeployedDevices" onchange="toggleAllDeployedDevices(this.checked)" style="cursor: pointer;">
                                 </th>
-                                <th style="text-align: left; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px;">设备SN</th>
-                                <th style="text-align: left; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px;">站点</th>
-                                <th style="text-align: center; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 80px;">操作</th>
+                                <th style="text-align: left; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px;" data-translate="ruleColDeviceSN">设备SN</th>
+                                <th style="text-align: left; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px;" data-translate="ruleColSite">站点</th>
+                                <th style="text-align: center; padding: 12px 8px; font-weight: 600; color: var(--text-secondary); font-size: 13px; width: 80px;" data-translate="ruleColOperation">操作</th>
                             </tr>
                         </thead>
                         <tbody id="deployedDeviceList">
@@ -1823,7 +1825,7 @@
                 <!-- 底部确认按钮 -->
                 <div style="padding: 20px 0 0 0; display: flex; justify-content: flex-end;">
                     <button class="btn btn-primary" onclick="closeDeviceDrawer()" style="width: 100px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
-                        确认
+                        <span data-translate="btnConfirm">确认</span>
                     </button>
                 </div>
             </div>
@@ -1836,7 +1838,7 @@
             <div class="rule-modal-header">
                 <div>
                     <h2 class="rule-modal-title" data-translate="ruleSelectTemplate">选择规则模版</h2>
-                    <p class="rule-modal-subtitle">选择一个系统模版作为起点</p>
+                    <p class="rule-modal-subtitle" data-translate="ruleSelectTemplateSubtitle">选择一个系统模版作为起点</p>
                 </div>
                 <button class="rule-modal-close-btn" onclick="closeTemplateModal()">
                     <i class="fas fa-times"></i>
@@ -1847,23 +1849,23 @@
                 <div style="display: flex; gap: 8px;">
                     <button class="template-tab active" onclick="switchTemplateTab('inverter')" data-tab="inverter">
                         <i class="fas fa-plug"></i>
-                        <span>逆变器</span>
+                        <span data-translate="ruleTabInverter">逆变器</span>
                     </button>
                     <button class="template-tab" onclick="switchTemplateTab('battery')" data-tab="battery">
                         <i class="fas fa-battery-three-quarters"></i>
-                        <span>电池</span>
+                        <span data-translate="ruleTabBattery">电池</span>
                     </button>
                     <button class="template-tab" onclick="switchTemplateTab('meter')" data-tab="meter">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span>电表</span>
+                        <span data-translate="ruleTabMeter">电表</span>
                     </button>
                     <button class="template-tab" onclick="switchTemplateTab('temperature')" data-tab="temperature">
                         <i class="fas fa-thermometer-half"></i>
-                        <span>温度</span>
+                        <span data-translate="ruleTabTemperature">温度</span>
                     </button>
                     <button class="template-tab" onclick="switchTemplateTab('fire')" data-tab="fire">
                         <i class="fas fa-fire-extinguisher"></i>
-                        <span>消防</span>
+                        <span data-translate="ruleTabFire">消防</span>
                     </button>
                 </div>
             </div>
@@ -1871,96 +1873,96 @@
                 <!-- 逆变器模版 -->
                 <div class="template-category" id="inverter-templates" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('inverterOverload')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">逆变器过载告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">功率超过额定功率110%</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_inverterOverload">逆变器过载告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_inverterOverload">功率超过额定功率110%</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('inverterFault')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">逆变器故障告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">逆变器工作异常</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_inverterFault">逆变器故障告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_inverterFault">逆变器工作异常</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('inverterTemp')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">逆变器温度告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">逆变器温度过高</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_inverterTemp">逆变器温度告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_inverterTemp">逆变器温度过高</div>
                     </div>
                 </div>
 
                 <!-- 电池模版 -->
                 <div class="template-category" id="battery-templates" style="display: none; grid-template-columns: 1fr; gap: 16px;">
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('batteryHighTemp')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电池高温告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">温度超过55°C时触发告警</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_batteryHighTemp">电池高温告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_batteryHighTemp">温度超过55°C时触发告警</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('batteryLowSOC')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电池SOC低告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">SOC低于20%时触发告警</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_batteryLowSOC">电池SOC低告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_batteryLowSOC">SOC低于20%时触发告警</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('batteryVoltageDiff')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电池压差告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">单体电压差超过0.3V</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_batteryVoltageDiff">电池压差告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_batteryVoltageDiff">单体电压差超过0.3V</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('batteryOverCurrent')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电池过流告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">充放电流超过额定值</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_batteryOverCurrent">电池过流告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_batteryOverCurrent">充放电流超过额定值</div>
                     </div>
                 </div>
 
                 <!-- 电表模版 -->
                 <div class="template-category" id="meter-templates" style="display: none; grid-template-columns: 1fr; gap: 16px;">
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('energyAbnormal')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">能源异常告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">能源消耗异常波动</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_energyAbnormal">能源异常告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_energyAbnormal">能源消耗异常波动</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('powerOverload')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">功率超标告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">总功率超过设定值</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_powerOverload">功率超标告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_powerOverload">总功率超过设定值</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('voltageAbnormal')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电压异常告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">电网电压超出正常范围</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_voltageAbnormal">电压异常告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_voltageAbnormal">电网电压超出正常范围</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('currentAbnormal')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">电流异常告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">电流超过额定值</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_currentAbnormal">电流异常告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_currentAbnormal">电流超过额定值</div>
                     </div>
                 </div>
 
                 <!-- 温度模版 -->
                 <div class="template-category" id="temperature-templates" style="display: none; grid-template-columns: 1fr; gap: 16px;">
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('envTempHigh')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">环境高温告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">环境温度超过35°C</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_envTempHigh">环境高温告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_envTempHigh">环境温度超过35°C</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('envTempLow')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">环境低温告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">环境温度低于0°C</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_envTempLow">环境低温告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_envTempLow">环境温度低于0°C</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('humidityHigh')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">高湿度告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">湿度超过85%</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_humidityHigh">高湿度告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_humidityHigh">湿度超过85%</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('deviceTempHigh')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">设备温度告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">设备表面温度过高</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_deviceTempHigh">设备温度告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_deviceTempHigh">设备表面温度过高</div>
                     </div>
                 </div>
 
                 <!-- 消防模版 -->
                 <div class="template-category" id="fire-templates" style="display: none; grid-template-columns: 1fr; gap: 16px;">
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('smokeAlarm')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">烟雾告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">检测到烟雾信号</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_smokeAlarm">烟雾告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_smokeAlarm">检测到烟雾信号</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('fireAlarm')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">火灾告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">检测到火灾信号</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_fireAlarm">火灾告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_fireAlarm">检测到火灾信号</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('waterLeakage')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">漏水告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">检测到漏水信号</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_waterLeakage">漏水告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_waterLeakage">检测到漏水信号</div>
                     </div>
                     <div style="border: 2px solid var(--border-color); border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;" onclick="selectTemplate('gasLeakage')">
-                        <div style="font-weight: 600; margin-bottom: 8px;">气体泄漏告警</div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">检测到可燃气体泄漏</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;" data-translate="ruleName_gasLeakage">气体泄漏告警</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);" data-translate="ruleDesc_gasLeakage">检测到可燃气体泄漏</div>
                     </div>
                 </div>
             </div>
@@ -1979,7 +1981,7 @@
         <div class="notification-panel-header">
             <h2 class="notification-panel-title">
                 <i class="fas fa-bell" style="margin-right: 8px;"></i>
-                告警通知策略
+                <span data-translate="notificationPanelTitle">告警通知策略</span>
             </h2>
             <button class="notification-panel-close" onclick="closeNotificationPanel()">
                 <i class="fas fa-times"></i>
@@ -1992,7 +1994,7 @@
             <div class="notification-section">
                 <div class="notification-section-title">
                     <i class="fas fa-layer-group" style="color: #64748b;"></i>
-                    <span>通知类型设置</span>
+                    <span data-translate="notificationTypeSettings">通知类型设置</span>
                 </div>
 
                 <!-- 故障 -->
@@ -2002,8 +2004,8 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-chevron-down" id="faultChevron" style="color: #64748b; font-size: 12px; transition: transform 0.3s; transform: rotate(-90deg);"></i>
                             <i class="fas fa-exclamation-circle" style="color: #dc2626; font-size: 16px;"></i>
-                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;">故障</span>
-                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;">需要立即修复</span>
+                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;" data-translate="notificationFault">故障</span>
+                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;" data-translate="notificationFaultDesc">需要立即修复</span>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="faultEnabled" checked>
@@ -2015,17 +2017,17 @@
                     <div id="faultContent" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, border-width 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; border-width: 0;">
                         <!-- 通知方式 -->
                         <div style="margin-bottom: 16px;">
-                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">通知方式</div>
+                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;" data-translate="notificationMethod">通知方式</div>
                             <div class="notification-checkbox-group">
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="faultSms" checked>
                                     <i class="fas fa-sms" style="color: #64748b;"></i>
-                                    <label for="faultSms">短信</label>
+                                    <label for="faultSms" data-translate="notificationSms">短信</label>
                                 </div>
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="faultEmail" checked>
                                     <i class="fas fa-envelope" style="color: #64748b;"></i>
-                                    <label for="faultEmail">邮件</label>
+                                    <label for="faultEmail" data-translate="notificationEmail">邮件</label>
                                 </div>
                             </div>
                         </div>
@@ -2035,7 +2037,7 @@
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
                                 <div style="display: flex; align-items: center; gap: 6px;">
                                     <i class="fas fa-volume-mute" style="color: #64748b; font-size: 13px;"></i>
-                                    <span style="font-size: 13px; color: #64748b;">消息降噪</span>
+                                    <span style="font-size: 13px; color: #64748b;" data-translate="notificationNoise">消息降噪</span>
                                 </div>
                                 <label class="switch" style="transform: scale(0.85);">
                                     <input type="checkbox" id="faultNoiseEnabled" checked onchange="toggleNoiseConfig('fault', this.checked)">
@@ -2045,9 +2047,9 @@
                             <div id="faultNoiseConfig" style="display: block; transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; max-height: 100px; opacity: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: #64748b;">
                                     <input type="number" class="form-input" id="faultRepeatInterval" value="30" min="1" max="120" style="width: 60px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>分钟内最多发送</span>
+                                    <span data-translate="notificationNoiseDesc">分钟内最多发送</span>
                                     <input type="number" class="form-input" id="faultMaxRepeats" value="3" min="1" max="20" style="width: 50px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>次</span>
+                                    <span data-translate="notificationNoiseTimes">次</span>
                                 </div>
                             </div>
                         </div>
@@ -2061,8 +2063,8 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-chevron-down" id="warningChevron" style="color: #64748b; font-size: 12px; transition: transform 0.3s; transform: rotate(-90deg);"></i>
                             <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 16px;"></i>
-                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;">告警</span>
-                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;">需要查看关注</span>
+                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;" data-translate="notificationWarning">告警</span>
+                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;" data-translate="notificationWarningDesc">需要查看关注</span>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="warningEnabled" checked>
@@ -2074,17 +2076,17 @@
                     <div id="warningContent" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, border-width 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; border-width: 0;">
                         <!-- 通知方式 -->
                         <div style="margin-bottom: 16px;">
-                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">通知方式</div>
+                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;" data-translate="notificationMethod">通知方式</div>
                             <div class="notification-checkbox-group">
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="warningSms">
                                     <i class="fas fa-sms" style="color: #64748b;"></i>
-                                    <label for="warningSms">短信</label>
+                                    <label for="warningSms" data-translate="notificationSms">短信</label>
                                 </div>
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="warningEmail" checked>
                                     <i class="fas fa-envelope" style="color: #64748b;"></i>
-                                    <label for="warningEmail">邮件</label>
+                                    <label for="warningEmail" data-translate="notificationEmail">邮件</label>
                                 </div>
                             </div>
                         </div>
@@ -2094,7 +2096,7 @@
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
                                 <div style="display: flex; align-items: center; gap: 6px;">
                                     <i class="fas fa-volume-mute" style="color: #64748b; font-size: 13px;"></i>
-                                    <span style="font-size: 13px; color: #64748b;">消息降噪</span>
+                                    <span style="font-size: 13px; color: #64748b;" data-translate="notificationNoise">消息降噪</span>
                                 </div>
                                 <label class="switch" style="transform: scale(0.85);">
                                     <input type="checkbox" id="warningNoiseEnabled" checked onchange="toggleNoiseConfig('warning', this.checked)">
@@ -2104,9 +2106,9 @@
                             <div id="warningNoiseConfig" style="display: block; transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; max-height: 100px; opacity: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: #64748b;">
                                     <input type="number" class="form-input" id="warningRepeatInterval" value="30" min="1" max="120" style="width: 60px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>分钟内最多发送</span>
+                                    <span data-translate="notificationNoiseDesc">分钟内最多发送</span>
                                     <input type="number" class="form-input" id="warningMaxRepeats" value="3" min="1" max="20" style="width: 50px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>次</span>
+                                    <span data-translate="notificationNoiseTimes">次</span>
                                 </div>
                             </div>
                         </div>
@@ -2120,8 +2122,8 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-chevron-down" id="noticeChevron" style="color: #64748b; font-size: 12px; transition: transform 0.3s; transform: rotate(-90deg);"></i>
                             <i class="fas fa-info-circle" style="color: #3b82f6; font-size: 16px;"></i>
-                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;">通知</span>
-                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;">知道就行</span>
+                            <span style="font-weight: 600; font-size: 14px; color: #1e293b;" data-translate="notificationNotice">通知</span>
+                            <span style="font-size: 12px; color: #64748b; margin-left: 4px;" data-translate="notificationNoticeDesc">知道就行</span>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="noticeEnabled" checked>
@@ -2133,17 +2135,17 @@
                     <div id="noticeContent" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, border-width 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; border-width: 0;">
                         <!-- 通知方式 -->
                         <div style="margin-bottom: 16px;">
-                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">通知方式</div>
+                            <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;" data-translate="notificationMethod">通知方式</div>
                             <div class="notification-checkbox-group">
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="noticeSms">
                                     <i class="fas fa-sms" style="color: #64748b;"></i>
-                                    <label for="noticeSms">短信</label>
+                                    <label for="noticeSms" data-translate="notificationSms">短信</label>
                                 </div>
                                 <div class="notification-checkbox-item">
                                     <input type="checkbox" id="noticeEmail" checked>
                                     <i class="fas fa-envelope" style="color: #64748b;"></i>
-                                    <label for="noticeEmail">邮件</label>
+                                    <label for="noticeEmail" data-translate="notificationEmail">邮件</label>
                                 </div>
                             </div>
                         </div>
@@ -2153,7 +2155,7 @@
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
                                 <div style="display: flex; align-items: center; gap: 6px;">
                                     <i class="fas fa-volume-mute" style="color: #64748b; font-size: 13px;"></i>
-                                    <span style="font-size: 13px; color: #64748b;">消息降噪</span>
+                                    <span style="font-size: 13px; color: #64748b;" data-translate="notificationNoise">消息降噪</span>
                                 </div>
                                 <label class="switch" style="transform: scale(0.85);">
                                     <input type="checkbox" id="noticeNoiseEnabled" checked onchange="toggleNoiseConfig('notice', this.checked)">
@@ -2163,9 +2165,9 @@
                             <div id="noticeNoiseConfig" style="display: block; transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; max-height: 100px; opacity: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: #64748b;">
                                     <input type="number" class="form-input" id="noticeRepeatInterval" value="30" min="1" max="120" style="width: 60px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>分钟内最多发送</span>
+                                    <span data-translate="notificationNoiseDesc">分钟内最多发送</span>
                                     <input type="number" class="form-input" id="noticeMaxRepeats" value="3" min="1" max="20" style="width: 50px; text-align: center; height: 32px; font-size: 13px;">
-                                    <span>次</span>
+                                    <span data-translate="notificationNoiseTimes">次</span>
                                 </div>
                             </div>
                         </div>
@@ -2176,16 +2178,16 @@
 
         <!-- 面板底部 -->
         <div class="notification-panel-footer">
-            <button class="btn btn-secondary" onclick="closeNotificationPanel()">取消</button>
+            <button class="btn btn-secondary" onclick="closeNotificationPanel()" data-translate="btnCancel">取消</button>
             <button class="btn btn-primary" onclick="saveNotificationSettings()">
-                <i class="fas fa-save" style="margin-right: 4px;"></i>保存
+                <i class="fas fa-save" style="margin-right: 4px;"></i><span data-translate="btnSave">保存</span>
             </button>
         </div>
     </div>
 
     <!-- 引入通用脚本 -->
+    <script src="common.js"></script>
     <script src="navbar.js"></script>
-    <script src="i18n.js"></script>
 
     <script>
         // 全局规则数据
@@ -2193,10 +2195,10 @@
             // 系统模版
             {
                 id: 'rule-001',
-                name: '电池高温告警',
-                description: '温度超过55°C时触发告警',
+                nameKey: 'ruleName_batteryHighTemp',
+                descKey: 'ruleDesc_batteryHighTemp',
+                condKey: 'ruleCond_batteryHighTemp',
                 type: 'system',
-                condition: '温度 > 55°C 持续5分钟',
                 notifications: ['短信', '邮箱', 'APP推送'],
                 alarmLevel: 'fault',
                 status: 'active',
@@ -2205,10 +2207,10 @@
             },
             {
                 id: 'rule-002',
-                name: '电池SOC低告警',
-                description: 'SOC低于20%时触发告警',
+                nameKey: 'ruleName_batteryLowSOC',
+                descKey: 'ruleDesc_batteryLowSOC',
+                condKey: 'ruleCond_batteryLowSOC',
                 type: 'system',
-                condition: 'SOC < 20% 持续3分钟',
                 notifications: ['短信', '站内信'],
                 alarmLevel: 'warning',
                 status: 'active',
@@ -2217,10 +2219,10 @@
             },
             {
                 id: 'rule-003',
-                name: '逆变器过载告警',
-                description: '功率超过额定功率110%',
+                nameKey: 'ruleName_inverterOverload',
+                descKey: 'ruleDesc_inverterOverload',
+                condKey: 'ruleCond_inverterOverload',
                 type: 'system',
-                condition: '功率 > 110% 持续2分钟',
                 notifications: ['短信', '邮箱'],
                 alarmLevel: 'fault',
                 status: 'inactive',
@@ -2229,10 +2231,10 @@
             },
             {
                 id: 'rule-004',
-                name: '能源异常告警',
-                description: '能源消耗异常波动',
+                nameKey: 'ruleName_energyAbnormal',
+                descKey: 'ruleDesc_energyAbnormal',
+                condKey: 'ruleCond_energyAbnormal',
                 type: 'system',
-                condition: '波动 > 30% 持续10分钟',
                 notifications: ['短信', '邮箱', '站内信'],
                 alarmLevel: 'notice',
                 status: 'active',
@@ -2242,10 +2244,10 @@
             // 自定义策略
             {
                 id: 'rule-101',
-                name: '夜间充电监控',
-                description: '监控夜间时段充电状态',
+                nameKey: 'ruleName_nightCharging',
+                descKey: 'ruleDesc_nightCharging',
+                condKey: 'ruleCond_nightCharging',
                 type: 'custom',
-                condition: '时段 22:00-06:00 充电异常',
                 notifications: ['站内信'],
                 alarmLevel: 'notice',
                 status: 'active',
@@ -2253,6 +2255,21 @@
                 deployedDevices: []
             }
         ];
+
+        // 获取规则的翻译名称
+        function getRuleName(rule) {
+            return rule.nameKey ? getTranslation(rule.nameKey) : (rule.name || '');
+        }
+
+        // 获取规则的翻译描述
+        function getRuleDesc(rule) {
+            return rule.descKey ? getTranslation(rule.descKey) : (rule.description || '');
+        }
+
+        // 获取规则的翻译条件
+        function getRuleCond(rule) {
+            return rule.condKey ? getTranslation(rule.condKey) : (rule.condition || '');
+        }
 
         let filteredRules = [...allRules];
         let currentRuleId = null; // 当前要下发的规则ID
@@ -2308,26 +2325,33 @@
                     <tr>
                         <td colspan="7" class="no-data-cell">
                             <i class="fas fa-folder-open no-data-icon"></i>
-                            <div class="no-data-text">暂无策略</div>
-                            <div class="no-data-subtext">点击上方"新建策略"按钮创建您的第一条策略</div>
+                            <div class="no-data-text">${getTranslation('ruleNoDataTitle')}</div>
+                            <div class="no-data-subtext">${getTranslation('ruleNoDataSubtitle')}</div>
                         </td>
                     </tr>
                 `;
                 return;
             }
 
+            // 获取通知类型翻译
+            const alarmLevelLabels = {
+                fault: getTranslation('ruleAlarmLevelFault'),
+                warning: getTranslation('ruleAlarmLevelWarning'),
+                notice: getTranslation('ruleAlarmLevelNotice')
+            };
+
             tbody.innerHTML = filteredRules.map(rule => `
                 <tr>
                     <td class="rule-name-cell">
-                        <div class="rule-name">${rule.name}</div>
-                        <div class="rule-description">${rule.description}</div>
+                        <div class="rule-name">${getRuleName(rule)}</div>
+                        <div class="rule-description">${getRuleDesc(rule)}</div>
                     </td>
                     <td style="color: var(--text-secondary); font-size: 13px;">
-                        ${rule.condition}
+                        ${getRuleCond(rule)}
                     </td>
                     <td>
                         <span class="alarm-level-badge ${rule.alarmLevel}">
-                            ${rule.alarmLevel === 'fault' ? '故障' : rule.alarmLevel === 'warning' ? '告警' : '通知'}
+                            ${alarmLevelLabels[rule.alarmLevel] || rule.alarmLevel}
                         </span>
                     </td>
                     <td>
@@ -2343,10 +2367,10 @@
                     </td>
                     <td class="rule-time-cell">${rule.createTime}</td>
                     <td style="text-align: center; white-space: nowrap;" onclick="event.stopPropagation()">
-                        <button class="btn" onclick="editRule('${rule.id}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="编辑">
+                        <button class="btn" onclick="editRule('${rule.id}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="${getTranslation('btnEdit') || 'Edit'}">
                             <i class="far fa-edit" style="font-size: 16px; color: var(--text-secondary);"></i>
                         </button>
-                        <button class="btn" onclick="deleteRule('${rule.id}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: ${rule.deployedDevices && rule.deployedDevices.length > 0 ? 'not-allowed' : 'pointer'}; opacity: ${rule.deployedDevices && rule.deployedDevices.length > 0 ? '0.5' : '1'};" title="删除">
+                        <button class="btn" onclick="deleteRule('${rule.id}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: ${rule.deployedDevices && rule.deployedDevices.length > 0 ? 'not-allowed' : 'pointer'}; opacity: ${rule.deployedDevices && rule.deployedDevices.length > 0 ? '0.5' : '1'};" title="${getTranslation('btnDelete') || 'Delete'}">
                             <i class="far fa-trash-alt" style="font-size: 16px; color: ${rule.deployedDevices && rule.deployedDevices.length > 0 ? '#cbd5e1' : '#ef4444'};"></i>
                         </button>
                     </td>
@@ -2420,8 +2444,8 @@
                 const templates = {
                     // 逆变器模板
                     'inverterOverload': {
-                        name: '逆变器过载告警',
-                        description: '功率超过额定功率110%',
+                        nameKey: 'ruleName_inverterOverload',
+                        descKey: 'ruleDesc_inverterOverload',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 110,
@@ -2429,8 +2453,8 @@
                         alarmLevel: 'fault'
                     },
                     'inverterFault': {
-                        name: '逆变器故障告警',
-                        description: '逆变器工作异常',
+                        nameKey: 'ruleName_inverterFault',
+                        descKey: 'ruleDesc_inverterFault',
                         parameter: 'power',
                         operator: 'lt',
                         threshold: 10,
@@ -2438,8 +2462,8 @@
                         alarmLevel: 'fault'
                     },
                     'inverterTemp': {
-                        name: '逆变器温度告警',
-                        description: '逆变器温度过高',
+                        nameKey: 'ruleName_inverterTemp',
+                        descKey: 'ruleDesc_inverterTemp',
                         parameter: 'temperature',
                         operator: 'gt',
                         threshold: 65,
@@ -2448,8 +2472,8 @@
                     },
                     // 电池模板
                     'batteryHighTemp': {
-                        name: '电池高温告警',
-                        description: '温度超过55°C时触发告警',
+                        nameKey: 'ruleName_batteryHighTemp',
+                        descKey: 'ruleDesc_batteryHighTemp',
                         parameter: 'temperature',
                         operator: 'gt',
                         threshold: 55,
@@ -2457,8 +2481,8 @@
                         alarmLevel: 'fault'
                     },
                     'batteryLowSOC': {
-                        name: '电池SOC低告警',
-                        description: 'SOC低于20%时触发告警',
+                        nameKey: 'ruleName_batteryLowSOC',
+                        descKey: 'ruleDesc_batteryLowSOC',
                         parameter: 'soc',
                         operator: 'lt',
                         threshold: 20,
@@ -2466,8 +2490,8 @@
                         alarmLevel: 'warning'
                     },
                     'batteryVoltageDiff': {
-                        name: '电池压差告警',
-                        description: '单体电压差超过0.3V',
+                        nameKey: 'ruleName_batteryVoltageDiff',
+                        descKey: 'ruleDesc_batteryVoltageDiff',
                         parameter: 'voltage',
                         operator: 'gt',
                         threshold: 0.3,
@@ -2475,8 +2499,8 @@
                         alarmLevel: 'fault'
                     },
                     'batteryOverCurrent': {
-                        name: '电池过流告警',
-                        description: '充放电流超过额定值',
+                        nameKey: 'ruleName_batteryOverCurrent',
+                        descKey: 'ruleDesc_batteryOverCurrent',
                         parameter: 'current',
                         operator: 'gt',
                         threshold: 100,
@@ -2485,8 +2509,8 @@
                     },
                     // 电表模板
                     'energyAbnormal': {
-                        name: '能源异常告警',
-                        description: '能源消耗异常波动',
+                        nameKey: 'ruleName_energyAbnormal',
+                        descKey: 'ruleDesc_energyAbnormal',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 30,
@@ -2494,8 +2518,8 @@
                         alarmLevel: 'notice'
                     },
                     'powerOverload': {
-                        name: '功率超标告警',
-                        description: '总功率超过设定值',
+                        nameKey: 'ruleName_powerOverload',
+                        descKey: 'ruleDesc_powerOverload',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 100,
@@ -2503,8 +2527,8 @@
                         alarmLevel: 'fault'
                     },
                     'voltageAbnormal': {
-                        name: '电压异常告警',
-                        description: '电网电压超出正常范围',
+                        nameKey: 'ruleName_voltageAbnormal',
+                        descKey: 'ruleDesc_voltageAbnormal',
                         parameter: 'voltage',
                         operator: 'lt',
                         threshold: 220,
@@ -2512,8 +2536,8 @@
                         alarmLevel: 'fault'
                     },
                     'currentAbnormal': {
-                        name: '电流异常告警',
-                        description: '电流超过额定值',
+                        nameKey: 'ruleName_currentAbnormal',
+                        descKey: 'ruleDesc_currentAbnormal',
                         parameter: 'current',
                         operator: 'gt',
                         threshold: 50,
@@ -2522,8 +2546,8 @@
                     },
                     // 温度模板
                     'envTempHigh': {
-                        name: '环境高温告警',
-                        description: '环境温度超过35°C',
+                        nameKey: 'ruleName_envTempHigh',
+                        descKey: 'ruleDesc_envTempHigh',
                         parameter: 'temperature',
                         operator: 'gt',
                         threshold: 35,
@@ -2531,8 +2555,8 @@
                         alarmLevel: 'warning'
                     },
                     'envTempLow': {
-                        name: '环境低温告警',
-                        description: '环境温度低于0°C',
+                        nameKey: 'ruleName_envTempLow',
+                        descKey: 'ruleDesc_envTempLow',
                         parameter: 'temperature',
                         operator: 'lt',
                         threshold: 0,
@@ -2540,8 +2564,8 @@
                         alarmLevel: 'warning'
                     },
                     'humidityHigh': {
-                        name: '高湿度告警',
-                        description: '湿度超过85%',
+                        nameKey: 'ruleName_humidityHigh',
+                        descKey: 'ruleDesc_humidityHigh',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 85,
@@ -2549,8 +2573,8 @@
                         alarmLevel: 'warning'
                     },
                     'deviceTempHigh': {
-                        name: '设备温度告警',
-                        description: '设备表面温度过高',
+                        nameKey: 'ruleName_deviceTempHigh',
+                        descKey: 'ruleDesc_deviceTempHigh',
                         parameter: 'temperature',
                         operator: 'gt',
                         threshold: 70,
@@ -2559,8 +2583,8 @@
                     },
                     // 消防模板
                     'smokeAlarm': {
-                        name: '烟雾告警',
-                        description: '检测到烟雾信号',
+                        nameKey: 'ruleName_smokeAlarm',
+                        descKey: 'ruleDesc_smokeAlarm',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 0,
@@ -2568,8 +2592,8 @@
                         alarmLevel: 'fault'
                     },
                     'fireAlarm': {
-                        name: '火灾告警',
-                        description: '检测到火灾信号',
+                        nameKey: 'ruleName_fireAlarm',
+                        descKey: 'ruleDesc_fireAlarm',
                         parameter: 'temperature',
                         operator: 'gt',
                         threshold: 80,
@@ -2577,8 +2601,8 @@
                         alarmLevel: 'fault'
                     },
                     'waterLeakage': {
-                        name: '漏水告警',
-                        description: '检测到漏水信号',
+                        nameKey: 'ruleName_waterLeakage',
+                        descKey: 'ruleDesc_waterLeakage',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 0,
@@ -2586,8 +2610,8 @@
                         alarmLevel: 'fault'
                     },
                     'gasLeakage': {
-                        name: '气体泄漏告警',
-                        description: '检测到可燃气体泄漏',
+                        nameKey: 'ruleName_gasLeakage',
+                        descKey: 'ruleDesc_gasLeakage',
                         parameter: 'power',
                         operator: 'gt',
                         threshold: 0,
@@ -2598,8 +2622,10 @@
 
                 const template = templates[templateId];
                 if (template) {
-                    document.getElementById('ruleName').value = template.name + ' (副本)';
-                    document.getElementById('ruleDescription').value = template.description;
+                    const templateName = getTranslation(template.nameKey);
+                    const templateDesc = getTranslation(template.descKey);
+                    document.getElementById('ruleName').value = templateName + getTranslation('ruleTemplateCopySuffix');
+                    document.getElementById('ruleDescription').value = templateDesc;
                     document.getElementById('ruleParameter').value = template.parameter;
                     document.getElementById('ruleOperator').value = template.operator;
                     document.getElementById('ruleThreshold').value = template.threshold;
@@ -2615,12 +2641,12 @@
             const modalTitle = document.getElementById('modalTitle');
 
             if (ruleId) {
-                modalTitle.textContent = '编辑规则';
+                modalTitle.textContent = getTranslation('ruleModalEditTitle');
                 // 加载规则数据
                 const rule = allRules.find(r => r.id === ruleId);
                 if (rule) {
-                    document.getElementById('ruleName').value = rule.name;
-                    document.getElementById('ruleDescription').value = rule.description;
+                    document.getElementById('ruleName').value = getRuleName(rule);
+                    document.getElementById('ruleDescription').value = getRuleDesc(rule);
                     // 填充其他字段...
 
                     // 加载降噪配置
@@ -2663,7 +2689,7 @@
                     }
                 }
             } else {
-                modalTitle.textContent = '新建策略';
+                modalTitle.textContent = getTranslation('ruleModalNewTitle');
                 document.getElementById('ruleForm').reset();
 
                 // 重置降噪配置
@@ -2702,14 +2728,21 @@
             const status = document.getElementById('ruleStatus').checked ? 'active' : 'inactive';
 
             if (!name || !parameter || !operator || !threshold || !alarmLevel) {
-                showNotification('请填写所有必填项', 'warning');
+                showNotification(getTranslation('ruleNotifyFillRequired'), 'warning');
                 return;
             }
 
-            // 构造条件描述
-            const paramLabels = { temperature: '温度', soc: 'SOC', voltage: '电压', current: '电流', power: '功率' };
+            // 构造条件描述（使用翻译）
+            const paramLabels = {
+                temperature: getTranslation('ruleParamTemp'),
+                soc: 'SOC',
+                voltage: getTranslation('ruleParamVoltage'),
+                current: getTranslation('ruleParamCurrent'),
+                power: getTranslation('ruleParamPower')
+            };
             const operatorLabels = { gt: '>', lt: '<', gte: '>=', lte: '<=', eq: '=' };
-            const condition = `${paramLabels[parameter]} ${operatorLabels[operator]} ${threshold} 持续${duration || 0}分钟`;
+            const durationText = getTranslation('ruleConditionDuration').replace('{minutes}', duration || 0);
+            const condition = `${paramLabels[parameter]} ${operatorLabels[operator]} ${threshold} ${durationText}`;
 
             // 收集降噪配置
             const noiseReduction = {
@@ -2741,14 +2774,14 @@
             filteredRules = [...allRules];
             renderRulesTable();
             closeRuleModal();
-            showNotification('规则创建成功', 'success');
+            showNotification(getTranslation('ruleNotifyCreateSuccess'), 'success');
         }
 
         // 查看规则详情
         function viewRuleDetails(ruleId) {
             const rule = allRules.find(r => r.id === ruleId);
             if (rule) {
-                showNotification(`查看规则: ${rule.name}`, 'info');
+                showNotification(getTranslation('ruleViewRule').replace('{name}', getRuleName(rule)), 'info');
             }
         }
 
@@ -2764,7 +2797,12 @@
                 const newRule = {
                     ...rule,
                     id: 'rule-' + Date.now(),
-                    name: rule.name + ' (副本)',
+                    name: getRuleName(rule) + getTranslation('ruleTemplateCopySuffix'),
+                    nameKey: null, // 复制的规则使用 name 字段而非 nameKey
+                    descKey: null, // 同理
+                    condKey: null,
+                    description: getRuleDesc(rule),
+                    condition: getRuleCond(rule),
                     type: 'custom',
                     createTime: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
                     deployedDevices: [] // 复制的规则不继承已下发设备
@@ -2772,7 +2810,7 @@
                 allRules.unshift(newRule);
                 filteredRules = [...allRules];
                 renderRulesTable();
-                showNotification('规则已复制', 'success');
+                showNotification(getTranslation('ruleNotifyCopySuccess'), 'success');
             }
         }
 
@@ -2783,15 +2821,15 @@
 
             // 检查是否有下发设备
             if (rule.deployedDevices && rule.deployedDevices.length > 0) {
-                showNotification('请先移除设备后再删除规则', 'error');
+                showNotification(getTranslation('ruleNotifyRemoveDeviceFirst'), 'error');
                 return;
             }
 
-            if (confirm('确定要删除这条规则吗?')) {
+            if (confirm(getTranslation('ruleNotifyDeleteConfirm'))) {
                 allRules = allRules.filter(r => r.id !== ruleId);
                 filteredRules = filteredRules.filter(r => r.id !== ruleId);
                 renderRulesTable();
-                showNotification('规则已删除', 'success');
+                showNotification(getTranslation('ruleNotifyDeleteSuccess'), 'success');
             }
         }
 
@@ -2805,7 +2843,7 @@
                 if (filteredRule) {
                     filteredRule.status = rule.status;
                 }
-                showNotification(`规则已${isActive ? '启用' : '禁用'}`, 'success');
+                showNotification(isActive ? getTranslation('ruleNotifyEnabled') : getTranslation('ruleNotifyDisabled'), 'success');
             }
         }
 
@@ -2826,9 +2864,12 @@
                 }
                 // 关键词搜索
                 if (keyword) {
-                    return rule.name.includes(keyword) ||
-                           (rule.description && rule.description.includes(keyword)) ||
-                           rule.condition.includes(keyword);
+                    const ruleName = getRuleName(rule);
+                    const ruleDesc = getRuleDesc(rule);
+                    const ruleCond = getRuleCond(rule);
+                    return ruleName.includes(keyword) ||
+                           ruleDesc.includes(keyword) ||
+                           ruleCond.includes(keyword);
                 }
                 return true;
             });
@@ -2848,7 +2889,7 @@
             document.getElementById('ruleStatusFilter').value = 'all';
             filteredRules = [...allRules];
             renderRulesTable();
-            showNotification('策略列表已刷新', 'success');
+            showNotification(getTranslation('ruleNotifyRefreshSuccess'), 'success');
         }
 
         // 打开已下发设备抽屉
@@ -2857,7 +2898,7 @@
             const rule = allRules.find(r => r.id === ruleId);
             if (rule) {
                 const deployedCount = rule.deployedDevices ? rule.deployedDevices.length : 0;
-                document.getElementById('drawerSubtitle').textContent = `规则"${rule.name}"已下发到 ${deployedCount} 个设备`;
+                document.getElementById('drawerSubtitle').textContent = getTranslation('ruleDrawerSubtitle').replace('{name}', getRuleName(rule)).replace('{count}', deployedCount);
 
                 const drawer = document.getElementById('deviceDrawer');
                 const drawerContent = drawer.querySelector('div:last-child');
@@ -2906,11 +2947,11 @@
             });
 
             // 填充SN下拉列表
-            snFilter.innerHTML = '<option value="">全部SN</option>' +
+            snFilter.innerHTML = `<option value="">${getTranslation('ruleFilterAllSN')}</option>` +
                 Array.from(uniqueSNs).map(sn => `<option value="${sn}">${sn}</option>`).join('');
 
             // 填充站点下拉列表
-            siteFilter.innerHTML = '<option value="">全部站点</option>' +
+            siteFilter.innerHTML = `<option value="">${getTranslation('ruleFilterAllSite')}</option>` +
                 Array.from(uniqueSites).map(site => `<option value="${site}">${site}</option>`).join('');
 
             if (deployedDevices.length === 0) {
@@ -2918,7 +2959,7 @@
                     <tr>
                         <td colspan="4" style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
                             <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px; display: block;"></i>
-                            <div style="font-size: 14px;">暂无已下发设备</div>
+                            <div style="font-size: 14px;">${getTranslation('ruleNoDeployedDevices')}</div>
                         </td>
                     </tr>
                 `;
@@ -2934,7 +2975,7 @@
                             <td style="padding: 14px 8px; font-size: 13px; color: var(--text-primary);">${device.sn}</td>
                             <td style="padding: 14px 8px; font-size: 13px; color: var(--text-primary);">${device.site}</td>
                             <td style="padding: 14px 8px; text-align: center;">
-                                <button class="btn" onclick="removeDeployedDevice('${deviceId}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="移除">
+                                <button class="btn" onclick="removeDeployedDevice('${deviceId}')" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="${getTranslation('ruleBtnRemove')}">
                                     <i class="far fa-trash-alt" style="font-size: 16px; color: #ef4444;"></i>
                                 </button>
                             </td>
@@ -2998,7 +3039,7 @@
                 uniqueSites.add(device.site);
             });
             const deviceSiteFilter = document.getElementById('deviceSiteFilter');
-            deviceSiteFilter.innerHTML = '<option value="">全部站点</option>' +
+            deviceSiteFilter.innerHTML = `<option value="">${getTranslation('ruleFilterAllSite')}</option>` +
                 Array.from(uniqueSites).map(site => `<option value="${site}">${site}</option>`).join('');
 
             renderAvailableDeviceTable();
@@ -3022,7 +3063,7 @@
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
                             <i class="fas fa-check-circle" style="font-size: 48px; color: #10b981; opacity: 0.3; margin-bottom: 16px; display: block;"></i>
-                            <div style="font-size: 14px;">${hasFilter ? '未找到匹配的设备' : '所有在线设备都已下发'}</div>
+                            <div style="font-size: 14px;">${hasFilter ? getTranslation('ruleNoMatchingDevices') : getTranslation('ruleAllDevicesDeployed')}</div>
                         </td>
                     </tr>
                 `;
@@ -3056,7 +3097,7 @@
                     <td style="text-align: center; padding: 12px 16px;">
                         <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: #10b981;">
                             <i class="fas fa-circle" style="font-size: 6px;"></i>
-                            在线
+                            ${getTranslation('ruleDeviceOnline')}
                         </span>
                     </td>
                 </tr>
@@ -3119,7 +3160,7 @@
                 .map(cb => cb.value);
 
             if (selectedDevices.length === 0) {
-                showNotification('请至少选择一个设备', 'warning');
+                showNotification(getTranslation('ruleNotifySelectDeviceFirst'), 'warning');
                 return;
             }
 
@@ -3141,13 +3182,13 @@
                     filteredRule.deployedDevices = rule.deployedDevices;
                 }
 
-                showNotification(`成功添加 ${selectedDevices.length} 个设备`, 'success');
+                showNotification(getTranslation('ruleNotifyDevicesAddedCount').replace('{count}', selectedDevices.length), 'success');
                 closeAddDeviceModal();
                 renderDeviceList();
 
                 // 更新副标题
                 const deployedCount = rule.deployedDevices.length;
-                document.getElementById('drawerSubtitle').textContent = `规则"${rule.name}"已下发到 ${deployedCount} 个设备`;
+                document.getElementById('drawerSubtitle').textContent = getTranslation('ruleDrawerSubtitle').replace('{name}', getRuleName(rule)).replace('{count}', deployedCount);
             }
         }
 
@@ -3164,12 +3205,12 @@
                 }
 
                 const device = availableDevices.find(d => d.id === deviceId);
-                showNotification(`已从规则中移除设备"${device.name}"`, 'success');
+                showNotification(getTranslation('ruleNotifyDeviceRemovedName').replace('{name}', device ? device.name : ''), 'success');
                 renderDeviceList();
 
                 // 更新副标题
                 const deployedCount = rule.deployedDevices.length;
-                document.getElementById('drawerSubtitle').textContent = `规则"${rule.name}"已下发到 ${deployedCount} 个设备`;
+                document.getElementById('drawerSubtitle').textContent = getTranslation('ruleDrawerSubtitle').replace('{name}', getRuleName(rule)).replace('{count}', deployedCount);
             }
         }
 
@@ -3185,11 +3226,11 @@
         function batchRemoveDevices() {
             const checkboxes = document.querySelectorAll('.deployed-device-checkbox:checked');
             if (checkboxes.length === 0) {
-                showNotification('请先选择要移除的设备', 'warning');
+                showNotification(getTranslation('ruleNotifySelectDeviceToRemove'), 'warning');
                 return;
             }
 
-            if (!confirm(`确定要移除选中的 ${checkboxes.length} 个设备吗?`)) {
+            if (!confirm(getTranslation('ruleNotifyRemoveDevice'))) {
                 return;
             }
 
@@ -3206,7 +3247,7 @@
                     filteredRule.deployedDevices = rule.deployedDevices;
                 }
 
-                showNotification(`成功移除 ${deviceIdsToRemove.length} 个设备`, 'success');
+                showNotification(getTranslation('ruleNotifyDevicesRemovedCount').replace('{count}', deviceIdsToRemove.length), 'success');
 
                 // 取消全选复选框
                 document.getElementById('selectAllDeployedDevices').checked = false;
@@ -3215,7 +3256,7 @@
 
                 // 更新副标题
                 const deployedCount = rule.deployedDevices.length;
-                document.getElementById('drawerSubtitle').textContent = `规则"${rule.name}"已下发到 ${deployedCount} 个设备`;
+                document.getElementById('drawerSubtitle').textContent = getTranslation('ruleDrawerSubtitle').replace('{name}', getRuleName(rule)).replace('{count}', deployedCount);
             }
         }
 
@@ -3383,7 +3424,7 @@
             console.log('保存通知策略设置:', settings);
 
             // 显示成功提示
-            showNotification('通知策略已保存', 'success');
+            showNotification(getTranslation('ruleNotifySettingsSaved'), 'success');
 
             // 关闭面板
             closeNotificationPanel();
@@ -3440,6 +3481,14 @@
                     openNotificationPanel();
                 }, 300);
             }
+        });
+
+        // 监听语言切换事件
+        window.addEventListener('languageChanged', function() {
+            // 重新渲染规则表格
+            renderRulesTable();
+            // 更新统计数据显示
+            updateStatsCounts();
         });
     </script>
 </body>

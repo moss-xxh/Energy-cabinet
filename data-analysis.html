@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">收益分析 - 储能柜管理系统</title>
+    <title id="pageTitle" data-translate="pageTitleDataAnalysis">收益分析 - 储能柜管理系统</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
@@ -305,6 +305,8 @@
         }
 
         .tab-actions {
+            display: flex;
+            gap: 8px;
             margin-left: auto;
             margin-bottom: -2px;
         }
@@ -884,59 +886,59 @@
                 <div class="filter-row">
                     <!-- 1. 站点/设备 -->
                     <div class="filter-group has-tree">
-                        <label class="filter-label">站点/设备</label>
-                        <input type="text" class="filter-input" id="siteSelection" placeholder="请选择站点或设备" value="全部站点" readonly onclick="toggleTreeView()">
+                        <label class="filter-label" data-translate="dataAnalysisFilterSiteDevice">站点/设备</label>
+                        <input type="text" class="filter-input" id="siteSelection" data-translate-placeholder="dataAnalysisFilterPlaceholder" placeholder="请选择站点或设备" value="全部站点" readonly onclick="toggleTreeView()">
                         <div class="tree-view" id="treeView">
                             <div class="tree-node">
-                                <div class="tree-node-item selected" data-value="all" onclick="selectTreeNode(event, 'all', '全部站点')">
-                                    <span class="tree-node-label">全部站点</span>
+                                <div class="tree-node-item selected" data-value="all" data-site-key="dataAnalysisAllSites" onclick="selectTreeNode(event, 'all', 'dataAnalysisAllSites')">
+                                    <span class="tree-node-label" data-translate="dataAnalysisAllSites">全部站点</span>
                                 </div>
                             </div>
                             <div class="tree-node">
-                                <div class="tree-node-item expandable expanded" data-value="site1" onclick="handleSiteClick(event, 'site1', '北京朝阳站')">
+                                <div class="tree-node-item expandable expanded" data-value="site1" data-site-key="dataAnalysisSiteBeijing" onclick="handleSiteClick(event, 'site1', 'dataAnalysisSiteBeijing')">
                                     <i class="fas fa-caret-right tree-expand-icon" onclick="toggleTreeNode(event)"></i>
-                                    <span class="tree-node-label">北京朝阳站</span>
+                                    <span class="tree-node-label" data-translate="dataAnalysisSiteBeijing">北京朝阳站</span>
                                 </div>
                                 <div class="tree-children expanded">
-                                    <div class="tree-node-item child" data-value="site1-device1" onclick="selectTreeNode(event, 'site1-device1', '北京朝阳站 - 储能柜 #1')">
-                                        <span class="tree-node-label">储能柜 #1</span>
+                                    <div class="tree-node-item child" data-value="site1-device1" data-site-key="dataAnalysisSiteBeijing" data-device-num="1" onclick="selectTreeNode(event, 'site1-device1', 'dataAnalysisSiteBeijing', 1)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="1">储能柜 #1</span>
                                     </div>
-                                    <div class="tree-node-item child" data-value="site1-device2" onclick="selectTreeNode(event, 'site1-device2', '北京朝阳站 - 储能柜 #2')">
-                                        <span class="tree-node-label">储能柜 #2</span>
+                                    <div class="tree-node-item child" data-value="site1-device2" data-site-key="dataAnalysisSiteBeijing" data-device-num="2" onclick="selectTreeNode(event, 'site1-device2', 'dataAnalysisSiteBeijing', 2)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="2">储能柜 #2</span>
                                     </div>
-                                    <div class="tree-node-item child" data-value="site1-device3" onclick="selectTreeNode(event, 'site1-device3', '北京朝阳站 - 储能柜 #3')">
-                                        <span class="tree-node-label">储能柜 #3</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tree-node">
-                                <div class="tree-node-item expandable" data-value="site2" onclick="handleSiteClick(event, 'site2', '上海浦东站')">
-                                    <i class="fas fa-caret-right tree-expand-icon" onclick="toggleTreeNode(event)"></i>
-                                    <span class="tree-node-label">上海浦东站</span>
-                                </div>
-                                <div class="tree-children">
-                                    <div class="tree-node-item child" data-value="site2-device1" onclick="selectTreeNode(event, 'site2-device1', '上海浦东站 - 储能柜 #1')">
-                                        <span class="tree-node-label">储能柜 #1</span>
-                                    </div>
-                                    <div class="tree-node-item child" data-value="site2-device2" onclick="selectTreeNode(event, 'site2-device2', '上海浦东站 - 储能柜 #2')">
-                                        <span class="tree-node-label">储能柜 #2</span>
+                                    <div class="tree-node-item child" data-value="site1-device3" data-site-key="dataAnalysisSiteBeijing" data-device-num="3" onclick="selectTreeNode(event, 'site1-device3', 'dataAnalysisSiteBeijing', 3)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="3">储能柜 #3</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="tree-node">
-                                <div class="tree-node-item expandable" data-value="site3" onclick="handleSiteClick(event, 'site3', '深圳南山站')">
+                                <div class="tree-node-item expandable" data-value="site2" data-site-key="dataAnalysisSiteShanghai" onclick="handleSiteClick(event, 'site2', 'dataAnalysisSiteShanghai')">
                                     <i class="fas fa-caret-right tree-expand-icon" onclick="toggleTreeNode(event)"></i>
-                                    <span class="tree-node-label">深圳南山站</span>
+                                    <span class="tree-node-label" data-translate="dataAnalysisSiteShanghai">上海浦东站</span>
                                 </div>
                                 <div class="tree-children">
-                                    <div class="tree-node-item child" data-value="site3-device1" onclick="selectTreeNode(event, 'site3-device1', '深圳南山站 - 储能柜 #1')">
-                                        <span class="tree-node-label">储能柜 #1</span>
+                                    <div class="tree-node-item child" data-value="site2-device1" data-site-key="dataAnalysisSiteShanghai" data-device-num="1" onclick="selectTreeNode(event, 'site2-device1', 'dataAnalysisSiteShanghai', 1)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="1">储能柜 #1</span>
                                     </div>
-                                    <div class="tree-node-item child" data-value="site3-device2" onclick="selectTreeNode(event, 'site3-device2', '深圳南山站 - 储能柜 #2')">
-                                        <span class="tree-node-label">储能柜 #2</span>
+                                    <div class="tree-node-item child" data-value="site2-device2" data-site-key="dataAnalysisSiteShanghai" data-device-num="2" onclick="selectTreeNode(event, 'site2-device2', 'dataAnalysisSiteShanghai', 2)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="2">储能柜 #2</span>
                                     </div>
-                                    <div class="tree-node-item child" data-value="site3-device3" onclick="selectTreeNode(event, 'site3-device3', '深圳南山站 - 储能柜 #3')">
-                                        <span class="tree-node-label">储能柜 #3</span>
+                                </div>
+                            </div>
+                            <div class="tree-node">
+                                <div class="tree-node-item expandable" data-value="site3" data-site-key="dataAnalysisSiteShenzhen" onclick="handleSiteClick(event, 'site3', 'dataAnalysisSiteShenzhen')">
+                                    <i class="fas fa-caret-right tree-expand-icon" onclick="toggleTreeNode(event)"></i>
+                                    <span class="tree-node-label" data-translate="dataAnalysisSiteShenzhen">深圳南山站</span>
+                                </div>
+                                <div class="tree-children">
+                                    <div class="tree-node-item child" data-value="site3-device1" data-site-key="dataAnalysisSiteShenzhen" data-device-num="1" onclick="selectTreeNode(event, 'site3-device1', 'dataAnalysisSiteShenzhen', 1)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="1">储能柜 #1</span>
+                                    </div>
+                                    <div class="tree-node-item child" data-value="site3-device2" data-site-key="dataAnalysisSiteShenzhen" data-device-num="2" onclick="selectTreeNode(event, 'site3-device2', 'dataAnalysisSiteShenzhen', 2)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="2">储能柜 #2</span>
+                                    </div>
+                                    <div class="tree-node-item child" data-value="site3-device3" data-site-key="dataAnalysisSiteShenzhen" data-device-num="3" onclick="selectTreeNode(event, 'site3-device3', 'dataAnalysisSiteShenzhen', 3)">
+                                        <span class="tree-node-label" data-translate-template="dataAnalysisEnergyCabinet" data-num="3">储能柜 #3</span>
                                     </div>
                                 </div>
                             </div>
@@ -945,17 +947,17 @@
 
                     <!-- 2. 时间维度 -->
                     <div class="filter-group">
-                        <label class="filter-label">时间维度</label>
+                        <label class="filter-label" data-translate="dataAnalysisFilterTimeDimension">时间维度</label>
                         <select class="filter-select" id="reportType" onchange="changeDimension(this.value)">
-                            <option value="monthly">月报</option>
-                            <option value="yearly">年报</option>
+                            <option value="monthly" data-translate="dataAnalysisReportTypeMonthly">月报</option>
+                            <option value="yearly" data-translate="dataAnalysisReportTypeYearly">年报</option>
                         </select>
                     </div>
 
                     <!-- 3. 统计时间 -->
                     <div class="filter-group">
-                        <label class="filter-label" id="timeFilterLabel">选择日期</label>
-                        <input type="text" class="filter-input" id="statisticTime" placeholder="选择日期" readonly style="cursor: pointer;">
+                        <label class="filter-label" id="timeFilterLabel" data-translate="dataAnalysisFilterSelectMonth">选择月份</label>
+                        <input type="text" class="filter-input" id="statisticTime" data-translate-placeholder="dataAnalysisFilterPlaceholderDate" placeholder="选择日期" readonly style="cursor: pointer;">
                         <select class="filter-select" id="statisticTimeSelectYear" style="display: none;" onchange="onYearSelectChange()">
                             <!-- 动态生成年份选项 -->
                         </select>
@@ -965,7 +967,7 @@
                 <div class="export-buttons">
                     <button class="btn-export" onclick="queryData()">
                         <i class="fas fa-search"></i>
-                        查询数据
+                        <span data-translate="dataAnalysisBtnQuery">查询数据</span>
                     </button>
                 </div>
             </div>
@@ -979,20 +981,20 @@
                 <div class="tab-navigation">
                     <button class="tab-btn active" onclick="switchTab('chart')">
                         <i class="fas fa-chart-area"></i>
-                        图表
+                        <span data-translate="dataAnalysisTabChart">图表</span>
                     </button>
                     <button class="tab-btn" onclick="switchTab('table')">
                         <i class="fas fa-table"></i>
-                        表格
+                        <span data-translate="dataAnalysisTabTable">表格</span>
                     </button>
                     <div class="tab-actions">
                         <button class="btn-export-top" onclick="window.location.href='electricity-price-new.html'" style="margin-right: 8px;">
                             <i class="fas fa-cog"></i>
-                            电价设置
+                            <span data-translate="dataAnalysisBtnPriceSettings">电价设置</span>
                         </button>
                         <button class="btn-export-top" id="exportButton" onclick="exportData()">
                             <i class="fas fa-download"></i>
-                            导出数据
+                            <span data-translate="dataAnalysisBtnExport">导出数据</span>
                         </button>
                     </div>
                 </div>
@@ -1004,13 +1006,13 @@
                             <table class="data-table" id="revenueTable">
                                 <thead>
                                     <tr>
-                                        <th>时间</th>
-                                        <th>站点/设备名称</th>
-                                        <th>充电成本(元)</th>
-                                        <th>卖电利润(元)</th>
-                                        <th>净利润(元)</th>
-                                        <th>自用节省(元)</th>
-                                        <th>总收益(元)</th>
+                                        <th data-translate="dataAnalysisTableHeaderTime">时间</th>
+                                        <th data-translate="dataAnalysisTableHeaderSiteDevice">站点/设备名称</th>
+                                        <th data-translate="dataAnalysisTableHeaderChargeCost">充电成本(元)</th>
+                                        <th data-translate="dataAnalysisTableHeaderSellRevenue">卖电利润(元)</th>
+                                        <th data-translate="dataAnalysisTableHeaderNetProfit">净利润(元)</th>
+                                        <th data-translate="dataAnalysisTableHeaderSelfSaving">自用节省(元)</th>
+                                        <th data-translate="dataAnalysisTableHeaderTotalRevenue">总收益(元)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="revenueTableBody">
@@ -1022,7 +1024,7 @@
                             <table class="data-table">
                                 <tfoot>
                                     <tr class="summary-row">
-                                        <td class="summary-label" colspan="2">合计</td>
+                                        <td class="summary-label" colspan="2" data-translate="dataAnalysisTableFooterTotal">合计</td>
                                         <td id="summaryChargeCost" class="summary-value">¥0.00</td>
                                         <td id="summarySellRevenue" class="summary-value">¥0.00</td>
                                         <td id="summaryNetProfit" class="summary-value">¥0.00</td>
@@ -1042,14 +1044,14 @@
                         <!-- 总收益卡片 -->
                         <div class="revenue-card">
                             <!-- 卡片标题 -->
-                            <h3 class="revenue-card-title-main">收益统计</h3>
+                            <h3 class="revenue-card-title-main" data-translate="dataAnalysisRevenueStatistics">收益统计</h3>
 
                             <!-- 总利润行 -->
                             <div class="profit-row profit-row-main">
-                                <span class="profit-label">总利润</span>
+                                <span class="profit-label" data-translate="dataAnalysisTotalProfit">总利润</span>
                                 <span class="profit-value" id="totalProfitValue">¥0.00</span>
                                 <div class="profit-compare" id="totalProfitCompare">
-                                    <span class="compare-label">环比</span>
+                                    <span class="compare-label" data-translate="dataAnalysisCompareLabel">环比</span>
                                     <i class="fas fa-arrow-up"></i>
                                     <span>0%</span>
                                 </div>
@@ -1057,10 +1059,10 @@
 
                             <!-- 卖电利润行 -->
                             <div class="profit-row">
-                                <span class="profit-label">卖电利润</span>
+                                <span class="profit-label" data-translate="dataAnalysisSellProfit">卖电利润</span>
                                 <span class="profit-value" id="sellProfitDetail">¥0.00</span>
                                 <div class="profit-compare" id="sellProfitCompare">
-                                    <span class="compare-label">环比</span>
+                                    <span class="compare-label" data-translate="dataAnalysisCompareLabel">环比</span>
                                     <i class="fas fa-arrow-up"></i>
                                     <span>0%</span>
                                 </div>
@@ -1068,10 +1070,10 @@
 
                             <!-- 自用节省行 -->
                             <div class="profit-row">
-                                <span class="profit-label">自用节省</span>
+                                <span class="profit-label" data-translate="dataAnalysisSelfSaving">自用节省</span>
                                 <span class="profit-value" id="selfSavingDetail">¥0.00</span>
                                 <div class="profit-compare" id="selfSavingCompare">
-                                    <span class="compare-label">环比</span>
+                                    <span class="compare-label" data-translate="dataAnalysisCompareLabel">环比</span>
                                     <i class="fas fa-arrow-up"></i>
                                     <span>0%</span>
                                 </div>
@@ -1083,7 +1085,7 @@
                             <div class="chart-header">
                                 <h3 class="chart-title">
                                     <i class="fas fa-chart-pie"></i>
-                                    收益结构分析
+                                    <span data-translate="dataAnalysisRevenueStructure">收益结构分析</span>
                                 </h3>
                             </div>
                             <div class="chart-body" id="revenueStructureChart"></div>
@@ -1098,7 +1100,7 @@
                             <div class="chart-header">
                                 <h3 class="chart-title">
                                     <i class="fas fa-chart-line"></i>
-                                    收益趋势分析
+                                    <span data-translate="dataAnalysisRevenueTrend">收益趋势分析</span>
                                 </h3>
                             </div>
                             <div class="chart-body" id="revenueTrendChart"></div>
@@ -1117,10 +1119,25 @@
         let revenueTrendChart = null; // 趋势图实例
         let revenueStructureChart = null; // 结构图实例
         let selectedSite = 'all'; // 选中的站点/设备
-        let selectedLabel = '全部站点'; // 选中的设备名称
+        let selectedSiteKey = 'dataAnalysisAllSites'; // 选中的站点翻译键
+        let selectedDeviceNum = null; // 选中的设备编号（如果选择了设备）
+        let selectedLabel = ''; // 选中的设备名称（运行时动态设置）
 
         // 页面初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化选中标签的翻译
+            selectedLabel = getTranslation('dataAnalysisAllSites');
+            document.getElementById('siteSelection').value = selectedLabel;
+
+            // 翻译树形菜单模板元素
+            document.querySelectorAll('[data-translate-template]').forEach(el => {
+                const templateKey = el.getAttribute('data-translate-template');
+                const num = el.getAttribute('data-num');
+                if (templateKey && num) {
+                    el.textContent = getTranslation(templateKey).replace('{num}', num);
+                }
+            });
+
             initStatisticTimePicker('monthly');
             initCharts();
             queryData();
@@ -1146,7 +1163,7 @@
         }
 
         // 处理站点节点点击
-        function handleSiteClick(event, value, label) {
+        function handleSiteClick(event, value, siteKey) {
             // 如果点击的是箭头图标,不处理选择逻辑
             if (event.target.classList.contains('tree-expand-icon')) {
                 return;
@@ -1164,17 +1181,19 @@
 
             // 记录选择的值
             selectedSite = value;
-            selectedLabel = label;
+            selectedSiteKey = siteKey;
+            selectedDeviceNum = null;
+            selectedLabel = getTranslation(siteKey);
 
             // 更新输入框显示
-            document.getElementById('siteSelection').value = label;
+            document.getElementById('siteSelection').value = selectedLabel;
 
             // 隐藏树形视图
             document.getElementById('treeView').classList.remove('active');
         }
 
         // 选择树节点
-        function selectTreeNode(event, value, label) {
+        function selectTreeNode(event, value, siteKey, deviceNum = null) {
             event.stopPropagation();
 
             // 移除所有选中状态
@@ -1187,10 +1206,22 @@
 
             // 记录选择的值
             selectedSite = value;
-            selectedLabel = label;
+            selectedSiteKey = siteKey;
+            selectedDeviceNum = deviceNum;
+
+            // 构建显示标签
+            if (deviceNum !== null) {
+                // 站点名 - 储能柜 #N
+                const siteName = getTranslation(siteKey);
+                const deviceName = getTranslation('dataAnalysisEnergyCabinet').replace('{num}', deviceNum);
+                const separator = getTranslation('dataAnalysisSiteDeviceSeparator');
+                selectedLabel = siteName + separator + deviceName;
+            } else {
+                selectedLabel = getTranslation(siteKey);
+            }
 
             // 更新输入框显示
-            document.getElementById('siteSelection').value = label;
+            document.getElementById('siteSelection').value = selectedLabel;
 
             // 隐藏树形视图
             document.getElementById('treeView').classList.remove('active');
@@ -1212,6 +1243,7 @@
             const input = document.getElementById('statisticTime');
             const yearSelect = document.getElementById('statisticTimeSelectYear');
             const today = new Date();
+            const currentLang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             if (statisticTimePicker) {
                 statisticTimePicker.destroy();
@@ -1220,13 +1252,13 @@
 
             switch(dimension) {
                 case 'daily':
-                    label.textContent = '选择日期';
-                    input.placeholder = '选择日期';
+                    label.textContent = getTranslation('dataAnalysisFilterSelectDate');
+                    input.placeholder = getTranslation('dataAnalysisFilterPlaceholderDate');
                     input.style.display = 'block';
                     yearSelect.style.display = 'none';
 
                     statisticTimePicker = flatpickr(input, {
-                        locale: "zh",
+                        locale: currentLang === 'en' ? 'en' : 'zh',
                         dateFormat: "Y-m-d",
                         defaultDate: today,
                         clickOpens: true,
@@ -1235,13 +1267,13 @@
                     break;
 
                 case 'monthly':
-                    label.textContent = '选择月份';
-                    input.placeholder = '选择月份';
+                    label.textContent = getTranslation('dataAnalysisFilterSelectMonth');
+                    input.placeholder = getTranslation('dataAnalysisFilterSelectMonth');
                     input.style.display = 'block';
                     yearSelect.style.display = 'none';
 
                     statisticTimePicker = flatpickr(input, {
-                        locale: "zh",
+                        locale: currentLang === 'en' ? 'en' : 'zh',
                         dateFormat: "Y-m",
                         defaultDate: today,
                         clickOpens: true,
@@ -1250,22 +1282,23 @@
                             new window.monthSelectPlugin({
                                 shorthand: true,
                                 dateFormat: "Y-m",
-                                altFormat: "Y年m月"
+                                altFormat: currentLang === 'en' ? "M Y" : "Y年m月"
                             })
                         ]
                     });
                     break;
 
                 case 'yearly':
-                    label.textContent = '选择年份';
+                    label.textContent = getTranslation('dataAnalysisFilterSelectYear');
                     input.style.display = 'none';
                     yearSelect.style.display = 'block';
 
                     const currentYear = today.getFullYear();
                     let yearOptions = '';
+                    const yearSuffix = getTranslation('yearSuffix');
                     for (let i = currentYear - 10; i <= currentYear + 5; i++) {
                         const selected = i === currentYear ? 'selected' : '';
-                        yearOptions += `<option value="${i}" ${selected}>${i}年</option>`;
+                        yearOptions += `<option value="${i}" ${selected}>${i}${yearSuffix}</option>`;
                     }
                     yearSelect.innerHTML = yearOptions;
                     break;
@@ -1297,14 +1330,14 @@
 
         // 查询数据
         function queryData() {
-            showNotification('正在查询数据...', 'info');
+            showNotification(getTranslation('dataAnalysisNotifyQuerying'), 'info');
 
             setTimeout(() => {
                 loadTableData();
                 updateTotalRevenueCard();
                 updateRevenueTrendChart();
                 updateRevenueStructureChart();
-                showNotification('数据查询成功', 'success');
+                showNotification(getTranslation('dataAnalysisNotifyQuerySuccess'), 'success');
             }, 800);
         }
 
@@ -1612,6 +1645,11 @@
             const selfSavingData = [];
             const totalRevenueData = [];
 
+            // 获取翻译文本
+            const sellProfitLabel = getTranslation('dataAnalysisChartLegendSellProfit');
+            const selfSavingLabel = getTranslation('dataAnalysisChartLegendSelfSaving');
+            const totalRevenueLabel = getTranslation('dataAnalysisChartTooltipTotal');
+
             // 从表格中读取数据
             const tableRows = document.querySelectorAll('#revenueTableBody tr');
 
@@ -1644,12 +1682,12 @@
                             result += item.marker + ' ' + item.seriesName + ': ¥' + item.value + '<br/>';
                             total += parseFloat(item.value);
                         });
-                        result += '<strong>总收益: ¥' + total.toFixed(2) + '</strong>';
+                        result += '<strong>' + totalRevenueLabel + ': ¥' + total.toFixed(2) + '</strong>';
                         return result;
                     }
                 },
                 legend: {
-                    data: ['卖电利润', '自用节省'],
+                    data: [sellProfitLabel, selfSavingLabel],
                     top: 0
                 },
                 grid: {
@@ -1672,7 +1710,7 @@
                 },
                 series: [
                     {
-                        name: '卖电利润',
+                        name: sellProfitLabel,
                         type: 'bar',
                         stack: 'revenue',
                         data: sellRevenueData,
@@ -1682,7 +1720,7 @@
                         barMaxWidth: 60
                     },
                     {
-                        name: '自用节省',
+                        name: selfSavingLabel,
                         type: 'bar',
                         stack: 'revenue',
                         data: selfSavingData,
@@ -1702,6 +1740,11 @@
             const sellRevenue = parseFloat(document.getElementById('summarySellRevenue').textContent.replace('¥', ''));
             const selfSaving = parseFloat(document.getElementById('summarySelfSaving').textContent.replace('¥', ''));
 
+            // 获取翻译文本
+            const sellProfitLabel = getTranslation('dataAnalysisChartLegendSellProfit');
+            const selfSavingLabel = getTranslation('dataAnalysisChartLegendSelfSaving');
+            const revenueCompositionLabel = getTranslation('dataAnalysisRevenueComposition');
+
             const option = {
                 tooltip: {
                     trigger: 'item',
@@ -1714,7 +1757,7 @@
                 },
                 series: [
                     {
-                        name: '收益构成',
+                        name: revenueCompositionLabel,
                         type: 'pie',
                         radius: ['40%', '70%'],
                         avoidLabelOverlap: false,
@@ -1737,12 +1780,12 @@
                         data: [
                             {
                                 value: sellRevenue.toFixed(2),
-                                name: '卖电利润',
+                                name: sellProfitLabel,
                                 itemStyle: { color: '#10b981' }
                             },
                             {
                                 value: selfSaving.toFixed(2),
-                                name: '自用节省',
+                                name: selfSavingLabel,
                                 itemStyle: { color: '#3b82f6' }
                             }
                         ]
@@ -1787,9 +1830,9 @@
 
         // 导出数据
         function exportData() {
-            showNotification('正在导出数据...', 'info');
+            showNotification(getTranslation('dataAnalysisNotifyExporting'), 'info');
             setTimeout(() => {
-                showNotification('数据导出成功', 'success');
+                showNotification(getTranslation('dataAnalysisNotifyExportSuccess'), 'success');
             }, 1000);
         }
 

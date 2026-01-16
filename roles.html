@@ -1133,8 +1133,17 @@
             const modalTitle = document.getElementById('modalTitle');
             modalTitle.setAttribute('data-translate', 'rolesModalTitleEdit');
             modalTitle.textContent = translations[lang].rolesModalTitleEdit;
-            document.getElementById('roleName').value = role.name;
-            document.getElementById('roleDesc').value = role.description;
+
+            // 根据语言显示翻译后的角色名称和描述
+            const roleName = role.nameKey && translations[lang][role.nameKey]
+                ? translations[lang][role.nameKey]
+                : role.name;
+            const roleDesc = role.descKey && translations[lang][role.descKey]
+                ? translations[lang][role.descKey]
+                : role.description;
+
+            document.getElementById('roleName').value = roleName;
+            document.getElementById('roleDesc').value = roleDesc;
 
             // 渲染权限树
             renderPermissionTree();

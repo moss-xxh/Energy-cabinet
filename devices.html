@@ -2985,16 +2985,18 @@
                     <td style="padding: 12px; text-align: center;">
                         ${getStatusBadge(device.status)}
                     </td>
-                    <td style="padding: 12px; text-align: center;" onclick="event.stopPropagation()">
-                        <button class="btn" onclick="viewDetails(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="查看详情">
-                            <i class="fas fa-arrow-right" style="font-size: 16px; color: var(--text-secondary);"></i>
-                        </button>
-                        <button class="btn" onclick="editDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="编辑">
-                            <i class="far fa-edit" style="font-size: 16px; color: var(--text-secondary);"></i>
-                        </button>
-                        <button class="btn" onclick="deleteDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="删除">
-                            <i class="far fa-trash-alt" style="font-size: 16px; color: #ef4444;"></i>
-                        </button>
+                    <td style="padding: 12px; text-align: center; white-space: nowrap;" onclick="event.stopPropagation()">
+                        <div style="display: inline-flex; align-items: center; gap: 4px;">
+                            <button class="btn" onclick="viewDetails(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="查看详情">
+                                <i class="fas fa-arrow-right" style="font-size: 16px; color: var(--text-secondary);"></i>
+                            </button>
+                            <button class="btn" onclick="editDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="编辑">
+                                <i class="far fa-edit" style="font-size: 16px; color: var(--text-secondary);"></i>
+                            </button>
+                            <button class="btn" onclick="deleteDevice(${device.id})" style="padding: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; border-radius: 6px; cursor: pointer;" title="删除">
+                                <i class="far fa-trash-alt" style="font-size: 16px; color: #ef4444;"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);

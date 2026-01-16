@@ -1044,35 +1044,35 @@
             <div class="energy-flow-header">
                 <div class="energy-flow-title">
                     <i class="fas fa-project-diagram" style="margin-right: 12px; color: #3562E3;"></i>
-                    <span>能量流转图</span>
+                    <span data-translate="energyFlowPageTitle">能量流转图</span>
                 </div>
 
                 <div class="energy-flow-actions" style="display: flex; gap: 12px;">
                     <!-- 编辑/预览切换按钮 -->
                     <button class="toolbar-btn primary" id="editModeBtn" onclick="toggleEditMode()" title="切换编辑模式">
                         <i class="fas fa-edit"></i>
-                        <span>编辑</span>
+                        <span data-translate="energyFlowBtnEdit">编辑</span>
                     </button>
 
                     <!-- 保存按钮（只在编辑模式下显示） -->
                     <button class="toolbar-btn" id="saveBtn" onclick="saveFlowConfig()" title="保存配置" style="display: none;">
                         <i class="fas fa-save"></i>
-                        <span>保存</span>
+                        <span data-translate="energyFlowBtnSave">保存</span>
                     </button>
 
                     <!-- 对齐按钮组（只在编辑模式下显示） -->
                     <div id="alignmentBtns" style="display: none; gap: 8px;">
                         <button class="toolbar-btn" onclick="alignDevicesHorizontal()" title="水平对齐选中的设备">
                             <i class="fas fa-arrows-alt-h"></i>
-                            <span>水平对齐</span>
+                            <span data-translate="energyFlowBtnAlignH">水平对齐</span>
                         </button>
                         <button class="toolbar-btn" onclick="alignDevicesVertical()" title="垂直对齐选中的设备">
                             <i class="fas fa-arrows-alt-v"></i>
-                            <span>垂直对齐</span>
+                            <span data-translate="energyFlowBtnAlignV">垂直对齐</span>
                         </button>
                         <button class="toolbar-btn" onclick="straightenConnections()" title="将选中的连线拉直">
                             <i class="fas fa-ruler"></i>
-                            <span>连线拉直</span>
+                            <span data-translate="energyFlowBtnStraighten">连线拉直</span>
                         </button>
                     </div>
                 </div>
@@ -1092,7 +1092,7 @@
             <!-- 设备列表面板 -->
             <div class="device-list-panel" id="deviceListPanel">
                 <div class="device-list-title">
-                    <span>可用设备</span>
+                    <span data-translate="energyFlowAvailableDevices">可用设备</span>
                     <button class="panel-toggle-btn" id="panelToggleBtn" onclick="toggleDevicePanel()" title="收起面板">
                         <i class="fas fa-chevron-left"></i>
                     </button>
@@ -1102,7 +1102,7 @@
                 <div class="device-category">
                     <div class="device-category-title">
                         <span class="device-category-icon">⚡</span>
-                        <span>电源设备</span>
+                        <span data-translate="energyFlowPowerDevices">电源设备</span>
                     </div>
                     <div id="powerDevicesList">
                         <!-- 将通过JavaScript动态生成 -->
@@ -1113,7 +1113,7 @@
                 <div class="device-category">
                     <div class="device-category-title">
                         <span class="device-category-icon">🔋</span>
-                        <span>储能设备</span>
+                        <span data-translate="energyFlowStorageDevices">储能设备</span>
                     </div>
                     <div id="storageDevicesList">
                         <!-- 将通过JavaScript动态生成 -->
@@ -1124,7 +1124,7 @@
                 <div class="device-category">
                     <div class="device-category-title">
                         <span class="device-category-icon">🏭</span>
-                        <span>负载设备</span>
+                        <span data-translate="energyFlowLoadDevices">负载设备</span>
                     </div>
                     <div id="loadDevicesList">
                         <!-- 将通过JavaScript动态生成 -->
@@ -1138,7 +1138,7 @@
             <!-- 右侧设备设置面板 -->
             <div class="device-settings-panel" id="deviceSettingsPanel" style="display: none;">
                 <div class="device-list-title">
-                    <span id="settingsPanelTitle">设备设置</span>
+                    <span id="settingsPanelTitle" data-translate="energyFlowDeviceSettings">设备设置</span>
                     <button class="panel-toggle-btn" id="settingsPanelToggleBtn" onclick="toggleSettingsPanel()" title="收起面板">
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -1155,17 +1155,63 @@
     <script>
         let availableDevices = {
             power: [
-                { id: 'grid-1', type: 'grid', label: '市电', icon: '电网.png', desc: '380V 3相' },
-                { id: 'gen-1', type: 'generator', label: '柴发', icon: '柜子打开.png', desc: '500KW' },
-                { id: 'solar-1', type: 'solar', label: '光伏', icon: '光伏.png', desc: '200KW' }
+                { id: 'grid-1', type: 'grid', label: { zh: '市电', en: 'Grid' }, icon: '电网.png', desc: '380V 3相' },
+                { id: 'gen-1', type: 'generator', label: { zh: '柴发', en: 'Generator' }, icon: '柜子打开.png', desc: '500KW' },
+                { id: 'solar-1', type: 'solar', label: { zh: '光伏', en: 'Solar' }, icon: '光伏.png', desc: '200KW' }
             ],
             storage: [
-                { id: 'pcs-1', type: 'pcs', label: '储能柜', icon: '储能柜.png', desc: '250KW/500KWh' }
+                { id: 'pcs-1', type: 'pcs', label: { zh: '储能柜', en: 'ESS Cabinet' }, icon: '储能柜.png', desc: '250KW/500KWh' }
             ],
             load: [
-                { id: 'load-1', type: 'load', label: '负载', icon: '负载.png', desc: '工业负载' }
+                { id: 'load-1', type: 'load', label: { zh: '负载', en: 'Load' }, icon: '负载.png', desc: '工业负载' }
             ]
         };
+
+        // 获取设备标签（根据当前语言）
+        function getDeviceLabel(device) {
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
+            if (typeof device.label === 'object') {
+                return device.label[lang] || device.label.zh;
+            }
+            return device.label;
+        }
+
+        // 旧中文标签到多语言标签的映射表
+        const labelMigrationMap = {
+            '市电': { zh: '市电', en: 'Grid' },
+            '电网': { zh: '市电', en: 'Grid' },
+            '柴发': { zh: '柴发', en: 'Generator' },
+            '发电机': { zh: '柴发', en: 'Generator' },
+            '光伏': { zh: '光伏', en: 'Solar' },
+            '储能柜': { zh: '储能柜', en: 'ESS Cabinet' },
+            '储能': { zh: '储能柜', en: 'ESS Cabinet' },
+            'PCS': { zh: '储能柜', en: 'ESS Cabinet' },
+            '负载': { zh: '负载', en: 'Load' }
+        };
+
+        // 迁移设备数据（将旧格式的字符串label转换为多语言对象）
+        function migrateDeviceData(devices) {
+            if (!Array.isArray(devices)) return devices;
+
+            return devices.map(device => {
+                // 如果 label 已经是对象格式，无需迁移
+                if (typeof device.label === 'object' && device.label !== null) {
+                    return device;
+                }
+
+                // 如果 label 是字符串，尝试从映射表中找到对应的多语言标签
+                if (typeof device.label === 'string') {
+                    const migratedLabel = labelMigrationMap[device.label];
+                    if (migratedLabel) {
+                        return { ...device, label: migratedLabel };
+                    }
+                    // 如果映射表中没有，创建一个默认的多语言对象（中英文相同）
+                    return { ...device, label: { zh: device.label, en: device.label } };
+                }
+
+                return device;
+            });
+        }
 
         // 编辑模式状态
         let isEditMode = true; // 默认为编辑模式
@@ -1327,7 +1373,8 @@
             );
 
             // 删除设备
-            const deviceName = placedDevices.find(d => d.id === deviceId)?.label || '设备';
+            const deviceToDelete = placedDevices.find(d => d.id === deviceId);
+            const deviceName = deviceToDelete ? getDeviceLabel(deviceToDelete) : 'Device';
             placedDevices = placedDevices.filter(d => d.id !== deviceId);
 
             // 重新渲染
@@ -1414,7 +1461,8 @@
             const contentEl = document.getElementById('settingsPanelContent');
 
             // 设置标题
-            titleEl.textContent = `${device.label} - 设置`;
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
+            titleEl.textContent = `${getDeviceLabel(device)} - ${translations[lang].energyFlowDeviceSettings.replace('设备', '').replace('Device ', '')}`;
 
             // 初始化设备的显示参数和流向（如果不存在）
             if (!device.displayParams) {
@@ -1438,94 +1486,95 @@
             // 生成设置内容
             let settingsHTML = `
                 <div class="settings-item">
-                    <label class="settings-item-label">设备名称</label>
-                    <input type="text" class="settings-item-input" id="deviceName" value="${device.label}"
+                    <label class="settings-item-label">${lang === 'en' ? 'Device Name' : '设备名称'}</label>
+                    <input type="text" class="settings-item-input" id="deviceName" value="${getDeviceLabel(device)}"
                            oninput="updateDeviceProperty('${deviceId}', 'label', this.value)" />
                 </div>
 
                 <div class="settings-item">
-                    <label class="settings-item-label">显示参数（可多选）</label>
+                    <label class="settings-item-label">${translations[lang].energyFlowDisplayParams}</label>
                     <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="displayPower" ${device.displayParams.power.enabled ? 'checked' : ''}
                                    onchange="toggleDeviceParam('${deviceId}', 'power', this.checked)"
                                    style="width: 16px; height: 16px; cursor: pointer;">
-                            <span style="font-size: 13px; color: var(--text-primary);">功率 (P)</span>
+                            <span style="font-size: 13px; color: var(--text-primary);">${translations[lang].energyFlowPower}</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="displayVoltage" ${device.displayParams.voltage.enabled ? 'checked' : ''}
                                    onchange="toggleDeviceParam('${deviceId}', 'voltage', this.checked)"
                                    style="width: 16px; height: 16px; cursor: pointer;">
-                            <span style="font-size: 13px; color: var(--text-primary);">电压 (U)</span>
+                            <span style="font-size: 13px; color: var(--text-primary);">${translations[lang].energyFlowVoltage}</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="displayCurrent" ${device.displayParams.current.enabled ? 'checked' : ''}
                                    onchange="toggleDeviceParam('${deviceId}', 'current', this.checked)"
                                    style="width: 16px; height: 16px; cursor: pointer;">
-                            <span style="font-size: 13px; color: var(--text-primary);">电流 (I)</span>
+                            <span style="font-size: 13px; color: var(--text-primary);">${translations[lang].energyFlowCurrent}</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="displaySOC" ${device.displayParams.soc.enabled ? 'checked' : ''}
                                    onchange="toggleDeviceParam('${deviceId}', 'soc', this.checked)"
                                    style="width: 16px; height: 16px; cursor: pointer;">
-                            <span style="font-size: 13px; color: var(--text-primary);">SOC (%)</span>
+                            <span style="font-size: 13px; color: var(--text-primary);">${translations[lang].energyFlowSOC}</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="settings-item">
-                    <label class="settings-item-label">流向</label>
+                    <label class="settings-item-label">${translations[lang].energyFlowDirection}</label>
                     <div style="margin-top: 8px;">
                         <div style="margin-bottom: 16px; padding: 12px; background: rgba(53, 98, 227, 0.05); border-radius: 6px; border-left: 3px solid var(--primary-color);">
                             <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary);">
-                                流入
+                                ${translations[lang].energyFlowIn}
                             </label>
                             <div style="display: flex; gap: 8px; align-items: center;">
                                 <select class="settings-item-select" id="flowInAttribute" style="flex: 1;">
-                                    <option value="power" ${device.flowControl.inAttribute === 'power' ? 'selected' : ''}>功率 (P)</option>
-                                    <option value="voltage" ${device.flowControl.inAttribute === 'voltage' ? 'selected' : ''}>电压 (U)</option>
-                                    <option value="current" ${device.flowControl.inAttribute === 'current' ? 'selected' : ''}>电流 (I)</option>
+                                    <option value="power" ${device.flowControl.inAttribute === 'power' ? 'selected' : ''}>${translations[lang].energyFlowPower}</option>
+                                    <option value="voltage" ${device.flowControl.inAttribute === 'voltage' ? 'selected' : ''}>${translations[lang].energyFlowVoltage}</option>
+                                    <option value="current" ${device.flowControl.inAttribute === 'current' ? 'selected' : ''}>${translations[lang].energyFlowCurrent}</option>
                                     <option value="soc" ${device.flowControl.inAttribute === 'soc' ? 'selected' : ''}>SOC</option>
                                 </select>
                                 <select class="settings-item-select" id="flowInDirection" style="flex: 0 0 100px;">
-                                    <option value="positive" ${device.flowControl.inDirection === 'positive' ? 'selected' : ''}>正数</option>
-                                    <option value="negative" ${device.flowControl.inDirection === 'negative' ? 'selected' : ''}>负数</option>
+                                    <option value="positive" ${device.flowControl.inDirection === 'positive' ? 'selected' : ''}>${translations[lang].energyFlowPositive}</option>
+                                    <option value="negative" ${device.flowControl.inDirection === 'negative' ? 'selected' : ''}>${translations[lang].energyFlowNegative}</option>
                                 </select>
                             </div>
                         </div>
                         <div style="padding: 12px; background: rgba(239, 68, 68, 0.05); border-radius: 6px; border-left: 3px solid #ef4444;">
                             <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary);">
-                                流出
+                                ${translations[lang].energyFlowOut}
                             </label>
                             <div style="display: flex; gap: 8px; align-items: center;">
                                 <select class="settings-item-select" id="flowOutAttribute" style="flex: 1;">
-                                    <option value="power" ${device.flowControl.outAttribute === 'power' ? 'selected' : ''}>功率 (P)</option>
-                                    <option value="voltage" ${device.flowControl.outAttribute === 'voltage' ? 'selected' : ''}>电压 (U)</option>
-                                    <option value="current" ${device.flowControl.outAttribute === 'current' ? 'selected' : ''}>电流 (I)</option>
+                                    <option value="power" ${device.flowControl.outAttribute === 'power' ? 'selected' : ''}>${translations[lang].energyFlowPower}</option>
+                                    <option value="voltage" ${device.flowControl.outAttribute === 'voltage' ? 'selected' : ''}>${translations[lang].energyFlowVoltage}</option>
+                                    <option value="current" ${device.flowControl.outAttribute === 'current' ? 'selected' : ''}>${translations[lang].energyFlowCurrent}</option>
                                     <option value="soc" ${device.flowControl.outAttribute === 'soc' ? 'selected' : ''}>SOC</option>
                                 </select>
                                 <select class="settings-item-select" id="flowOutDirection" style="flex: 0 0 100px;">
-                                    <option value="positive" ${device.flowControl.outDirection === 'positive' ? 'selected' : ''}>正数</option>
-                                    <option value="negative" ${device.flowControl.outDirection === 'negative' ? 'selected' : ''}>负数</option>
+                                    <option value="positive" ${device.flowControl.outDirection === 'positive' ? 'selected' : ''}>${translations[lang].energyFlowPositive}</option>
+                                    <option value="negative" ${device.flowControl.outDirection === 'negative' ? 'selected' : ''}>${translations[lang].energyFlowNegative}</option>
                                 </select>
                             </div>
                         </div>
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5;">
-                            示例：选择"功率 + 正数"表示功率为正时流入/流出
+                            ${translations[lang].energyFlowDirectionTip}
                         </div>
                     </div>
                 </div>
             `;
 
-            // 根据设备类型添加特定设置
-            if (device.type === '市电' || device.type === '柴发' || device.type === '光伏') {
+            // 根据设备类型添加特定设置（使用 device.type 而非 label）
+            const powerDeviceTypes = ['grid', 'generator', 'solar'];
+            if (powerDeviceTypes.includes(device.type)) {
                 settingsHTML += `
                     <div class="settings-item">
-                        <label class="settings-item-label">额定功率 (KW)</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowRatedPower}</label>
                         <input type="number" class="settings-item-input" id="devicePower" value="${device.power || 500}" />
                     </div>
                     <div class="settings-item">
-                        <label class="settings-item-label">电压等级</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowVoltageLevel}</label>
                         <select class="settings-item-select" id="deviceVoltage">
                             <option value="380V" ${device.voltage === '380V' ? 'selected' : ''}>380V</option>
                             <option value="220V" ${device.voltage === '220V' ? 'selected' : ''}>220V</option>
@@ -1533,33 +1582,33 @@
                         </select>
                     </div>
                 `;
-            } else if (device.type === '储能柜') {
+            } else if (device.type === 'pcs') {
                 settingsHTML += `
                     <div class="settings-item">
-                        <label class="settings-item-label">容量 (KWh)</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowCapacity}</label>
                         <input type="number" class="settings-item-input" id="deviceCapacity" value="${device.capacity || 1000}" />
                     </div>
                     <div class="settings-item">
-                        <label class="settings-item-label">充电功率 (KW)</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowChargePower}</label>
                         <input type="number" class="settings-item-input" id="deviceChargePower" value="${device.chargePower || 500}" />
                     </div>
                     <div class="settings-item">
-                        <label class="settings-item-label">放电功率 (KW)</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowDischargePower}</label>
                         <input type="number" class="settings-item-input" id="deviceDischargePower" value="${device.dischargePower || 500}" />
                     </div>
                 `;
-            } else if (device.type === '负载') {
+            } else if (device.type === 'load') {
                 settingsHTML += `
                     <div class="settings-item">
-                        <label class="settings-item-label">负载功率 (KW)</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowRatedPower}</label>
                         <input type="number" class="settings-item-input" id="deviceLoadPower" value="${device.loadPower || 300}" />
                     </div>
                     <div class="settings-item">
-                        <label class="settings-item-label">负载类型</label>
+                        <label class="settings-item-label">${translations[lang].energyFlowLoadType}</label>
                         <select class="settings-item-select" id="deviceLoadType">
-                            <option value="恒定负载" ${device.loadType === '恒定负载' ? 'selected' : ''}>恒定负载</option>
-                            <option value="可调负载" ${device.loadType === '可调负载' ? 'selected' : ''}>可调负载</option>
-                            <option value="优先级负载" ${device.loadType === '优先级负载' ? 'selected' : ''}>优先级负载</option>
+                            <option value="industrial" ${device.loadType === 'industrial' ? 'selected' : ''}>${translations[lang].energyFlowLoadTypeIndustrial}</option>
+                            <option value="commercial" ${device.loadType === 'commercial' ? 'selected' : ''}>${translations[lang].energyFlowLoadTypeCommercial}</option>
+                            <option value="residential" ${device.loadType === 'residential' ? 'selected' : ''}>${translations[lang].energyFlowLoadTypeResidential}</option>
                         </select>
                     </div>
                 `;
@@ -1633,14 +1682,15 @@
             const editModeBtn = document.getElementById('editModeBtn');
             const saveBtn = document.getElementById('saveBtn');
             const deviceListPanel = document.getElementById('deviceListPanel');
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             editModeBtn.style.display = 'inline-flex';
-            editModeBtn.innerHTML = '<i class="fas fa-eye" style="color: white;"></i><span>预览</span>';
+            editModeBtn.innerHTML = `<i class="fas fa-eye" style="color: white;"></i><span>${translations[lang].energyFlowBtnPreview}</span>`;
             editModeBtn.className = 'toolbar-btn';
             editModeBtn.style.background = '#6b7280';
             editModeBtn.style.borderColor = '#6b7280';
             editModeBtn.style.color = 'white';
-            editModeBtn.title = '切换到预览模式';
+            editModeBtn.title = translations[lang].energyFlowBtnPreview;
             saveBtn.style.display = 'inline-flex';
             document.getElementById('alignmentBtns').style.display = 'flex';
             deviceListPanel.style.display = 'block';
@@ -1663,17 +1713,18 @@
             const editModeBtn = document.getElementById('editModeBtn');
             const saveBtn = document.getElementById('saveBtn');
             const deviceListPanel = document.getElementById('deviceListPanel');
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             if (isEditMode) {
                 // 进入编辑模式
                 console.log('✏️ 进入编辑模式');
                 editModeBtn.style.display = 'inline-flex'; // 显示编辑按钮
-                editModeBtn.innerHTML = '<i class="fas fa-eye" style="color: white;"></i><span>预览</span>';
+                editModeBtn.innerHTML = `<i class="fas fa-eye" style="color: white;"></i><span>${translations[lang].energyFlowBtnPreview}</span>`;
                 editModeBtn.className = 'toolbar-btn';
                 editModeBtn.style.background = '#6b7280';
                 editModeBtn.style.borderColor = '#6b7280';
                 editModeBtn.style.color = 'white';
-                editModeBtn.title = '切换到预览模式';
+                editModeBtn.title = translations[lang].energyFlowBtnPreview;
                 saveBtn.style.display = 'inline-flex'; // 显示保存按钮
                 document.getElementById('alignmentBtns').style.display = 'flex'; // 显示对齐按钮组
                 deviceListPanel.style.display = 'block';
@@ -1690,12 +1741,12 @@
                 // 进入预览模式
                 console.log('👁️ 进入预览模式');
                 editModeBtn.style.display = 'inline-flex'; // 显示按钮
-                editModeBtn.innerHTML = '<i class="fas fa-edit"></i><span>返回编辑</span>';
+                editModeBtn.innerHTML = `<i class="fas fa-edit"></i><span>${translations[lang].energyFlowBtnBackToEdit}</span>`;
                 editModeBtn.className = 'toolbar-btn primary';
                 editModeBtn.style.background = '';
                 editModeBtn.style.borderColor = '';
                 editModeBtn.style.color = '';
-                editModeBtn.title = '返回编辑模式';
+                editModeBtn.title = translations[lang].energyFlowBtnBackToEdit;
                 saveBtn.style.display = 'none'; // 隐藏保存按钮
                 document.getElementById('alignmentBtns').style.display = 'none'; // 隐藏对齐按钮组
                 deviceListPanel.style.display = 'none';
@@ -1951,10 +2002,10 @@
             powerList.innerHTML = availablePower.map(device => `
                 <div class="device-item" draggable="true" ondragstart="startDragDevice(event, '${device.id}', 'power')">
                     <div class="device-item-icon">
-                        <img src="${device.icon}" alt="${device.label}" style="width: 32px; height: 32px; object-fit: contain;" />
+                        <img src="${device.icon}" alt="${getDeviceLabel(device)}" style="width: 32px; height: 32px; object-fit: contain;" />
                     </div>
                     <div class="device-item-info">
-                        <div class="device-item-name">${device.label}</div>
+                        <div class="device-item-name">${getDeviceLabel(device)}</div>
                     </div>
                 </div>
             `).join('');
@@ -1965,10 +2016,10 @@
             storageList.innerHTML = availableStorage.map(device => `
                 <div class="device-item" draggable="true" ondragstart="startDragDevice(event, '${device.id}', 'storage')">
                     <div class="device-item-icon">
-                        <img src="${device.icon}" alt="${device.label}" style="width: 32px; height: 32px; object-fit: contain;" />
+                        <img src="${device.icon}" alt="${getDeviceLabel(device)}" style="width: 32px; height: 32px; object-fit: contain;" />
                     </div>
                     <div class="device-item-info">
-                        <div class="device-item-name">${device.label}</div>
+                        <div class="device-item-name">${getDeviceLabel(device)}</div>
                     </div>
                 </div>
             `).join('');
@@ -1979,10 +2030,10 @@
             loadList.innerHTML = availableLoad.map(device => `
                 <div class="device-item" draggable="true" ondragstart="startDragDevice(event, '${device.id}', 'load')">
                     <div class="device-item-icon">
-                        <img src="${device.icon}" alt="${device.label}" style="width: 32px; height: 32px; object-fit: contain;" />
+                        <img src="${device.icon}" alt="${getDeviceLabel(device)}" style="width: 32px; height: 32px; object-fit: contain;" />
                     </div>
                     <div class="device-item-info">
-                        <div class="device-item-name">${device.label}</div>
+                        <div class="device-item-name">${getDeviceLabel(device)}</div>
                     </div>
                 </div>
             `).join('');
@@ -2211,9 +2262,9 @@
                         </div>
 
                         <div class="flow-device-icon">
-                            <img src="${device.icon}" alt="${device.label}" draggable="false" />
+                            <img src="${device.icon}" alt="${getDeviceLabel(device)}" draggable="false" />
                         </div>
-                        <div class="flow-device-label" draggable="false">${device.label}</div>
+                        <div class="flow-device-label" draggable="false">${getDeviceLabel(device)}</div>
 
                         ${externalParams}
                     </div>`;
@@ -2391,7 +2442,7 @@
                     });
 
                     drawAllConnections();
-                    showMiniToast(`✅ 连接成功！<br>${fromDevice.label} ➡️ ${toDevice.label}`);
+                    showMiniToast(`✅ 连接成功！<br>${getDeviceLabel(fromDevice)} ➡️ ${getDeviceLabel(toDevice)}`);
                 }
             }
 
@@ -3561,7 +3612,7 @@
             const devices = [
                 {
                     id: 'grid-utility',
-                    label: '市电',
+                    label: { zh: '市电', en: 'Grid' },
                     icon: '电网.png',
                     desc: '380V 3相',
                     category: 'power',
@@ -3580,7 +3631,7 @@
                 },
                 {
                     id: 'grid-solar',
-                    label: '光伏',
+                    label: { zh: '光伏', en: 'Solar' },
                     icon: '光伏.png',
                     desc: '500KW',
                     category: 'power',
@@ -3599,7 +3650,7 @@
                 },
                 {
                     id: 'grid-storage',
-                    label: '储能柜',
+                    label: { zh: '储能柜', en: 'ESS Cabinet' },
                     icon: '储能柜.png',
                     desc: '500KWh',
                     category: 'storage',
@@ -3758,7 +3809,8 @@
                     const config = JSON.parse(saved);
                     console.log('解析配置成功:', config);
 
-                    placedDevices = config.placedDevices || [];
+                    // 迁移旧格式数据（将字符串label转换为多语言对象）
+                    placedDevices = migrateDeviceData(config.placedDevices || []);
                     deviceConnections = config.connections || [];
 
                     console.log('设备数量:', placedDevices.length);
@@ -3784,7 +3836,8 @@
                 const saved = localStorage.getItem('energyFlowConfig');
                 if (saved) {
                     const config = JSON.parse(saved);
-                    placedDevices = config.placedDevices || [];
+                    // 迁移旧格式数据（将字符串label转换为多语言对象）
+                    placedDevices = migrateDeviceData(config.placedDevices || []);
                     deviceConnections = config.connections || [];
                 }
             } catch (e) {

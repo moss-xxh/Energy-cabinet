@@ -556,28 +556,28 @@
             <div class="top-tabs">
                 <div class="top-tab active" onclick="switchStatTab('fault')">
                     <i class="fas fa-tools"></i>
-                    <span>故障</span>
+                    <span data-translate="alarmStatFault">故障</span>
                 </div>
                 <div class="top-tab" onclick="switchStatTab('alarm')">
                     <i class="fas fa-bell"></i>
-                    <span>告警</span>
+                    <span data-translate="alarmStatAlarm">告警</span>
                 </div>
             </div>
 
             <!-- 选择器 -->
             <div class="page-header" style="display: flex; gap: 16px; align-items: center;">
                 <div class="site-selector-wrapper">
-                    <label class="site-selector-label" for="siteSelector">选择站点：</label>
+                    <label class="site-selector-label" for="siteSelector" data-translate="alarmStatSelectSite">选择站点：</label>
                     <select id="siteSelector" onchange="filterBySite()">
-                        <option value="all">全部站点</option>
-                        <option value="科技园区站">科技园区站</option>
-                        <option value="工业园区站">工业园区站</option>
-                        <option value="商业中心站">商业中心站</option>
+                        <option value="all" data-translate="alarmStatAllSites">全部站点</option>
+                        <option value="site1" data-translate="alarmStatSiteTechPark">科技园区站</option>
+                        <option value="site2" data-translate="alarmStatSiteIndustrial">工业园区站</option>
+                        <option value="site3" data-translate="alarmStatSiteCommercial">商业中心站</option>
                     </select>
                 </div>
 
                 <div class="site-selector-wrapper">
-                    <label class="site-selector-label" for="timeDimensionSelector">时间维度：</label>
+                    <label class="site-selector-label" for="timeDimensionSelector" data-translate="alarmStatTimeDimension">时间维度：</label>
                     <select id="timeDimensionSelector" onchange="filterByTimeDimension()" style="
                         min-width: 160px;
                         padding: 10px 16px;
@@ -590,11 +590,11 @@
                         outline: none;
                         transition: all 0.2s;
                     ">
-                        <option value="yesterday">昨日</option>
-                        <option value="today" selected>今日</option>
-                        <option value="lastMonth">上月</option>
-                        <option value="thisMonth">本月</option>
-                        <option value="total">合计</option>
+                        <option value="yesterday" data-translate="alarmStatYesterday">昨日</option>
+                        <option value="today" selected data-translate="alarmStatToday">今日</option>
+                        <option value="lastMonth" data-translate="alarmStatLastMonth">上月</option>
+                        <option value="thisMonth" data-translate="alarmStatThisMonth">本月</option>
+                        <option value="total" data-translate="alarmStatTotal">合计</option>
                     </select>
                 </div>
             </div>
@@ -609,32 +609,32 @@
                             <!-- 主数据行 - 4列布局 -->
                             <div class="big-stat-data-row">
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">总数</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatTotalCount">总数</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="totalFaults">0</span>
-                                        <span class="big-stat-metric-comparison-label">环比：</span>
+                                        <span class="big-stat-metric-comparison-label" data-translate="alarmStatCompare">环比：</span>
                                         <span class="big-stat-metric-comparison" id="faultComparison">+0</span>
                                     </div>
                                 </div>
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">已修复</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatFixed">已修复</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="fixedPercentage">0</span>
                                         <span class="big-stat-metric-unit">%</span>
                                     </div>
                                 </div>
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">未修复</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatUnfixed">未修复</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="unfixedCount">0</span>
                                     </div>
                                 </div>
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">平均修复时长</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatAvgRepairTime">平均修复时长</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="avgRepairTime">0</span>
-                                        <span class="big-stat-metric-unit">小时</span>
-                                        <span class="big-stat-metric-comparison-label">环比:</span>
+                                        <span class="big-stat-metric-unit" data-translate="alarmStatHours">小时</span>
+                                        <span class="big-stat-metric-comparison-label" data-translate="alarmStatCompare">环比:</span>
                                         <span class="big-stat-metric-comparison" id="repairTimeComparison">+0</span>
                                     </div>
                                 </div>
@@ -650,22 +650,22 @@
                             <!-- 主数据行 - 3列布局 -->
                             <div class="big-stat-data-row" style="grid-template-columns: repeat(3, 1fr);">
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">总数</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatTotalCount">总数</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="totalAlarms">0</span>
-                                        <span class="big-stat-metric-comparison-label">环比：</span>
+                                        <span class="big-stat-metric-comparison-label" data-translate="alarmStatCompare">环比：</span>
                                         <span class="big-stat-metric-comparison" id="alarmComparison">+0</span>
                                     </div>
                                 </div>
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">已消警</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatAcknowledged">已消警</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="acknowledgedPercentage">0</span>
                                         <span class="big-stat-metric-unit">%</span>
                                     </div>
                                 </div>
                                 <div class="big-stat-metric">
-                                    <div class="big-stat-metric-label">未消警</div>
+                                    <div class="big-stat-metric-label" data-translate="alarmStatUnacknowledged">未消警</div>
                                     <div>
                                         <span class="big-stat-metric-value" id="unacknowledgedCount">0</span>
                                     </div>
@@ -681,9 +681,9 @@
                 <!-- 左侧：设备故障统计 -->
                 <div class="ranking-card" style="display: flex; flex-direction: column;">
                     <div class="card-header">
-                        <h2 class="card-title">
+                        <h2 class="card-title" id="leftCardTitle">
                             <i class="fas fa-chart-bar" style="color: #f59e0b;"></i>
-                            设备故障统计
+                            <span data-translate="alarmStatDeviceFaultStat">设备故障统计</span>
                         </h2>
                     </div>
 
@@ -691,9 +691,9 @@
                         <table class="ranking-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 80px;">序号</th>
-                                    <th>设备名称</th>
-                                    <th style="width: 120px;">次数</th>
+                                    <th style="width: 80px;" data-translate="alarmStatRank">序号</th>
+                                    <th id="nameColumnHeader" data-translate="alarmStatDeviceName">设备名称</th>
+                                    <th style="width: 120px;" data-translate="alarmStatCount">次数</th>
                                 </tr>
                             </thead>
                             <tbody id="faultRankingBody">
@@ -706,9 +706,9 @@
                 <!-- 右侧:故障类型分布 -->
                 <div class="ranking-card" id="typeDistributionCard" style="display: flex; flex-direction: column;">
                     <div class="card-header">
-                        <h2 class="card-title">
+                        <h2 class="card-title" id="rightCardTitle">
                             <i class="fas fa-chart-bar" style="color: #ef4444;"></i>
-                            故障类型分布
+                            <span data-translate="alarmStatFaultTypeDistribution">故障类型分布</span>
                         </h2>
                     </div>
 
@@ -716,8 +716,8 @@
                         <table class="ranking-table">
                             <thead>
                                 <tr>
-                                    <th id="typeColumnHeader">故障类型</th>
-                                    <th style="width: 140px;">次数</th>
+                                    <th id="typeColumnHeader" data-translate="alarmStatFaultType">故障类型</th>
+                                    <th style="width: 140px;" data-translate="alarmStatCount">次数</th>
                                 </tr>
                             </thead>
                             <tbody id="faultTypeRankingBody">
@@ -731,9 +731,9 @@
             <!-- 每日故障趋势模块 -->
             <div class="ranking-card" id="dailyTrendContainer">
                 <div class="card-header">
-                    <h2 class="card-title">
+                    <h2 class="card-title" id="trendCardTitle">
                         <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
-                        每日故障趋势
+                        <span data-translate="alarmStatDailyTrend">每日故障趋势</span>
                     </h2>
                 </div>
                 <div class="daily-trend-chart" id="dailyTrendChart" style="height: 400px;"></div>
@@ -747,7 +747,44 @@
         // 全局数据
         let allDeviceData = [];
         let currentPeriod = 'today';
-        let currentTabType = '故障';  // 当前tab类型: '故障' 或 '告警'
+        let currentTabType = 'fault';  // 当前tab类型: 'fault' 或 'alarm'
+
+        // 站点名称映射（使用翻译键）
+        const siteTranslateKeys = {
+            'site1': 'alarmStatSiteTechPark',
+            'site2': 'alarmStatSiteIndustrial',
+            'site3': 'alarmStatSiteCommercial'
+        };
+
+        // 故障类型映射（使用翻译键）
+        const faultTypeTranslateKeys = {
+            'batteryOvertemp': 'alarmStatFaultBatteryOvertemp',
+            'dcdc': 'alarmStatFaultDCDC',
+            'commInterrupt': 'alarmStatFaultCommInterrupt',
+            'socLow': 'alarmStatFaultSOCLow',
+            'voltageAbnormal': 'alarmStatFaultVoltageAbnormal',
+            'coolingSystem': 'alarmStatFaultCoolingSystem',
+            'bmsComm': 'alarmStatFaultBMSComm',
+            'insulation': 'alarmStatFaultInsulation'
+        };
+
+        // 获取翻译文本
+        function getTranslation(key) {
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
+            return translations[lang][key] || key;
+        }
+
+        // 获取站点翻译
+        function getSiteName(siteKey) {
+            const translateKey = siteTranslateKeys[siteKey];
+            return getTranslation(translateKey);
+        }
+
+        // 获取故障类型翻译
+        function getFaultTypeName(faultKey) {
+            const translateKey = faultTypeTranslateKeys[faultKey];
+            return getTranslation(translateKey);
+        }
 
         // 周期故障数量系数
         const periodMultipliers = {
@@ -760,17 +797,16 @@
 
         // 生成设备故障数据（基准数据）
         function generateDeviceData() {
-            const sites = ['科技园区站', '工业园区站', '商业中心站'];
-            const faultTypes = [
-                '电池过温', 'DC/DC故障', '通信中断', 'SOC过低',
-                '电压异常', '冷却系统故障', 'BMS通信异常', '绝缘故障'
+            const siteKeys = ['site1', 'site2', 'site3'];
+            const faultTypeKeys = [
+                'batteryOvertemp', 'dcdc', 'commInterrupt', 'socLow',
+                'voltageAbnormal', 'coolingSystem', 'bmsComm', 'insulation'
             ];
             const data = [];
 
-            sites.forEach(site => {
+            siteKeys.forEach(siteKey => {
                 // 每个站点生成8台设备
                 for (let i = 1; i <= 8; i++) {
-                    const deviceName = `储能柜#${i}`;
                     const baseFaults = Math.floor(Math.random() * 30 + 10); // 基准：本周10-40次故障
 
                     // 为每个设备随机分配主要故障类型
@@ -778,10 +814,10 @@
                     const numMainFaults = Math.min(3, Math.floor(Math.random() * 4 + 1));
 
                     for (let j = 0; j < numMainFaults; j++) {
-                        const faultType = faultTypes[Math.floor(Math.random() * faultTypes.length)];
-                        if (!mainFaultTypes.find(f => f.type === faultType)) {
+                        const faultTypeKey = faultTypeKeys[Math.floor(Math.random() * faultTypeKeys.length)];
+                        if (!mainFaultTypes.find(f => f.typeKey === faultTypeKey)) {
                             mainFaultTypes.push({
-                                type: faultType,
+                                typeKey: faultTypeKey,
                                 baseCount: Math.floor(baseFaults * (Math.random() * 0.3 + 0.2))
                             });
                         }
@@ -791,8 +827,8 @@
                     mainFaultTypes.sort((a, b) => b.baseCount - a.baseCount);
 
                     data.push({
-                        device: deviceName,
-                        site: site,
+                        deviceIndex: i,  // 设备序号
+                        siteKey: siteKey,
                         baseFaults: baseFaults,  // 保存基准数据
                         mainFaults: mainFaultTypes
                     });
@@ -805,12 +841,16 @@
         // 根据周期计算实际故障数量
         function getDeviceDataByPeriod(period) {
             const multiplier = periodMultipliers[period];
+            const deviceLabel = getTranslation('alarmStatDeviceESS');
             return allDeviceData.map(item => ({
-                device: item.device,
-                site: item.site,
+                device: `${deviceLabel}#${item.deviceIndex}`,
+                deviceIndex: item.deviceIndex,
+                siteKey: item.siteKey,
+                site: getSiteName(item.siteKey),
                 totalFaults: Math.floor(item.baseFaults * multiplier),
                 mainFaults: item.mainFaults.map(f => ({
-                    type: f.type,
+                    typeKey: f.typeKey,
+                    type: getFaultTypeName(f.typeKey),
                     count: Math.floor(f.baseCount * multiplier)
                 }))
             }));
@@ -822,6 +862,10 @@
             let ranking;
             let cardTitle;
             let tableHeader;
+
+            // 获取当前类型的翻译文本
+            const isFault = currentTabType === 'fault';
+            const typeLabel = isFault ? getTranslation('alarmStatFault') : getTranslation('alarmStatAlarm');
 
             if (selectedSite === 'all') {
                 // 全部站点：按站点聚合数据
@@ -840,15 +884,15 @@
                 ranking = Object.values(siteStats)
                     .sort((a, b) => b.totalFaults - a.totalFaults);
 
-                cardTitle = `站点${currentTabType}统计`;
-                tableHeader = '站点名称';
+                cardTitle = isFault ? getTranslation('alarmStatSiteFaultStat') : getTranslation('alarmStatSiteAlarmStat');
+                tableHeader = getTranslation('alarmStatSiteName');
             } else {
                 // 特定站点：显示所有设备
                 ranking = [...data]
                     .sort((a, b) => b.totalFaults - a.totalFaults);
 
-                cardTitle = `设备${currentTabType}统计`;
-                tableHeader = '设备名称';
+                cardTitle = isFault ? getTranslation('alarmStatDeviceFaultStat') : getTranslation('alarmStatDeviceAlarmStat');
+                tableHeader = getTranslation('alarmStatDeviceName');
             }
 
             // 更新卡片标题
@@ -870,6 +914,7 @@
             const totalFaultsSum = data.reduce((sum, device) => sum + device.totalFaults, 0);
 
             // 渲染表格
+            const unitLabel = getTranslation('alarmStatUnitTimes');
             const tbody = document.getElementById('faultRankingBody');
             tbody.innerHTML = ranking.map((item, index) => {
                 const rank = index + 1;
@@ -892,7 +937,7 @@
                         </td>
                         <td>
                             <span class="count-value">${item.totalFaults}</span>
-                            <span class="count-label">次</span>
+                            <span class="count-label">${unitLabel}</span>
                         </td>
                     </tr>
                 `;
@@ -929,6 +974,7 @@
             const totalCount = sortedData.reduce((sum, item) => sum + item.count, 0);
 
             // 渲染表格 - 显示所有故障类型,降序排列
+            const unitLabel = getTranslation('alarmStatUnitTimes');
             tbody.innerHTML = sortedData.map((item) => {
                 const percentage = totalCount > 0 ? ((item.count / totalCount) * 100).toFixed(1) : 0;
                 return `
@@ -940,7 +986,7 @@
                             <span style="font-size: 13px; color: #64748b;">${percentage}%</span>
                             <span style="margin: 0 6px; color: #cbd5e1;">|</span>
                             <span class="count-value">${item.count}</span>
-                            <span class="count-label">次</span>
+                            <span class="count-label">${unitLabel}</span>
                         </td>
                     </tr>
                 `;
@@ -974,27 +1020,33 @@
                 document.getElementById('faultStatContent').classList.add('active');
 
                 // 更新当前tab类型和相关标题
-                currentTabType = '故障';
-                updateCardTitles(currentTabType);
+                currentTabType = 'fault';
+                updateCardTitles();
             } else if (tabName === 'alarm') {
                 document.querySelector('.top-tab:nth-child(2)').classList.add('active');
                 document.getElementById('alarmStatContent').classList.add('active');
 
                 // 更新当前tab类型和相关标题
-                currentTabType = '告警';
-                updateCardTitles(currentTabType);
+                currentTabType = 'alarm';
+                updateCardTitles();
             }
         }
 
         // 更新卡片标题
-        function updateCardTitles(type) {
+        function updateCardTitles() {
             const selectedSite = document.getElementById('siteSelector').value;
+            const isFault = currentTabType === 'fault';
+            const isAllSites = selectedSite === 'all';
 
             // 更新左侧卡片标题
             const leftTitle = document.querySelector('.ranking-card:first-child .card-title');
             if (leftTitle) {
-                const isAllSites = selectedSite === 'all';
-                const titleText = isAllSites ? `站点${type}统计` : `设备${type}统计`;
+                let titleText;
+                if (isAllSites) {
+                    titleText = isFault ? getTranslation('alarmStatSiteFaultStat') : getTranslation('alarmStatSiteAlarmStat');
+                } else {
+                    titleText = isFault ? getTranslation('alarmStatDeviceFaultStat') : getTranslation('alarmStatDeviceAlarmStat');
+                }
                 leftTitle.innerHTML = `
                     <i class="fas fa-chart-bar" style="color: #f59e0b;"></i>
                     ${titleText}
@@ -1004,24 +1056,26 @@
             // 更新右侧卡片标题
             const rightTitle = document.querySelector('#typeDistributionCard .card-title');
             if (rightTitle) {
+                const distributionText = isFault ? getTranslation('alarmStatFaultTypeDistribution') : getTranslation('alarmStatAlarmTypeDistribution');
                 rightTitle.innerHTML = `
                     <i class="fas fa-chart-bar" style="color: #ef4444;"></i>
-                    ${type}类型分布
+                    ${distributionText}
                 `;
             }
 
             // 更新右侧表格表头
             const typeHeader = document.getElementById('typeColumnHeader');
             if (typeHeader) {
-                typeHeader.textContent = `${type}类型`;
+                typeHeader.textContent = isFault ? getTranslation('alarmStatFaultType') : getTranslation('alarmStatAlarmType');
             }
 
             // 更新趋势图表标题
             const trendTitle = document.querySelector('#dailyTrendContainer .card-title');
             if (trendTitle) {
+                const trendText = isFault ? getTranslation('alarmStatDailyTrend') : getTranslation('alarmStatDailyAlarmTrend');
                 trendTitle.innerHTML = `
                     <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
-                    每日${type}趋势
+                    ${trendText}
                 `;
             }
         }
@@ -1037,12 +1091,16 @@
         // 计算上期数据
         function getPreviousDeviceData(period) {
             const multiplier = getPreviousPeriodMultiplier(period);
+            const deviceLabel = getTranslation('alarmStatDeviceESS');
             return allDeviceData.map(item => ({
-                device: item.device,
-                site: item.site,
+                device: `${deviceLabel}#${item.deviceIndex}`,
+                deviceIndex: item.deviceIndex,
+                siteKey: item.siteKey,
+                site: getSiteName(item.siteKey),
                 totalFaults: Math.floor(item.baseFaults * multiplier),
                 mainFaults: item.mainFaults.map(f => ({
-                    type: f.type,
+                    typeKey: f.typeKey,
+                    type: getFaultTypeName(f.typeKey),
                     count: Math.floor(f.baseCount * multiplier)
                 }))
             }));
@@ -1183,6 +1241,11 @@
             const myChart = echarts.init(chartDom);
             const dailyData = generateDailyData(period);
 
+            // 获取翻译文本
+            const isFault = currentTabType === 'fault';
+            const countLabel = isFault ? getTranslation('alarmStatFaultCount') : getTranslation('alarmStatAlarmCount');
+            const rateLabel = isFault ? getTranslation('alarmStatRepairRate') : getTranslation('alarmStatAckRate');
+
             // 计算修复率(65%-95%之间随机,符合真实情况)
             const repairRates = dailyData.map(() => {
                 const rate = 65 + Math.random() * 30; // 65-95之间
@@ -1198,7 +1261,7 @@
                     containLabel: true
                 },
                 legend: {
-                    data: ['故障数量', '修复率'],
+                    data: [countLabel, rateLabel],
                     top: '2%',
                     textStyle: {
                         fontSize: 12,
@@ -1222,7 +1285,7 @@
                 yAxis: [
                     {
                         type: 'value',
-                        name: '故障数量',
+                        name: countLabel,
                         nameTextStyle: {
                             fontSize: 12,
                             color: '#64748b'
@@ -1240,7 +1303,7 @@
                     },
                     {
                         type: 'value',
-                        name: '修复率(%)',
+                        name: rateLabel + '(%)',
                         nameTextStyle: {
                             fontSize: 12,
                             color: '#64748b'
@@ -1258,7 +1321,7 @@
                 ],
                 series: [
                     {
-                        name: '故障数量',
+                        name: countLabel,
                         type: 'bar',
                         data: dailyData.map(d => d.faults),
                         barWidth: '40%',
@@ -1299,7 +1362,7 @@
                         }
                     },
                     {
-                        name: '修复率',
+                        name: rateLabel,
                         type: 'line',
                         yAxisIndex: 1,
                         data: repairRates,
@@ -1336,10 +1399,10 @@
                     formatter: function(params) {
                         let result = `${params[0].axisValue}<br/>`;
                         params.forEach(param => {
-                            if (param.seriesName === '故障数量') {
-                                result += `${param.marker}故障数量: <strong>${param.value}</strong><br/>`;
-                            } else if (param.seriesName === '修复率') {
-                                result += `${param.marker}修复率: <strong>${param.value}%</strong>`;
+                            if (param.seriesIndex === 0) {
+                                result += `${param.marker}${countLabel}: <strong>${param.value}</strong><br/>`;
+                            } else if (param.seriesIndex === 1) {
+                                result += `${param.marker}${rateLabel}: <strong>${param.value}%</strong>`;
                             }
                         });
                         return result;
@@ -1363,10 +1426,10 @@
             let deviceData = getDeviceDataByPeriod(currentPeriod);
             let previousData = getPreviousDeviceData(currentPeriod);
 
-            // 根据站点筛选
+            // 根据站点筛选（使用 siteKey）
             if (selectedSite !== 'all') {
-                deviceData = deviceData.filter(d => d.site === selectedSite);
-                previousData = previousData.filter(d => d.site === selectedSite);
+                deviceData = deviceData.filter(d => d.siteKey === selectedSite);
+                previousData = previousData.filter(d => d.siteKey === selectedSite);
             }
 
             updateStatistics(deviceData);
@@ -1393,6 +1456,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             allDeviceData = generateDeviceData();
             updateDisplay();
+            updateCardTitles();
+        });
+
+        // 语言切换时重新渲染
+        document.addEventListener('languageChanged', function() {
+            updateDisplay();
+            updateCardTitles();
+            applyTranslations();
         });
     </script>
 </body>

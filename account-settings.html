@@ -6,8 +6,8 @@
     <title>账号设置 - 储能柜管理系统</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="common.js"></script>
     <script src="navbar.js"></script>
-    <script src="../ueh/components/i18n.js"></script>
     <style>
         .settings-container {
             display: flex;
@@ -627,8 +627,8 @@
     <main class="main-content">
         <!-- 页面标题 -->
         <div class="page-header" style="padding: 0 24px; margin-bottom: 24px;">
-            <h1 class="page-title" id="accountSettingsTitle" data-i18n="accountSettings.pageTitle">账号设置</h1>
-            <p class="page-subtitle" id="accountSettingsSubtitle" data-i18n="accountSettings.pageSubtitle">管理您的个人信息和账号安全</p>
+            <h1 class="page-title" id="accountSettingsTitle" data-translate="accountSettingsPageTitle">账号设置</h1>
+            <p class="page-subtitle" id="accountSettingsSubtitle" data-translate="accountSettingsPageSubtitle">管理您的个人信息和账号安全</p>
         </div>
 
         <div class="settings-container">
@@ -636,11 +636,11 @@
             <div class="settings-tabs">
                 <button class="tab-item active" onclick="switchTab('basic')" data-tab="basic">
                     <i class="fas fa-user"></i>
-                    <span id="tabBasicInfo" data-i18n="accountSettings.tabs.basicInfo">基础信息</span>
+                    <span id="tabBasicInfo" data-translate="accountSettingsTabBasicInfo">基础信息</span>
                 </button>
                 <button class="tab-item" onclick="switchTab('password')" data-tab="password">
                     <i class="fas fa-lock"></i>
-                    <span id="tabChangePassword" data-i18n="accountSettings.tabs.changePassword">修改密码</span>
+                    <span id="tabChangePassword" data-translate="accountSettingsTabChangePassword">修改密码</span>
                 </button>
             </div>
 
@@ -650,11 +650,11 @@
                 <!-- 成功/错误消息 -->
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle"></i>
-                    <span id="msgSaveSuccess" data-i18n="accountSettings.messages.saveSuccess">保存成功！</span>
+                    <span id="msgSaveSuccess" data-translate="accountSettingsMsgSaveSuccess">保存成功！</span>
                 </div>
                 <div class="error-message" id="errorMessage">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span id="msgSaveFailed" data-i18n="accountSettings.messages.saveFailed">保存失败，请稍后重试</span>
+                    <span id="msgSaveFailed" data-translate="accountSettingsMsgSaveFailed">保存失败，请稍后重试</span>
                 </div>
 
                 <!-- 基础信息面板 -->
@@ -665,13 +665,13 @@
                             <div class="settings-icon">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <h2 class="settings-title" id="cardBasicInfoTitle" data-i18n="accountSettings.basicInfo.cardTitle">基本信息</h2>
+                            <h2 class="settings-title" id="cardBasicInfoTitle" data-translate="accountSettingsBasicInfoTitle">基本信息</h2>
                         </div>
 
                         <div class="info-content">
                             <!-- 头像行 -->
                             <div class="info-row">
-                                <div class="info-label" id="labelAvatar" data-i18n="accountSettings.basicInfo.avatar">头像</div>
+                                <div class="info-label" id="labelAvatar" data-translate="accountSettingsAvatar">头像</div>
                                 <div class="info-value">
                                     <div class="avatar-wrap">
                                         <div class="avatar-display">
@@ -679,29 +679,29 @@
                                             <div id="avatarText" class="avatar-placeholder">D</div>
                                         </div>
                                         <div class="avatar-actions">
-                                            <button class="link-btn" onclick="document.getElementById('avatarInput').click()" id="btnChangeAvatar" data-i18n="accountSettings.basicInfo.changeAvatar">
+                                            <button class="link-btn" onclick="document.getElementById('avatarInput').click()" id="btnChangeAvatar" data-translate="accountSettingsChangeAvatar">
                                                 更换头像
                                             </button>
                                             <span class="divider">|</span>
-                                            <button class="link-btn" onclick="removeAvatar()" id="btnRemoveAvatar" data-i18n="accountSettings.basicInfo.removeAvatar">
+                                            <button class="link-btn" onclick="removeAvatar()" id="btnRemoveAvatar" data-translate="accountSettingsRemoveAvatar">
                                                 移除
                                             </button>
                                             <input type="file" id="avatarInput" style="display: none;" accept="image/*" onchange="handleAvatarChange(event)">
                                         </div>
                                     </div>
-                                    <div class="info-hint" id="hintAvatarFormat" data-i18n="accountSettings.basicInfo.avatarHint">支持 JPG、PNG 格式，大小不超过 2MB</div>
+                                    <div class="info-hint" id="hintAvatarFormat" data-translate="accountSettingsAvatarHint">支持 JPG、PNG 格式，大小不超过 2MB</div>
                                 </div>
                             </div>
 
                             <!-- 昵称行 -->
                             <div class="info-row" style="border-bottom: none;">
-                                <div class="info-label" id="labelNickname" data-i18n="accountSettings.basicInfo.nickname">昵称</div>
+                                <div class="info-label" id="labelNickname" data-translate="accountSettingsNickname">昵称</div>
                                 <div class="info-value">
                                     <form id="nicknameForm" onsubmit="saveNickname(event); return false;" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-                                        <input type="text" class="form-control" id="nicknameInput" value="demo" data-i18n-placeholder="accountSettings.basicInfo.nicknamePlaceholder" placeholder="请输入昵称" style="max-width: 300px;">
+                                        <input type="text" class="form-control" id="nicknameInput" value="demo" data-translate-placeholder="accountSettingsNicknamePlaceholder" placeholder="请输入昵称" style="max-width: 300px;">
                                         <div style="text-align: right;">
                                             <button type="submit" class="btn btn-primary" style="height: 40px; padding: 0 12px; font-size: 14px; width: 90px;">
-                                                <span id="btnSaveNickname" data-i18n="accountSettings.basicInfo.save">保存</span>
+                                                <span id="btnSaveNickname" data-translate="accountSettingsSave">保存</span>
                                             </button>
                                         </div>
                                     </form>
@@ -718,20 +718,20 @@
                             <div class="settings-icon">
                                 <i class="fas fa-lock"></i>
                             </div>
-                            <h2 class="settings-title" data-i18n="accountSettings.passwordSettings.cardTitle">密码设置</h2>
+                            <h2 class="settings-title" data-translate="accountSettingsPasswordTitle">密码设置</h2>
                         </div>
 
                         <!-- 验证方式选择 -->
                         <div class="form-row">
-                            <label class="form-label" data-i18n="accountSettings.passwordSettings.changeMethod">修改方式</label>
+                            <label class="form-label" data-translate="accountSettingsChangeMethod">修改方式</label>
                             <div style="display: flex; align-items: center; gap: 24px;">
                                 <label class="radio-item">
                                     <input type="radio" name="verifyMethod" value="password" checked onchange="switchVerifyMethod('password')">
-                                    <span class="radio-label" data-i18n="accountSettings.passwordSettings.usePassword">使用原密码验证</span>
+                                    <span class="radio-label" data-translate="accountSettingsUsePassword">使用原密码验证</span>
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="verifyMethod" value="email" onchange="switchVerifyMethod('email')">
-                                    <span class="radio-label" data-i18n="accountSettings.passwordSettings.useEmail">使用邮箱验证</span>
+                                    <span class="radio-label" data-translate="accountSettingsUseEmail">使用邮箱验证</span>
                                 </label>
                             </div>
                         </div>
@@ -740,45 +740,45 @@
                             <!-- 原密码验证 -->
                             <div id="passwordVerify" class="verify-section">
                                 <div class="form-row">
-                                    <label class="form-label" data-i18n="accountSettings.passwordSettings.currentPassword">原密码</label>
-                                    <input type="password" class="form-control" id="currentPassword" placeholder="请输入原密码" data-i18n-placeholder="accountSettings.passwordSettings.currentPasswordPlaceholder">
+                                    <label class="form-label" data-translate="accountSettingsCurrentPassword">原密码</label>
+                                    <input type="password" class="form-control" id="currentPassword" placeholder="请输入原密码" data-translate-placeholder="accountSettingsCurrentPasswordPlaceholder">
                                 </div>
                             </div>
 
                             <!-- 邮箱验证 -->
                             <div id="emailVerify" class="verify-section" style="display: none;">
                                 <div class="form-row">
-                                    <label class="form-label" data-i18n="accountSettings.passwordSettings.emailVerification">邮箱验证</label>
+                                    <label class="form-label" data-translate="accountSettingsEmailVerification">邮箱验证</label>
                                     <div class="input-group">
                                         <input type="email" class="form-control" value="admin@example.com" disabled style="background: var(--bg-secondary);">
                                         <button type="button" class="btn btn-outline" onclick="sendPasswordResetCode()">
-                                            <span data-i18n="accountSettings.passwordSettings.getVerificationCode">获取验证码</span>
+                                            <span data-translate="accountSettingsGetCode">获取验证码</span>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-label" data-i18n="accountSettings.passwordSettings.verificationCode">验证码</label>
-                                    <input type="text" class="form-control" id="resetCode" placeholder="请输入验证码" data-i18n-placeholder="accountSettings.passwordSettings.verificationCodePlaceholder" maxlength="6">
+                                    <label class="form-label" data-translate="accountSettingsVerificationCode">验证码</label>
+                                    <input type="text" class="form-control" id="resetCode" placeholder="请输入验证码" data-translate-placeholder="accountSettingsVerificationCodePlaceholder" maxlength="6">
                                 </div>
                             </div>
 
                             <!-- 新密码设置 -->
                             <div class="form-row">
-                                <label class="form-label" data-i18n="accountSettings.passwordSettings.newPassword">新密码</label>
+                                <label class="form-label" data-translate="accountSettingsNewPassword">新密码</label>
                                 <div style="width: 100%;">
-                                    <input type="password" class="form-control" id="newPassword" placeholder="请输入新密码" data-i18n-placeholder="accountSettings.passwordSettings.newPasswordPlaceholder" oninput="checkPasswordStrength(this.value)">
+                                    <input type="password" class="form-control" id="newPassword" placeholder="请输入新密码" data-translate-placeholder="accountSettingsNewPasswordPlaceholder" oninput="checkPasswordStrength(this.value)">
                                 </div>
                             </div>
                             <div class="form-row">
-                                <label class="form-label" data-i18n="accountSettings.passwordSettings.confirmPassword">确认密码</label>
-                                <input type="password" class="form-control" id="confirmPassword" placeholder="请再次输入新密码" data-i18n-placeholder="accountSettings.passwordSettings.confirmPasswordPlaceholder">
+                                <label class="form-label" data-translate="accountSettingsConfirmPassword">确认密码</label>
+                                <input type="password" class="form-control" id="confirmPassword" placeholder="请再次输入新密码" data-translate-placeholder="accountSettingsConfirmPasswordPlaceholder">
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" onclick="resetPasswordForm()" style="width: 90px; height: 40px;">
-                                    <span data-i18n="accountSettings.passwordSettings.reset">重置</span>
+                                    <span data-translate="accountSettingsReset">重置</span>
                                 </button>
                                 <button type="submit" class="btn btn-primary" style="width: 110px; height: 40px;">
-                                    <span data-i18n="accountSettings.passwordSettings.changePassword">修改密码</span>
+                                    <span data-translate="accountSettingsChangePassword">修改密码</span>
                                 </button>
                             </div>
                         </form>
@@ -788,7 +788,6 @@
         </div>
     </main>
 
-    <script src="common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 用户下拉菜单样式 */
@@ -873,7 +872,7 @@
             const file = event.target.files[0];
             if (file) {
                 if (file.size > 2 * 1024 * 1024) {
-                    showError(window.i18n.getText('accountSettings.basicInfo.avatarSizeError'));
+                    showError(getTranslation('accountSettingsAvatarSizeError'));
                     return;
                 }
                 
@@ -919,20 +918,20 @@
             const btn = event.target;
             let countdown = 60;
             btn.disabled = true;
-            btn.textContent = `${countdown}` + window.i18n.getText('accountSettings.emailBinding.retryAfter');
-            
+            btn.textContent = `${countdown}` + getTranslation('accountSettingsRetryAfter');
+
             const timer = setInterval(() => {
                 countdown--;
                 if (countdown <= 0) {
                     clearInterval(timer);
                     btn.disabled = false;
-                    btn.textContent = window.i18n.getText('accountSettings.emailBinding.getCode');
+                    btn.textContent = getTranslation('accountSettingsGetCode');
                 } else {
-                    btn.textContent = `${countdown}` + window.i18n.getText('accountSettings.emailBinding.retryAfter');
+                    btn.textContent = `${countdown}` + getTranslation('accountSettingsRetryAfter');
                 }
             }, 1000);
             
-            showSuccess(window.i18n.getText('accountSettings.messages.codeSent'));
+            showSuccess(getTranslation('accountSettingsCodeSent'));
         }
 
 
@@ -987,7 +986,7 @@
             
             const newNickname = document.getElementById('nicknameInput').value.trim();
             if (!newNickname) {
-                showError(window.i18n.getText('accountSettings.messages.nicknameEmpty'));
+                showError(getTranslation('accountSettingsNicknameEmpty'));
                 return;
             }
             
@@ -1007,7 +1006,7 @@
             // 保存到localStorage
             localStorage.setItem('username', newNickname);
             
-            showSuccess(window.i18n.getText('accountSettings.messages.nicknameSaved'));
+            showSuccess(getTranslation('accountSettingsNicknameSaved'));
         }
 
 
@@ -1030,13 +1029,13 @@
             if (verifyMethod === 'password') {
                 const currentPassword = document.getElementById('currentPassword').value;
                 if (!currentPassword) {
-                    showError(window.i18n.getText('accountSettings.passwordSettings.enterCurrentPassword'));
+                    showError(getTranslation('accountSettingsEnterCurrentPassword'));
                     return;
                 }
             } else {
                 const resetCode = document.getElementById('resetCode').value;
                 if (!resetCode) {
-                    showError(window.i18n.getText('accountSettings.passwordSettings.enterVerificationCode'));
+                    showError(getTranslation('accountSettingsEnterVerificationCode'));
                     return;
                 }
             }
@@ -1045,27 +1044,27 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (!newPassword) {
-                showError(window.i18n.getText('accountSettings.passwordSettings.enterNewPassword'));
+                showError(getTranslation('accountSettingsEnterNewPassword'));
                 return;
             }
             
             if (!confirmPassword) {
-                showError(window.i18n.getText('accountSettings.passwordSettings.confirmNewPassword'));
+                showError(getTranslation('accountSettingsConfirmNewPassword'));
                 return;
             }
             
             if (newPassword !== confirmPassword) {
-                showError(window.i18n.getText('accountSettings.passwordSettings.passwordMismatch'));
+                showError(getTranslation('accountSettingsPasswordMismatch'));
                 return;
             }
             
             if (newPassword.length < 8) {
-                showError(window.i18n.getText('accountSettings.passwordSettings.passwordTooShort'));
+                showError(getTranslation('accountSettingsPasswordTooShort'));
                 return;
             }
             
             // 模拟保存
-            showSuccess(window.i18n.getText('accountSettings.passwordSettings.passwordChangeSuccess'));
+            showSuccess(getTranslation('accountSettingsPasswordChangeSuccess'));
             
             // 清空表单
             resetPasswordForm();
@@ -1084,6 +1083,11 @@
             if (avatarText) avatarText.textContent = firstLetter;
             const avatar = document.querySelector('.avatar');
             if (avatar) avatar.textContent = firstLetter;
+
+            // 应用翻译
+            if (typeof applyTranslations === 'function') {
+                applyTranslations();
+            }
         });
     </script>
 </body>

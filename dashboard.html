@@ -1294,8 +1294,8 @@
                     </select>
                     <!-- 自定义icon提示 -->
                     <a href="personalization.html" style="font-size: 12px; color: #64748b; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#64748b'">
-                        <span>可根据自己品牌自定义设备icon，</span>
-                        <span style="color: #3b82f6; font-weight: 500;">立即前往</span>
+                        <span data-translate="dashboardCustomIconTip">可根据自己品牌自定义设备icon，</span>
+                        <span style="color: #3b82f6; font-weight: 500;" data-translate="dashboardGoNow">立即前往</span>
                         <i class="fas fa-arrow-right" style="font-size: 10px; color: #3b82f6;"></i>
                     </a>
                 </div>
@@ -1536,7 +1536,7 @@
         <!-- 故障分析 -->
         <div class="card" style="margin-top: 24px;">
             <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">故障分析</h3>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;" data-translate="dashboardFaultAnalysis">故障分析</h3>
                 <select id="faultTimeDimension" style="
                     min-width: 120px;
                     padding: 8px 12px;
@@ -1549,11 +1549,11 @@
                     outline: none;
                     transition: all 0.2s;
                 " onchange="updateFaultTable()">
-                    <option value="yesterday">昨日</option>
-                    <option value="today" selected>今日</option>
-                    <option value="lastMonth">上月</option>
-                    <option value="thisMonth">本月</option>
-                    <option value="total">合计</option>
+                    <option value="yesterday" data-translate="dashboardFaultYesterday">昨日</option>
+                    <option value="today" selected data-translate="dashboardFaultToday">今日</option>
+                    <option value="lastMonth" data-translate="dashboardFaultLastMonth">上月</option>
+                    <option value="thisMonth" data-translate="dashboardFaultThisMonth">本月</option>
+                    <option value="total" data-translate="dashboardFaultTotal">合计</option>
                 </select>
             </div>
             <div style="padding: 24px;">
@@ -1561,62 +1561,27 @@
                     <table class="station-table" id="stationTable">
                         <thead>
                             <tr>
-                                <th>站点名称</th>
+                                <th data-translate="dashboardFaultSiteName">站点名称</th>
                                 <th class="sortable" data-column="faultCount" data-type="number">
-                                    故障数量
+                                    <span data-translate="dashboardFaultCount">故障数量</span>
                                     <span class="sort-icon"></span>
                                 </th>
                                 <th class="sortable" data-column="repairRate" data-type="number">
-                                    修复率
+                                    <span data-translate="dashboardFaultRepairRate">修复率</span>
                                     <span class="sort-icon"></span>
                                 </th>
                                 <th class="sortable" data-column="unfixed" data-type="number">
-                                    未修复
+                                    <span data-translate="dashboardFaultUnfixed">未修复</span>
                                     <span class="sort-icon"></span>
                                 </th>
                                 <th class="sortable" data-column="repairTime" data-type="number">
-                                    修复时长
+                                    <span data-translate="dashboardFaultRepairTime">修复时长</span>
                                     <span class="sort-icon"></span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <div class="station-name-cell clickable-station" data-site="site1" onclick="navigateToDevicesWithFilter('site1')">
-                                        <i class="fas fa-building" style="color: #3b82f6;"></i>
-                                        科技园区站
-                                    </div>
-                                </td>
-                                <td class="station-table-number" data-value="28">28<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="65">65<span class="station-table-unit">%</span></td>
-                                <td class="station-table-number" data-value="10">10<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="6.2">6.2<span class="station-table-unit">小时</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="station-name-cell clickable-station" data-site="site2" onclick="navigateToDevicesWithFilter('site2')">
-                                        <i class="fas fa-building" style="color: #3b82f6;"></i>
-                                        工业园区站
-                                    </div>
-                                </td>
-                                <td class="station-table-number" data-value="12">12<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="83">83<span class="station-table-unit">%</span></td>
-                                <td class="station-table-number" data-value="2">2<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="4.5">4.5<span class="station-table-unit">小时</span></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="station-name-cell clickable-station" data-site="site3" onclick="navigateToDevicesWithFilter('site3')">
-                                        <i class="fas fa-building" style="color: #3b82f6;"></i>
-                                        商业中心站
-                                    </div>
-                                </td>
-                                <td class="station-table-number" data-value="45">45<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="56">56<span class="station-table-unit">%</span></td>
-                                <td class="station-table-number" data-value="20">20<span class="station-table-unit">次</span></td>
-                                <td class="station-table-number" data-value="8.7">8.7<span class="station-table-unit">小时</span></td>
-                            </tr>
+                            <!-- 将通过 updateFaultTable() 动态渲染 -->
                         </tbody>
                     </table>
                 </div>
@@ -3715,6 +3680,7 @@
         function updateFaultTable() {
             const timeDimension = document.getElementById('faultTimeDimension').value;
             const tbody = document.querySelector('#stationTable tbody');
+            const lang = localStorage.getItem('language') === 'en' ? 'en' : 'zh';
 
             // 根据不同时间维度生成不同的数据
             const multipliers = {
@@ -3726,31 +3692,36 @@
             };
 
             const baseData = [
-                { name: '科技园区站', site: 'site1', baseFault: 28, baseRepair: 65, baseUnfixed: 10, baseTime: 6.2 },
-                { name: '工业园区站', site: 'site2', baseFault: 12, baseRepair: 83, baseUnfixed: 2, baseTime: 4.5 },
-                { name: '商业中心站', site: 'site3', baseFault: 45, baseRepair: 56, baseUnfixed: 20, baseTime: 8.7 }
+                { nameKey: 'dashboardStation1', site: 'site1', baseFault: 28, baseRepair: 65, baseUnfixed: 10, baseTime: 6.2 },
+                { nameKey: 'dashboardStation2', site: 'site2', baseFault: 12, baseRepair: 83, baseUnfixed: 2, baseTime: 4.5 },
+                { nameKey: 'dashboardStation3', site: 'site3', baseFault: 45, baseRepair: 56, baseUnfixed: 20, baseTime: 8.7 }
             ];
 
             const multiplier = multipliers[timeDimension] || 1;
+
+            // 获取翻译文本
+            const unitTimes = translations[lang].dashboardFaultUnitTimes || '次';
+            const unitHours = translations[lang].dashboardFaultUnitHours || '小时';
 
             tbody.innerHTML = baseData.map(station => {
                 const faultCount = Math.round(station.baseFault * multiplier);
                 const unfixed = Math.round(station.baseUnfixed * multiplier);
                 const repairRate = station.baseRepair;
                 const repairTime = (station.baseTime * multiplier).toFixed(1);
+                const stationName = translations[lang][station.nameKey] || station.nameKey;
 
                 return `
                     <tr>
                         <td>
                             <div class="station-name-cell clickable-station" data-site="${station.site}" onclick="navigateToDevicesWithFilter('${station.site}')">
                                 <i class="fas fa-building" style="color: #3b82f6;"></i>
-                                ${station.name}
+                                ${stationName}
                             </div>
                         </td>
-                        <td class="station-table-number" data-value="${faultCount}">${faultCount}<span class="station-table-unit">次</span></td>
+                        <td class="station-table-number" data-value="${faultCount}">${faultCount}<span class="station-table-unit">${unitTimes}</span></td>
                         <td class="station-table-number" data-value="${repairRate}">${repairRate}<span class="station-table-unit">%</span></td>
-                        <td class="station-table-number" data-value="${unfixed}">${unfixed}<span class="station-table-unit">次</span></td>
-                        <td class="station-table-number" data-value="${repairTime}">${repairTime}<span class="station-table-unit">小时</span></td>
+                        <td class="station-table-number" data-value="${unfixed}">${unfixed}<span class="station-table-unit">${unitTimes}</span></td>
+                        <td class="station-table-number" data-value="${repairTime}">${repairTime}<span class="station-table-unit">${unitHours}</span></td>
                     </tr>
                 `;
             }).join('');
@@ -3875,8 +3846,9 @@
             });
         }
 
-        // 在页面加载时初始化表格排序
+        // 在页面加载时初始化表格排序和故障分析数据
         document.addEventListener('DOMContentLoaded', function() {
+            updateFaultTable(); // 初始化故障分析表格数据
             initStationTableSort();
         });
     </script>

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个性化设置 - 储能柜管理系统</title>
+    <title data-translate="personalPageTitle">个性化设置 - 储能柜管理系统</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="common.js"></script>
     <script src="navbar.js"></script>
     <style>
         /* 主内容区 */
@@ -643,10 +644,10 @@
         <!-- Tab导航 -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('system')">
-                <i class="fas fa-cog"></i> 系统设置
+                <i class="fas fa-cog"></i> <span data-translate="personalTabSystem">系统设置</span>
             </button>
             <button class="tab-btn" onclick="switchTab('energy')">
-                <i class="fas fa-bolt"></i> 能量流图标
+                <i class="fas fa-bolt"></i> <span data-translate="personalTabEnergy">能量流图标</span>
             </button>
         </div>
 
@@ -656,30 +657,30 @@
                 <table class="settings-table">
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>预览</th>
-                            <th>操作</th>
+                            <th data-translate="personalTableName">名称</th>
+                            <th data-translate="personalTablePreview">预览</th>
+                            <th data-translate="personalTableAction">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Logo设置 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">系统 Logo</div>
-                                <div class="setting-desc">建议尺寸：800x200px，支持 PNG 格式（透明背景）</div>
+                                <div class="setting-name" data-translate="personalSystemLogo">系统 Logo</div>
+                                <div class="setting-desc" data-translate="personalSystemLogoDesc">建议尺寸：800x200px，支持 PNG 格式（透明背景）</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail logo" id="logoPreview" onclick="openImageModal('logo', '系统 Logo')">
+                                <div class="preview-thumbnail logo" id="logoPreview" data-type="logo" data-title-key="personalSystemLogo">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-tag"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('logo', '系统 Logo', 'image/png')">
+                                <button class="btn btn-primary" data-type="logo" data-title-key="personalSystemLogo" data-accept="image/png">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -695,30 +696,30 @@
                 <table class="settings-table">
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>预览</th>
-                            <th>操作</th>
+                            <th data-translate="personalTableName">名称</th>
+                            <th data-translate="personalTablePreview">预览</th>
+                            <th data-translate="personalTableAction">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- 光伏图标 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">☀️ 光伏</div>
-                                <div class="setting-desc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
+                                <div class="setting-name" data-translate="personalEnergySolar">☀️ 光伏</div>
+                                <div class="setting-desc" data-translate="personalEnergyIconDesc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail energy" id="solarPreview" onclick="openImageModal('solar', '光伏图标')">
+                                <div class="preview-thumbnail energy" id="solarPreview" data-type="solar" data-title-key="personalEnergySolar">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-solar-panel"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('solar', '光伏图标', 'image/*')">
+                                <button class="btn btn-primary" data-type="solar" data-title-key="personalEnergySolar" data-accept="image/*">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -726,21 +727,21 @@
                         <!-- 储能柜图标 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">🔋 储能柜</div>
-                                <div class="setting-desc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
+                                <div class="setting-name" data-translate="personalEnergyStorage">🔋 储能柜</div>
+                                <div class="setting-desc" data-translate="personalEnergyIconDesc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail energy" id="storagePreview" onclick="openImageModal('storage', '储能柜图标')">
+                                <div class="preview-thumbnail energy" id="storagePreview" data-type="storage" data-title-key="personalEnergyStorage">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-battery-full"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('storage', '储能柜图标', 'image/*')">
+                                <button class="btn btn-primary" data-type="storage" data-title-key="personalEnergyStorage" data-accept="image/*">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -748,21 +749,21 @@
                         <!-- 负载图标 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">🏢 负载</div>
-                                <div class="setting-desc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
+                                <div class="setting-name" data-translate="personalEnergyLoad">🏢 负载</div>
+                                <div class="setting-desc" data-translate="personalEnergyIconDesc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail energy" id="loadPreview" onclick="openImageModal('load', '负载图标')">
+                                <div class="preview-thumbnail energy" id="loadPreview" data-type="load" data-title-key="personalEnergyLoad">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-building"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('load', '负载图标', 'image/*')">
+                                <button class="btn btn-primary" data-type="load" data-title-key="personalEnergyLoad" data-accept="image/*">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -770,21 +771,21 @@
                         <!-- 柴发图标 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">⚙️ 柴发</div>
-                                <div class="setting-desc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
+                                <div class="setting-name" data-translate="personalEnergyGenerator">⚙️ 柴发</div>
+                                <div class="setting-desc" data-translate="personalEnergyIconDesc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail energy" id="generatorPreview" onclick="openImageModal('generator', '柴发图标')">
+                                <div class="preview-thumbnail energy" id="generatorPreview" data-type="generator" data-title-key="personalEnergyGenerator">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-cog"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('generator', '柴发图标', 'image/*')">
+                                <button class="btn btn-primary" data-type="generator" data-title-key="personalEnergyGenerator" data-accept="image/*">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -792,21 +793,21 @@
                         <!-- 市电图标 -->
                         <tr>
                             <td class="setting-name-cell">
-                                <div class="setting-name">⚡ 市电</div>
-                                <div class="setting-desc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
+                                <div class="setting-name" data-translate="personalEnergyGrid">⚡ 市电</div>
+                                <div class="setting-desc" data-translate="personalEnergyIconDesc">建议尺寸：512x512px，支持 PNG、SVG 格式</div>
                             </td>
                             <td class="preview-cell">
-                                <div class="preview-thumbnail energy" id="gridPreview" onclick="openImageModal('grid', '市电图标')">
+                                <div class="preview-thumbnail energy" id="gridPreview" data-type="grid" data-title-key="personalEnergyGrid">
                                     <div class="preview-placeholder">
                                         <i class="fas fa-plug"></i>
-                                        <div>暂无</div>
+                                        <div data-translate="personalPreviewNone">暂无</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="action-cell">
-                                <button class="btn btn-primary" onclick="openEditModal('grid', '市电图标', 'image/*')">
+                                <button class="btn btn-primary" data-type="grid" data-title-key="personalEnergyGrid" data-accept="image/*">
                                     <i class="fas fa-edit"></i>
-                                    编辑
+                                    <span data-translate="personalBtnEdit">编辑</span>
                                 </button>
                             </td>
                         </tr>
@@ -820,7 +821,7 @@
     <!-- 提示消息 -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">操作成功</span>
+        <span id="toastMessage" data-translate="personalToastSuccess">操作成功</span>
     </div>
 
     <!-- 图片预览模态框 -->
@@ -838,7 +839,7 @@
     <div class="edit-drawer" id="editDrawer" onclick="closeEditDrawer(event)">
         <div class="edit-drawer-panel" onclick="event.stopPropagation()">
             <div class="edit-modal-header">
-                <h3 class="edit-modal-title" id="editModalTitle">编辑图片</h3>
+                <h3 class="edit-modal-title" id="editModalTitle" data-translate="personalEditTitle">编辑图片</h3>
                 <button class="edit-modal-close-btn" onclick="closeEditDrawer()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -848,7 +849,7 @@
                 <div class="image-preview-area" id="imagePreviewArea">
                     <div class="empty-image-placeholder">
                         <i class="fas fa-image"></i>
-                        <p>暂无图片</p>
+                        <p data-translate="personalNoImage">暂无图片</p>
                     </div>
                 </div>
 
@@ -856,21 +857,21 @@
                 <div class="image-actions">
                     <button class="btn btn-primary" onclick="triggerEditFileInput()" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; width: auto !important; padding: 0 16px !important; font-size: 14px !important; line-height: 1 !important; border-radius: 6px !important; box-sizing: border-box !important;">
                         <i class="fas fa-sync-alt"></i>
-                        替换
+                        <span data-translate="personalBtnReplace">替换</span>
                     </button>
                     <button class="btn btn-secondary" onclick="resetCurrentImage()" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; width: auto !important; padding: 0 16px !important; font-size: 14px !important; line-height: 1 !important; border-radius: 6px !important; box-sizing: border-box !important;">
                         <i class="fas fa-undo"></i>
-                        恢复默认
+                        <span data-translate="personalBtnResetDefault">恢复默认</span>
                     </button>
                 </div>
 
                 <input type="file" id="editFileInput" class="file-input" accept="image/*" onchange="handleEditImageUpload(event)">
             </div>
             <div class="edit-modal-footer">
-                <button class="btn btn-secondary" onclick="closeEditDrawer()" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; width: auto !important; padding: 0 16px !important; font-size: 14px !important; line-height: 1 !important; border-radius: 6px !important; box-sizing: border-box !important;">取消</button>
+                <button class="btn btn-secondary" onclick="closeEditDrawer()" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; width: auto !important; padding: 0 16px !important; font-size: 14px !important; line-height: 1 !important; border-radius: 6px !important; box-sizing: border-box !important;"><span data-translate="personalBtnCancel">取消</span></button>
                 <button class="btn btn-primary" onclick="saveEditImage()" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; width: auto !important; padding: 0 16px !important; font-size: 14px !important; line-height: 1 !important; border-radius: 6px !important; box-sizing: border-box !important;">
                     <i class="fas fa-save"></i>
-                    保存
+                    <span data-translate="personalBtnSave">保存</span>
                 </button>
             </div>
         </div>
@@ -879,6 +880,7 @@
     <script>
         let currentEditType = null;
         let currentEditImage = null;
+        let currentEditTitleKey = null;
 
         // Tab切换功能
         function switchTab(tabName) {
@@ -902,7 +904,38 @@
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
             loadCurrentImages();
+            initEventListeners();
+            // 应用翻译
+            if (typeof applyTranslations === 'function') {
+                applyTranslations();
+            }
         });
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 预览缩略图点击事件
+            document.querySelectorAll('.preview-thumbnail').forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const titleKey = this.dataset.titleKey;
+                    if (type && titleKey) {
+                        openImageModal(type, getTranslation(titleKey));
+                    }
+                });
+            });
+
+            // 编辑按钮点击事件
+            document.querySelectorAll('.action-cell .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const titleKey = this.dataset.titleKey;
+                    const accept = this.dataset.accept;
+                    if (type && titleKey) {
+                        openEditModal(type, getTranslation(titleKey), accept, titleKey);
+                    }
+                });
+            });
+        }
 
         // 加载当前图片
         function loadCurrentImages() {
@@ -994,20 +1027,12 @@
             const img = new Image();
             img.onload = function() {
                 // 图片加载成功，显示图片
-                const tooltipMap = {
-                    poster: '点击查看大图',
-                    logo: '点击查看大图',
-                    solar: '点击查看大图',
-                    storage: '点击查看大图',
-                    load: '点击查看大图',
-                    generator: '点击查看大图',
-                    grid: '点击查看大图'
-                };
-                container.setAttribute('data-tooltip', tooltipMap[type]);
+                const tooltip = getTranslation('personalPreviewClickToView');
+                container.setAttribute('data-tooltip', tooltip);
                 container.innerHTML = `
                     <img src="${defaultImg}" class="preview-image" alt="${type}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     <div class="preview-hover-zoom">
-                        <img src="${defaultImg}" alt="预览">
+                        <img src="${defaultImg}" alt="${type}">
                     </div>
                 `;
             };
@@ -1020,16 +1045,18 @@
 
         // 获取占位符HTML
         function getPlaceholder(type) {
-            const placeholders = {
-                poster: '<div class="preview-placeholder"><i class="fas fa-image"></i><div>暂无</div></div>',
-                logo: '<div class="preview-placeholder"><i class="fas fa-tag"></i><div>暂无</div></div>',
-                solar: '<div class="preview-placeholder"><i class="fas fa-solar-panel"></i><div>暂无</div></div>',
-                storage: '<div class="preview-placeholder"><i class="fas fa-battery-full"></i><div>暂无</div></div>',
-                load: '<div class="preview-placeholder"><i class="fas fa-building"></i><div>暂无</div></div>',
-                generator: '<div class="preview-placeholder"><i class="fas fa-cog"></i><div>暂无</div></div>',
-                grid: '<div class="preview-placeholder"><i class="fas fa-plug"></i><div>暂无</div></div>'
+            const noneText = getTranslation('personalPreviewNone');
+            const icons = {
+                poster: 'fa-image',
+                logo: 'fa-tag',
+                solar: 'fa-solar-panel',
+                storage: 'fa-battery-full',
+                load: 'fa-building',
+                generator: 'fa-cog',
+                grid: 'fa-plug'
             };
-            return placeholders[type];
+            const icon = icons[type] || 'fa-image';
+            return `<div class="preview-placeholder"><i class="fas ${icon}"></i><div>${noneText}</div></div>`;
         }
 
         // 显示图片
@@ -1044,32 +1071,24 @@
                 grid: 'gridPreview'
             };
 
-            const tooltipMap = {
-                poster: '点击查看大图',
-                logo: '点击查看大图',
-                solar: '点击查看大图',
-                storage: '点击查看大图',
-                load: '点击查看大图',
-                generator: '点击查看大图',
-                grid: '点击查看大图'
-            };
-
             const container = document.getElementById(previewMap[type]);
             if (!container) return;
 
-            container.setAttribute('data-tooltip', tooltipMap[type]);
+            const tooltip = getTranslation('personalPreviewClickToView');
+            container.setAttribute('data-tooltip', tooltip);
             container.innerHTML = `
                 <img src="${dataUrl}" class="preview-image" alt="${type}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 <div class="preview-hover-zoom">
-                    <img src="${dataUrl}" alt="预览">
+                    <img src="${dataUrl}" alt="${type}">
                 </div>
             `;
         }
 
         // 打开编辑抽屉
-        function openEditModal(type, title, accept) {
+        function openEditModal(type, title, accept, titleKey) {
             currentEditType = type;
             currentEditImage = null;
+            currentEditTitleKey = titleKey || null;
 
             // 更新标题
             document.getElementById('editModalTitle').textContent = title;
@@ -1094,13 +1113,13 @@
             if (existingImg) {
                 // 显示现有图片
                 currentEditImage = existingImg.src;
-                imagePreviewArea.innerHTML = `<img src="${existingImg.src}" alt="当前图片" onclick="openImageModalFromDrawer('${title}')">`;
+                imagePreviewArea.innerHTML = `<img src="${existingImg.src}" alt="${title}" onclick="openImageModalFromDrawer()">`;
             } else {
                 // 显示空状态
                 imagePreviewArea.innerHTML = `
                     <div class="empty-image-placeholder">
                         <i class="fas fa-image"></i>
-                        <p>暂无图片</p>
+                        <p>${getTranslation('personalNoImage')}</p>
                     </div>
                 `;
             }
@@ -1127,10 +1146,10 @@
             imagePreviewArea.innerHTML = `
                 <div class="empty-image-placeholder">
                     <i class="fas fa-image"></i>
-                    <p>暂无图片</p>
+                    <p>${getTranslation('personalNoImage')}</p>
                 </div>
             `;
-            showToast('已恢复默认，点击保存应用', 'success');
+            showToast(getTranslation('personalToastResetDone'), 'success');
         }
 
         // 触发文件选择
@@ -1145,13 +1164,13 @@
 
             // 验证文件大小（最大5MB）
             if (file.size > 5 * 1024 * 1024) {
-                showToast('文件大小不能超过 5MB', 'error');
+                showToast(getTranslation('personalToastFileTooLarge'), 'error');
                 return;
             }
 
             // 验证文件类型
             if (!file.type.startsWith('image/')) {
-                showToast('请选择有效的图片文件', 'error');
+                showToast(getTranslation('personalToastInvalidFile'), 'error');
                 return;
             }
 
@@ -1165,9 +1184,9 @@
 
                 // 显示图片
                 const imagePreviewArea = document.getElementById('imagePreviewArea');
-                imagePreviewArea.innerHTML = `<img src="${dataUrl}" alt="预览" onclick="openImageModalFromDrawer('${currentTitle}')">`;
+                imagePreviewArea.innerHTML = `<img src="${dataUrl}" alt="${currentTitle}" onclick="openImageModalFromDrawer()">`;
 
-                showToast('图片已加载', 'success');
+                showToast(getTranslation('personalToastImageLoaded'), 'success');
             };
             reader.readAsDataURL(file);
 
@@ -1193,12 +1212,12 @@
                 // 保存自定义图片
                 displayImage(currentEditType, currentEditImage);
                 localStorage.setItem(storageKeys[currentEditType], currentEditImage);
-                showToast('保存成功！', 'success');
+                showToast(getTranslation('personalToastSaveSuccess'), 'success');
             } else {
                 // 恢复默认图片
                 localStorage.removeItem(storageKeys[currentEditType]);
                 displayDefaultImage(currentEditType);
-                showToast('已恢复默认图片', 'success');
+                showToast(getTranslation('personalToastResetSuccess'), 'success');
             }
 
             closeEditDrawer();
@@ -1206,7 +1225,7 @@
 
         // 重置图片
         function resetImage(type) {
-            if (confirm('确定要恢复默认图片吗？')) {
+            if (confirm(getTranslation('personalConfirmReset'))) {
                 const storageKeys = {
                     poster: 'customPoster',
                     logo: 'customLogo',
@@ -1219,7 +1238,7 @@
 
                 localStorage.removeItem(storageKeys[type]);
                 displayDefaultImage(type);
-                showToast('已恢复默认图片', 'success');
+                showToast(getTranslation('personalToastResetSuccess'), 'success');
             }
         }
 
@@ -1253,7 +1272,7 @@
             const img = container ? container.querySelector('img.preview-image') : null;
 
             if (!img) {
-                showToast('暂无图片可预览', 'error');
+                showToast(getTranslation('personalToastNoPreview'), 'error');
                 return;
             }
 
@@ -1282,11 +1301,14 @@
         }
 
         // 从编辑抽屉打开图片预览
-        function openImageModalFromDrawer(title) {
+        function openImageModalFromDrawer() {
             if (!currentEditImage) {
-                showToast('暂无图片可预览', 'error');
+                showToast(getTranslation('personalToastNoPreview'), 'error');
                 return;
             }
+
+            // 使用保存的标题键获取翻译后的标题
+            const title = currentEditTitleKey ? getTranslation(currentEditTitleKey) : document.getElementById('editModalTitle').textContent;
 
             document.getElementById('modalImage').src = currentEditImage;
             document.getElementById('modalTitle').textContent = title;
