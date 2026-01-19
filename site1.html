@@ -2431,7 +2431,6 @@
                 document.getElementById('station-name').value = getTranslatedStationName(device.siteName);
                 document.getElementById('address').value = getTranslatedAddress(device.address);
                 document.getElementById('timezone').value = 'UTC+8';
-                document.getElementById('installed-power').value = device.installedPower;
                 document.getElementById('grid-date').value = '';
 
                 // 修改标题为编辑站点
@@ -3445,7 +3444,6 @@
                 type: '工商储',
                 address: document.getElementById('address').value,
                 timezone: document.getElementById('timezone').value,
-                installedPower: document.getElementById('installed-power').value,
                 gridDate: document.getElementById('grid-date').value,
                 devices: getDeviceListData()
             };
@@ -3457,7 +3455,6 @@
                 if (device) {
                     device.siteName = stationData.name;
                     device.address = stationData.address;
-                    device.installedPower = parseInt(stationData.installedPower) || 0;
                     // 其他字段更新...
                 }
                 console.log('编辑站点数据：', stationData);
@@ -3481,7 +3478,6 @@
             document.getElementById('station-name').value = '';
             document.getElementById('address').value = '';
             document.getElementById('timezone').value = 'UTC+8';
-            document.getElementById('installed-power').value = '';
             document.getElementById('grid-date').value = '';
             document.getElementById('device-list').innerHTML = '';
             currentWizardStep = 1;
