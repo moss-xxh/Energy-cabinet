@@ -712,7 +712,7 @@
                             <input type="text" class="form-input" id="faultDeviceFilter" style="width: 100%; height: 40px;" placeholder="请输入设备名称" data-translate-placeholder="alarmMgmtPlaceholderDevice">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息类型</label>
+                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息来源</label>
                             <select class="form-select" id="faultTypeFilter" style="width: 100%; height: 40px;">
                                 <option value="" data-translate="alarmMgmtAllTypes">全部类型</option>
                                 <option value="EMS">EMS</option>
@@ -770,7 +770,7 @@
                                 <th style="width: 40px;">
                                     <input type="checkbox" id="faultSelectAll" onchange="toggleAllAlarms('fault', this.checked)">
                                 </th>
-                                <th data-translate="alarmMgmtColMsgType">消息类型</th>
+                                <th data-translate="alarmMgmtColMsgType">消息来源</th>
                                 <th data-translate="alarmMgmtColMsgDesc">消息描述</th>
                                 <th data-translate="alarmMgmtColDevice">设备</th>
                                 <th data-translate="alarmMgmtColSite">站点</th>
@@ -828,7 +828,7 @@
                             <input type="text" class="form-input" id="warningDeviceFilter" style="width: 100%; height: 40px;" placeholder="请输入设备名称" data-translate-placeholder="alarmMgmtPlaceholderDevice">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息类型</label>
+                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息来源</label>
                             <select class="form-select" id="warningTypeFilter" style="width: 100%; height: 40px;">
                                 <option value="" data-translate="alarmMgmtAllTypes">全部类型</option>
                                 <option value="EMS">EMS</option>
@@ -889,7 +889,7 @@
                                 <th style="width: 40px;">
                                     <input type="checkbox" id="warningSelectAll" onchange="toggleAllAlarms('warning', this.checked)">
                                 </th>
-                                <th data-translate="alarmMgmtColMsgType">消息类型</th>
+                                <th data-translate="alarmMgmtColMsgType">消息来源</th>
                                 <th data-translate="alarmMgmtColMsgDesc">消息描述</th>
                                 <th data-translate="alarmMgmtColDevice">设备</th>
                                 <th data-translate="alarmMgmtColSite">站点</th>
@@ -947,7 +947,7 @@
                             <input type="text" class="form-input" id="noticeDeviceFilter" style="width: 100%; height: 40px;" placeholder="请输入设备名称" data-translate-placeholder="alarmMgmtPlaceholderDevice">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息类型</label>
+                            <label class="form-label" data-translate="alarmMgmtLabelMsgType">消息来源</label>
                             <select class="form-select" id="noticeTypeFilter" style="width: 100%; height: 40px;">
                                 <option value="" data-translate="alarmMgmtAllTypes">全部类型</option>
                                 <option value="EMS">EMS</option>
@@ -1008,7 +1008,7 @@
                                 <th style="width: 40px;">
                                     <input type="checkbox" id="noticeSelectAll" onchange="toggleAllAlarms('notice', this.checked)">
                                 </th>
-                                <th data-translate="alarmMgmtColMsgType">消息类型</th>
+                                <th data-translate="alarmMgmtColMsgType">消息来源</th>
                                 <th data-translate="alarmMgmtColMsgDesc">消息描述</th>
                                 <th data-translate="alarmMgmtColDevice">设备</th>
                                 <th data-translate="alarmMgmtColSite">站点</th>
@@ -1061,7 +1061,7 @@
                     </div>
                 </div>
                 <div class="alarm-detail-row">
-                    <div class="alarm-detail-label" id="detailLabelAlarmType" data-translate="alarmMgmtDetailMsgType">消息类型：</div>
+                    <div class="alarm-detail-label" id="detailLabelAlarmType" data-translate="alarmMgmtDetailMsgType">消息来源：</div>
                     <div class="alarm-detail-value" id="detailAlarmType">电池过温</div>
                 </div>
                 <div class="alarm-detail-row">
