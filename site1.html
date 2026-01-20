@@ -2426,7 +2426,7 @@
                 const modal = document.getElementById('create-station-modal');
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
-                
+
                 // 填充数据
                 document.getElementById('station-name').value = getTranslatedStationName(device.siteName);
                 document.getElementById('address').value = getTranslatedAddress(device.address);
@@ -2436,10 +2436,26 @@
                 // 修改标题为编辑站点
                 const editTitle = translations[currentLang].editStationTitle || '编辑站点';
                 document.querySelector('#create-station-modal .modal-title').textContent = editTitle;
-                
+
                 // 保存设备ID用于更新
                 window.editingDeviceId = id;
-                
+
+                // 清空设备列表并填充现有设备
+                document.getElementById('device-list').innerHTML = '';
+
+                // 如果有储能柜，预填充设备列表（SN为只读）
+                if (device.cabinetCount > 0) {
+                    // 模拟已有设备数据（实际项目中应从后端获取）
+                    for (let i = 1; i <= device.cabinetCount; i++) {
+                        const deviceData = {
+                            sn: `ESS-${device.id.toString().padStart(3, '0')}-${i.toString().padStart(3, '0')}`,
+                            name: `储能柜-${i}`
+                        };
+                        // isExisting = true，使SN字段只读
+                        addDevice(deviceData, true);
+                    }
+                }
+
                 // 重置向导到第一步
                 currentWizardStep = 1;
                 updateWizardStep();
@@ -2499,10 +2515,17 @@
             const modal = document.getElementById('create-station-modal');
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
+
+            // 清除编辑状态，确保是新建模式
+            window.editingDeviceId = null;
+
+            // 恢复标题为新建站点
+            const createTitle = translations[currentLang].createStationTitle || '新建站点';
+            document.querySelector('#create-station-modal .modal-title').textContent = createTitle;
+
             // 初始化表单
             resetCreateStationForm();
-            
+
             // 重置向导到第一步
             currentWizardStep = 1;
             updateWizardStep();
@@ -3485,7 +3508,9 @@
         }
         
         // 添加设备
-        function addDevice() {
+        // deviceData: 可选参数，包含 { sn, name } 用于预填设备数据
+        // isExisting: 如果为 true，则SN字段为只读（用于编辑模式下的已有设备）
+        function addDevice(deviceData = null, isExisting = false) {
             const deviceList = document.getElementById('device-list');
             const deviceItem = document.createElement('div');
             deviceItem.className = 'device-item';
@@ -3494,9 +3519,19 @@
             const currentLang = localStorage.getItem('language') || 'zh';
             const t = translations[currentLang];
 
+            // 预填数据
+            const snValue = deviceData ? deviceData.sn || '' : '';
+            const nameValue = deviceData ? deviceData.name || '' : '';
+
+            // 如果是已存在的设备，SN字段设为只读
+            const snReadOnly = isExisting ? 'readonly' : '';
+            const snStyle = isExisting
+                ? 'flex: 1; background-color: var(--bg-secondary, #f1f5f9); cursor: not-allowed;'
+                : 'flex: 1;';
+
             deviceItem.innerHTML = `
-                <input type="text" class="form-input device-sn" placeholder="${t.deviceSnPlaceholder}" style="flex: 1;">
-                <input type="text" class="form-input device-name" placeholder="${t.deviceNamePlaceholder}" style="flex: 1;">
+                <input type="text" class="form-input device-sn" placeholder="${t.deviceSnPlaceholder}" value="${snValue}" ${snReadOnly} style="${snStyle}">
+                <input type="text" class="form-input device-name" placeholder="${t.deviceNamePlaceholder}" value="${nameValue}" style="flex: 1;">
                 <button type="button" onclick="removeDevice(this)" style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 0.5rem; font-size: 1rem;">
                     <span>${t.deviceRemoveBtn}</span>
                 </button>

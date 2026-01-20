@@ -4609,6 +4609,13 @@
                     mainContent.style.padding = '24px';
                     mainContent.style.background = ''; // 恢复默认背景
                 }
+
+                // 表格视图恢复显示"全部站点"选项
+                const siteSelect = document.getElementById('unifiedSiteSelect');
+                const allSitesOption = siteSelect.querySelector('option[value=""]');
+                if (allSitesOption) {
+                    allSitesOption.style.display = '';
+                }
             } else if (tabName === 'view') {
                 // 显示3D视图
                 if (tableView) tableView.style.display = 'none';
@@ -4633,6 +4640,21 @@
                     mainContent.style.padding = '24px';
                     mainContent.style.paddingBottom = '0'; // 底部不需要padding
                     mainContent.style.background = ''; // 使用默认背景
+                }
+
+                // 场景视图隐藏"全部站点"选项
+                const siteSelect = document.getElementById('unifiedSiteSelect');
+                const allSitesOption = siteSelect.querySelector('option[value=""]');
+                if (allSitesOption) {
+                    allSitesOption.style.display = 'none';
+                    // 如果当前选中的是"全部站点"，自动选择第一个具体站点
+                    if (siteSelect.value === '') {
+                        const firstSiteOption = siteSelect.querySelector('option[value]:not([value=""])');
+                        if (firstSiteOption) {
+                            siteSelect.value = firstSiteOption.value;
+                            handleSiteChange();
+                        }
+                    }
                 }
             } else if (tabName === 'flow') {
                 // 显示能量流视图
