@@ -2811,7 +2811,7 @@
                     <input type="hidden" name="deviceId" id="deviceId">
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);"><span data-translate="devicesTableCode">设备编码</span> <span style="color: #ef4444;">*</span></label>
-                        <input type="text" name="code" class="form-input" required style="width: 100%; height: 40px;">
+                        <input type="text" name="code" id="deviceCodeInput" class="form-input" required style="width: 100%; height: 40px;">
                     </div>
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);"><span data-translate="devicesTableName">设备名称</span> <span style="color: #ef4444;">*</span></label>
@@ -3329,7 +3329,12 @@
                 // 设置为编辑模式
                 document.getElementById('drawerTitle').textContent = getTranslation('devicesDrawerTitleEdit');
                 document.getElementById('deviceId').value = id;
-                document.querySelector('input[name="code"]').value = device.code;
+                const codeInput = document.getElementById('deviceCodeInput');
+                codeInput.value = device.code;
+                // 编辑模式下禁用设备编码输入框
+                codeInput.readOnly = true;
+                codeInput.style.backgroundColor = 'var(--bg-secondary, #f1f5f9)';
+                codeInput.style.cursor = 'not-allowed';
                 // 艹！修复name对象显示问题，使用getDeviceDisplayName获取正确的名称
                 document.querySelector('input[name="name"]').value = getDeviceDisplayName(device);
                 document.querySelector('select[name="site"]').value = device.site || '';
@@ -3438,6 +3443,12 @@
             document.getElementById('drawerTitle').textContent = getTranslation('devicesDrawerTitleAdd');
             document.getElementById('deviceId').value = '';
             document.getElementById('addDeviceForm').reset();
+
+            // 添加模式下启用设备编码输入框
+            const codeInput = document.getElementById('deviceCodeInput');
+            codeInput.readOnly = false;
+            codeInput.style.backgroundColor = '';
+            codeInput.style.cursor = '';
 
             const drawer = document.getElementById('addDeviceDrawer');
             const drawerContent = drawer.querySelector('div:last-child');
