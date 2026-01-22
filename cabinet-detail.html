@@ -8058,15 +8058,6 @@
                 '</div>';
             }
 
-            if (extremeFields) {
-                html += '<div class="metrics-section">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">' +
-                        '<h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);">电压温度极值</h3>' +
-                    '</div>' +
-                    '<div class="metrics-grid">' + extremeFields + '</div>' +
-                '</div>';
-            }
-
             // Pack电池簇信息 section (使用独立的生成函数，但检查是否应该显示任何Pack字段)
             let shouldShowPack = shouldShowField('bms', 'realtime', 'packStatus') ||
                                 shouldShowField('bms', 'realtime', 'packVoltage') ||
@@ -8081,7 +8072,7 @@
                         '<h3 style="font-size: 16px; font-weight: 600; margin: 0; color: var(--text-primary);" data-translate="packBatteryTitle">' + getTranslation('packBatteryTitle') + '</h3>' +
                         '<span style="font-size: 13px; color: #666;">点击Pack查看单体详情</span>' +
                     '</div>' +
-                    '<div class="metrics-grid">' + generatePackCardsHTML() + '</div>' +
+                    '<div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">' + generatePackCardsHTML() + '</div>' +
                 '</div>';
             }
 
@@ -8091,10 +8082,43 @@
         // 生成Pack卡片HTML（保持原样式，添加点击事件，支持字段可见性控制）
         function generatePackCardsHTML() {
             const packsData = [
-                { id: 1, status: '正常', voltage: 192.1, current: 43.1, soc: 88.1, soh: 97.2, temp: 32.0 },
-                { id: 2, status: '正常', voltage: 190.6, current: 44.5, soc: 87.0, soh: 97.9, temp: 31.3 },
-                { id: 3, status: '正常', voltage: 190.1, current: 46.0, soc: 91.5, soh: 98.3, temp: 30.5 },
-                { id: 4, status: '正常', voltage: 193.2, current: 39.9, soc: 92.6, soh: 96.7, temp: 29.0 }
+                {
+                    id: 1, status: '正常', voltage: 192.1, current: 43.1, soc: 88.1, soh: 97.2, temp: 32.0,
+                    // 电压温度极值数据
+                    maxCellVoltage: 3.658, maxCellVoltagePos: 'Cell045',
+                    minCellVoltage: 3.612, minCellVoltagePos: 'Cell023',
+                    avgCellVoltage: 3.635, voltageDiff: 46,
+                    maxCellTemp: 32.8, maxCellTempPos: 'Cell156',
+                    minCellTemp: 29.2, minCellTempPos: 'Cell012',
+                    avgCellTemp: 31.0, tempDiff: 3.6
+                },
+                {
+                    id: 2, status: '正常', voltage: 190.6, current: 44.5, soc: 87.0, soh: 97.9, temp: 31.3,
+                    maxCellVoltage: 3.652, maxCellVoltagePos: 'Cell087',
+                    minCellVoltage: 3.608, minCellVoltagePos: 'Cell031',
+                    avgCellVoltage: 3.630, voltageDiff: 44,
+                    maxCellTemp: 31.9, maxCellTempPos: 'Cell142',
+                    minCellTemp: 28.8, minCellTempPos: 'Cell056',
+                    avgCellTemp: 30.4, tempDiff: 3.1
+                },
+                {
+                    id: 3, status: '正常', voltage: 190.1, current: 46.0, soc: 91.5, soh: 98.3, temp: 30.5,
+                    maxCellVoltage: 3.645, maxCellVoltagePos: 'Cell019',
+                    minCellVoltage: 3.601, minCellVoltagePos: 'Cell042',
+                    avgCellVoltage: 3.623, voltageDiff: 44,
+                    maxCellTemp: 31.2, maxCellTempPos: 'Cell098',
+                    minCellTemp: 28.5, minCellTempPos: 'Cell028',
+                    avgCellTemp: 29.9, tempDiff: 2.7
+                },
+                {
+                    id: 4, status: '正常', voltage: 193.2, current: 39.9, soc: 92.6, soh: 96.7, temp: 29.0,
+                    maxCellVoltage: 3.661, maxCellVoltagePos: 'Cell078',
+                    minCellVoltage: 3.615, minCellVoltagePos: 'Cell005',
+                    avgCellVoltage: 3.638, voltageDiff: 46,
+                    maxCellTemp: 30.5, maxCellTempPos: 'Cell167',
+                    minCellTemp: 27.8, minCellTempPos: 'Cell034',
+                    avgCellTemp: 29.2, tempDiff: 2.7
+                }
             ];
 
             let html = '';
@@ -8138,6 +8162,43 @@
                     '</div>';
                 }
 
+                // 电压极值和温度极值 - 分开两个小卡片
+                let extremeHtml = '';
+                extremeHtml += '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); display: flex; gap: 8px;">' +
+                    // 电压极值卡片
+                    '<div style="flex: 1; background: #fff; border-radius: 6px; padding: 10px 12px; border: 1px solid #e2e8f0;">' +
+                        '<div style="font-size: 11px; font-weight: 500; color: #94a3b8; margin-bottom: 8px;">电压极值</div>' +
+                        '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">' +
+                            '<span style="font-size: 11px; color: #64748b;">最高</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.maxCellVoltage + ' V</span>' +
+                        '</div>' +
+                        '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">' +
+                            '<span style="font-size: 11px; color: #64748b;">最低</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.minCellVoltage + ' V</span>' +
+                        '</div>' +
+                        '<div style="display: flex; justify-content: space-between;">' +
+                            '<span style="font-size: 11px; color: #64748b;">平均</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.avgCellVoltage + ' V</span>' +
+                        '</div>' +
+                    '</div>' +
+                    // 温度极值卡片
+                    '<div style="flex: 1; background: #fff; border-radius: 6px; padding: 10px 12px; border: 1px solid #e2e8f0;">' +
+                        '<div style="font-size: 11px; font-weight: 500; color: #94a3b8; margin-bottom: 8px;">温度极值</div>' +
+                        '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">' +
+                            '<span style="font-size: 11px; color: #64748b;">最高</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.maxCellTemp + ' °C</span>' +
+                        '</div>' +
+                        '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">' +
+                            '<span style="font-size: 11px; color: #64748b;">最低</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.minCellTemp + ' °C</span>' +
+                        '</div>' +
+                        '<div style="display: flex; justify-content: space-between;">' +
+                            '<span style="font-size: 11px; color: #64748b;">平均</span>' +
+                            '<span style="font-size: 12px; font-weight: 600; color: #334155;">' + pack.avgCellTemp + ' °C</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
                 // 只有当Pack状态字段可见，或者有其他字段可见时，才显示整个Pack卡片
                 let showPackStatus = shouldShowField('bms', 'realtime', 'packStatus');
 
@@ -8150,6 +8211,7 @@
                             '</div>' +
                         '</div>' +
                         '<div>' + packFieldsHtml + '</div>' +
+                        extremeHtml +
                     '</div>';
                 }
             });
