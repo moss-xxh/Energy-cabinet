@@ -1309,8 +1309,8 @@
                             <span id="faultCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
                             <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsFault">
-                            启用 3 个通知渠道
+                        <div id="faultChannels" style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                            通知渠道：-
                         </div>
                     </div>
                     <div style="width: 48px; height: 48px; background: #fef2f2; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -1328,8 +1328,8 @@
                             <span id="warningCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
                             <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsWarning">
-                            启用 2 个通知渠道
+                        <div id="warningChannels" style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                            通知渠道：-
                         </div>
                     </div>
                     <div style="width: 48px; height: 48px; background: #fffbeb; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -1347,8 +1347,8 @@
                             <span id="noticeCount" style="font-size: 32px; font-weight: 700; color: #1f2937; line-height: 1;">0</span>
                             <span style="font-size: 13px; color: #9ca3af;" data-translate="ruleStatsUnit">条</span>
                         </div>
-                        <div style="font-size: 11px; color: #9ca3af; line-height: 1.4;" data-translate="ruleStatsChannelsNotice">
-                            启用 1 个通知渠道
+                        <div id="noticeChannels" style="font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                            通知渠道：-
                         </div>
                     </div>
                     <div style="width: 48px; height: 48px; background: #eff6ff; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -2384,14 +2384,40 @@
         // 更新统计数据
         function updateStats() {
             // 统计所有策略(不受过滤影响)
-            const faultCount = allRules.filter(rule => rule.alarmLevel === 'fault').length;
-            const warningCount = allRules.filter(rule => rule.alarmLevel === 'warning').length;
-            const noticeCount = allRules.filter(rule => rule.alarmLevel === 'notice').length;
+            const faultRules = allRules.filter(rule => rule.alarmLevel === 'fault');
+            const warningRules = allRules.filter(rule => rule.alarmLevel === 'warning');
+            const noticeRules = allRules.filter(rule => rule.alarmLevel === 'notice');
 
-            // 更新DOM
-            document.getElementById('faultCount').textContent = faultCount;
-            document.getElementById('warningCount').textContent = warningCount;
-            document.getElementById('noticeCount').textContent = noticeCount;
+            // 更新策略数量
+            document.getElementById('faultCount').textContent = faultRules.length;
+            document.getElementById('warningCount').textContent = warningRules.length;
+            document.getElementById('noticeCount').textContent = noticeRules.length;
+
+            // 获取某类型策略中所有使用的通知渠道（去重）
+            function getUniqueChannels(rules) {
+                const channels = new Set();
+                rules.forEach(rule => {
+                    if (rule.notifications && Array.isArray(rule.notifications)) {
+                        rule.notifications.forEach(channel => channels.add(channel));
+                    }
+                });
+                return Array.from(channels);
+            }
+
+            // 格式化渠道显示
+            function formatChannels(channels) {
+                if (channels.length === 0) return '无通知渠道';
+                return channels.join('、');
+            }
+
+            // 更新通知渠道显示
+            const faultChannels = getUniqueChannels(faultRules);
+            const warningChannels = getUniqueChannels(warningRules);
+            const noticeChannels = getUniqueChannels(noticeRules);
+
+            document.getElementById('faultChannels').textContent = formatChannels(faultChannels);
+            document.getElementById('warningChannels').textContent = formatChannels(warningChannels);
+            document.getElementById('noticeChannels').textContent = formatChannels(noticeChannels);
         }
 
         // 切换创建菜单
