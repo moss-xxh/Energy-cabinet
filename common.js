@@ -2843,10 +2843,11 @@ const translations = {
 
         // === Rule Engine 消息策略管理页面翻译 ===
         alarmRuleManagement: '消息策略管理',
-        ruleStatsFault: '故障消息策略',
-        ruleStatsWarning: '告警消息策略',
-        ruleStatsNotice: '普通消息策略',
+        ruleStatsFault: '故障消息策略(启用)',
+        ruleStatsWarning: '告警消息策略(启用)',
+        ruleStatsNotice: '普通消息策略(启用)',
         ruleStatsUnit: '条',
+        ruleStatsTotalLabel: '故障总策略',
         ruleStatsChannelsFault: '启用 3 个通知渠道',
         ruleStatsChannelsWarning: '启用 2 个通知渠道',
         ruleStatsChannelsNotice: '启用 1 个通知渠道',
@@ -6445,10 +6446,11 @@ const translations = {
 
         // === Rule Engine Page Translations ===
         alarmRuleManagement: 'Message Policy Management',
-        ruleStatsFault: 'Fault Message Policies',
-        ruleStatsWarning: 'Warning Message Policies',
-        ruleStatsNotice: 'Notice Message Policies',
+        ruleStatsFault: 'Fault Message Policies (Enabled)',
+        ruleStatsWarning: 'Warning Message Policies (Enabled)',
+        ruleStatsNotice: 'Notice Message Policies (Enabled)',
         ruleStatsUnit: '',
+        ruleStatsTotalLabel: 'Total Fault Policies',
         ruleStatsChannelsFault: '3 notification channels enabled',
         ruleStatsChannelsWarning: '2 notification channels enabled',
         ruleStatsChannelsNotice: '1 notification channel enabled',
