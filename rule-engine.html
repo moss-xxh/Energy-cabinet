@@ -285,6 +285,52 @@
             box-shadow: 0 0 0 3px rgba(53, 98, 227, 0.1);
         }
 
+        /* ========== 确保模态框中的select可交互 ========== */
+        .rule-modal-body select.form-select {
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            pointer-events: auto !important;
+        }
+
+        .form-select:hover {
+            border-color: #3562E3;
+            background-color: #f8fafc;
+        }
+
+        [data-theme="dark"] .form-select:hover {
+            background-color: #0f172a;
+            border-color: #3562E3;
+        }
+
+        /* optgroup分组样式优化 */
+        .form-select optgroup {
+            font-weight: 600;
+            color: #475569;
+            padding: 8px 0;
+            font-size: 13px;
+            background: #f8fafc;
+        }
+
+        [data-theme="dark"] .form-select optgroup {
+            color: #94a3b8;
+            background: #0f172a;
+        }
+
+        .form-select option {
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .form-select option:hover {
+            background-color: #eff6ff;
+        }
+
+        [data-theme="dark"] .form-select option:hover {
+            background-color: #1e3a5f;
+        }
+
         /* ========== 搜索筛选卡片样式 ========== */
         .search-section {
             background: white;
@@ -1515,11 +1561,36 @@
                             <div>
                                 <select class="form-select" id="ruleParameter">
                                     <option value="" data-translate="ruleSelectParameter">选择监测参数</option>
-                                    <option value="temperature" data-translate="ruleParamTemp">温度</option>
-                                    <option value="soc" data-translate="ruleParamSOC">SOC</option>
-                                    <option value="voltage" data-translate="ruleParamVoltage">电压</option>
-                                    <option value="current" data-translate="ruleParamCurrent">电流</option>
-                                    <option value="power" data-translate="ruleParamPower">功率</option>
+                                    <!-- 电池参数组 -->
+                                    <optgroup label="📊 电池参数" data-translate-label="groupBattery">
+                                        <option value="soc" data-translate="paramSOC">SOC电量 (%)</option>
+                                        <option value="soh" data-translate="paramSOH">SOH健康度 (%)</option>
+                                        <option value="voltage" data-translate="paramVoltage">总电压 (V)</option>
+                                        <option value="current" data-translate="paramCurrent">总电流 (A)</option>
+                                        <option value="power" data-translate="paramPower">总功率 (kW)</option>
+                                        <option value="cell_voltage_max" data-translate="paramCellVoltageMax">单体最高电压 (V)</option>
+                                        <option value="cell_voltage_min" data-translate="paramCellVoltageMin">单体最低电压 (V)</option>
+                                        <option value="cell_voltage_diff" data-translate="paramCellVoltageDiff">单体压差 (V)</option>
+                                    </optgroup>
+                                    <!-- 温度参数组 -->
+                                    <optgroup label="🌡️ 温度参数" data-translate-label="groupTemperature">
+                                        <option value="temp_max" data-translate="paramTempMax">最高温度 (℃)</option>
+                                        <option value="temp_min" data-translate="paramTempMin">最低温度 (℃)</option>
+                                        <option value="temp_diff" data-translate="paramTempDiff">温差 (℃)</option>
+                                        <option value="temp_avg" data-translate="paramTempAvg">平均温度 (℃)</option>
+                                    </optgroup>
+                                    <!-- 系统状态组 -->
+                                    <optgroup label="⚙️ 系统状态" data-translate-label="groupSystem">
+                                        <option value="charge_cycles" data-translate="paramChargeCycles">充放电次数 (次)</option>
+                                        <option value="insulation_resistance" data-translate="paramInsulation">绝缘阻值 (kΩ)</option>
+                                        <option value="connection_status" data-translate="paramConnection">通信状态</option>
+                                    </optgroup>
+                                    <!-- PCS参数组 -->
+                                    <optgroup label="⚡ PCS参数" data-translate-label="groupPCS">
+                                        <option value="grid_frequency" data-translate="paramGridFreq">电网频率 (Hz)</option>
+                                        <option value="ac_voltage" data-translate="paramACVoltage">交流电压 (V)</option>
+                                        <option value="ac_current" data-translate="paramACCurrent">交流电流 (A)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div>
@@ -2274,6 +2345,96 @@
         let filteredRules = [...allRules];
         let currentRuleId = null; // 当前要下发的规则ID
 
+        // ==================== 储能柜设备属性配置 ====================
+        const CABINET_DEVICE_ATTRIBUTES = {
+            battery: {
+                label: '电池参数',
+                labelKey: 'groupBattery',
+                icon: 'fa-battery-three-quarters',
+                params: [
+                    { value: 'soc', labelKey: 'paramSOC', label: 'SOC电量', unit: '%' },
+                    { value: 'soh', labelKey: 'paramSOH', label: 'SOH健康度', unit: '%' },
+                    { value: 'voltage', labelKey: 'paramVoltage', label: '总电压', unit: 'V' },
+                    { value: 'current', labelKey: 'paramCurrent', label: '总电流', unit: 'A' },
+                    { value: 'power', labelKey: 'paramPower', label: '总功率', unit: 'kW' },
+                    { value: 'cell_voltage_max', labelKey: 'paramCellVoltageMax', label: '单体最高电压', unit: 'V' },
+                    { value: 'cell_voltage_min', labelKey: 'paramCellVoltageMin', label: '单体最低电压', unit: 'V' },
+                    { value: 'cell_voltage_diff', labelKey: 'paramCellVoltageDiff', label: '单体压差', unit: 'V' }
+                ]
+            },
+            temperature: {
+                label: '温度参数',
+                labelKey: 'groupTemperature',
+                icon: 'fa-thermometer-half',
+                params: [
+                    { value: 'temp_max', labelKey: 'paramTempMax', label: '最高温度', unit: '℃' },
+                    { value: 'temp_min', labelKey: 'paramTempMin', label: '最低温度', unit: '℃' },
+                    { value: 'temp_diff', labelKey: 'paramTempDiff', label: '温差', unit: '℃' },
+                    { value: 'temp_avg', labelKey: 'paramTempAvg', label: '平均温度', unit: '℃' }
+                ]
+            },
+            system: {
+                label: '系统状态',
+                labelKey: 'groupSystem',
+                icon: 'fa-microchip',
+                params: [
+                    { value: 'charge_cycles', labelKey: 'paramChargeCycles', label: '充放电次数', unit: '次' },
+                    { value: 'insulation_resistance', labelKey: 'paramInsulation', label: '绝缘阻值', unit: 'kΩ' },
+                    { value: 'connection_status', labelKey: 'paramConnection', label: '通信状态', unit: '' }
+                ]
+            },
+            pcs: {
+                label: 'PCS参数',
+                labelKey: 'groupPCS',
+                icon: 'fa-plug',
+                params: [
+                    { value: 'grid_frequency', labelKey: 'paramGridFreq', label: '电网频率', unit: 'Hz' },
+                    { value: 'ac_voltage', labelKey: 'paramACVoltage', label: '交流电压', unit: 'V' },
+                    { value: 'ac_current', labelKey: 'paramACCurrent', label: '交流电流', unit: 'A' }
+                ]
+            }
+        };
+
+        // 动态加载设备属性到触发条件下拉列表
+        function loadDeviceAttributes() {
+            const select = document.getElementById('ruleParameter');
+            if (!select) {
+                console.warn('⚠️ 未找到ruleParameter元素');
+                return;
+            }
+
+            // 清空现有选项(保留第一个"请选择"选项)
+            select.innerHTML = `<option value="" data-translate="ruleSelectParameter">选择监测参数</option>`;
+
+            // 按分类添加选项
+            Object.keys(CABINET_DEVICE_ATTRIBUTES).forEach(category => {
+                const categoryData = CABINET_DEVICE_ATTRIBUTES[category];
+
+                // 添加分组标签
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = categoryData.label;
+                if (categoryData.labelKey) {
+                    optgroup.setAttribute('data-translate-label', categoryData.labelKey);
+                }
+
+                categoryData.params.forEach(param => {
+                    const option = document.createElement('option');
+                    option.value = param.value;
+                    const unitText = param.unit ? ` (${param.unit})` : '';
+                    option.textContent = `${param.label}${unitText}`;
+                    if (param.labelKey) {
+                        option.setAttribute('data-translate', param.labelKey);
+                    }
+                    option.setAttribute('data-unit', param.unit);
+                    optgroup.appendChild(option);
+                });
+
+                select.appendChild(optgroup);
+            });
+
+            console.log('✅ 设备属性已加载，共', select.options.length - 1, '个参数');
+        }
+
         // 模拟设备数据
         const availableDevices = [
             { id: 'device-001', name: '储能柜-A区-01号', sn: 'SN2024001', site: '北京总部站', location: 'A区1楼', status: 'online' },
@@ -2650,6 +2811,9 @@
             const modal = document.getElementById('ruleModal');
             const modalTitle = document.getElementById('modalTitle');
 
+            // ✅ 动态加载设备属性(确保每次打开模态框都重新加载)
+            loadDeviceAttributes();
+
             if (ruleId) {
                 modalTitle.textContent = getTranslation('ruleModalEditTitle');
                 // 加载规则数据
@@ -2714,6 +2878,29 @@
             }
 
             modal.style.display = 'flex';
+
+            // ✅ 确保select元素可交互(延迟执行以确保DOM已更新)
+            setTimeout(() => {
+                const ruleParameter = document.getElementById('ruleParameter');
+                const ruleOperator = document.getElementById('ruleOperator');
+                const ruleThreshold = document.getElementById('ruleThreshold');
+
+                if (ruleParameter) {
+                    ruleParameter.style.pointerEvents = 'auto';
+                    ruleParameter.style.position = 'relative';
+                    ruleParameter.style.zIndex = '1';
+                    ruleParameter.disabled = false;
+                    console.log('✅ ruleParameter已激活，选项数:', ruleParameter.options.length);
+                }
+
+                if (ruleOperator) {
+                    ruleOperator.disabled = false;
+                }
+
+                if (ruleThreshold) {
+                    ruleThreshold.disabled = false;
+                }
+            }, 100);
         }
 
         // 关闭规则模态框
@@ -3482,6 +3669,10 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
+
+            // ✅ 预加载设备属性(确保页面初始化时属性已可用)
+            loadDeviceAttributes();
+            console.log('📦 页面初始化完成，设备属性已预加载');
 
             // 检测URL参数，如果需要打开通知设置面板
             const urlParams = new URLSearchParams(window.location.search);

@@ -2136,6 +2136,31 @@
             background: #94a3b8;
         }
 
+        /* 云端版本列表滚动条样式 */
+        #cloudVersionList::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #cloudVersionList::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        #cloudVersionList::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        #cloudVersionList::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* 版本列表项动画优化 */
+        .version-item {
+            will-change: transform, border-color;
+        }
+
     </style>
 </head>
 <body data-page="devices1">
@@ -3476,6 +3501,9 @@
 
                 // 清除本地文件选择
                 clearOTAFile();
+
+                // 重新渲染云端版本列表(确保默认选中最新版本)
+                renderCloudVersionList();
             } else {
                 localRadio.checked = true;
                 cloudRadio.checked = false;
@@ -3490,6 +3518,164 @@
             }
         }
 
+        // ==================== 云端版本管理 ====================
+
+        // 云端可用版本列表(模拟数据)
+        const cloudVersions = [
+            {
+                version: 'v2.5.1',
+                releaseDate: '2024-03-15',
+                size: '18.2 MB',
+                isLatest: true,
+                type: 'stable',
+                changelog: ['优化电池均衡算法', '修复PCS通信异常', '增强安全防护机制', '性能提升15%'],
+                critical: false
+            },
+            {
+                version: 'v2.5.0',
+                releaseDate: '2024-01-15',
+                size: '15.6 MB',
+                isLatest: false,
+                type: 'stable',
+                changelog: ['新增AI热管理功能', '优化SOC计算精度', '支持远程诊断', '修复已知问题'],
+                critical: false
+            },
+            {
+                version: 'v2.4.8',
+                releaseDate: '2023-11-20',
+                size: '14.8 MB',
+                isLatest: false,
+                type: 'stable',
+                changelog: ['稳定性增强', '修复内存泄漏', '优化通信协议'],
+                critical: false
+            },
+            {
+                version: 'v2.4.5',
+                releaseDate: '2023-09-10',
+                size: '14.2 MB',
+                isLatest: false,
+                type: 'stable',
+                changelog: ['基础功能完善', '性能优化', 'Bug修复'],
+                critical: false
+            },
+            {
+                version: 'v2.4.0',
+                releaseDate: '2023-07-01',
+                size: '13.5 MB',
+                isLatest: false,
+                type: 'legacy',
+                changelog: ['核心功能稳定版本', '长期支持版本'],
+                critical: false
+            }
+        ];
+
+        // 当前选中的版本
+        let selectedCloudVersion = null;
+
+        // 渲染云端版本列表
+        function renderCloudVersionList() {
+            const container = document.getElementById('cloudVersionList');
+            if (!container) return;
+
+            const html = cloudVersions.map((ver, index) => {
+                const isLatest = ver.isLatest;
+
+                return `
+                    <label class="version-item"
+                           style="
+                               background: white;
+                               border: 1.5px solid #e5e7eb;
+                               border-radius: 8px;
+                               padding: 14px 16px;
+                               margin-bottom: 10px;
+                               cursor: pointer;
+                               transition: all 0.2s;
+                               display: flex;
+                               align-items: center;
+                               gap: 12px;
+                               user-select: none;
+                           "
+                           onmouseover="this.style.borderColor='#3b82f6'; this.style.background='#f8fafc';"
+                           onmouseout="if(!this.querySelector('input[type=radio]').checked) { this.style.borderColor='#e5e7eb'; this.style.background='white'; }">
+
+                        <!-- 单选按钮 -->
+                        <input type="radio"
+                               name="cloudVersion"
+                               value="${ver.version}"
+                               ${selectedCloudVersion === ver.version ? 'checked' : ''}
+                               onchange="selectCloudVersion('${ver.version}')"
+                               style="
+                                   width: 18px;
+                                   height: 18px;
+                                   cursor: pointer;
+                                   flex-shrink: 0;
+                                   accent-color: #3b82f6;
+                               ">
+
+                        <!-- 版本信息 -->
+                        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                            <!-- 版本号 -->
+                            <span style="font-size: 15px; font-weight: 600; color: #1e293b; flex-shrink: 0; min-width: 70px;">${ver.version}</span>
+
+                            <!-- 最新标签 -->
+                            ${isLatest ? '<span style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; flex-shrink: 0;">最新</span>' : ''}
+
+                            <!-- 占位空间 -->
+                            <div style="flex: 1; min-width: 20px;"></div>
+
+                            <!-- 发布信息 -->
+                            <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: #64748b; flex-shrink: 0;">
+                                <span style="white-space: nowrap;"><i class="fas fa-calendar-alt" style="margin-right: 4px;"></i>${ver.releaseDate}</span>
+                                <span style="white-space: nowrap;"><i class="fas fa-file-archive" style="margin-right: 4px;"></i>${ver.size}</span>
+                            </div>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+
+            // 默认选中最新版本
+            if (!selectedCloudVersion && cloudVersions.length > 0) {
+                selectCloudVersion(cloudVersions[0].version);
+            }
+        }
+
+        // 选择云端版本
+        function selectCloudVersion(version) {
+            selectedCloudVersion = version;
+
+            // 更新所有版本项的样式和单选按钮状态
+            document.querySelectorAll('.version-item').forEach(item => {
+                const radio = item.querySelector('input[type=radio]');
+                if (radio && radio.value === version) {
+                    radio.checked = true;  // ✅ 设置单选按钮为选中状态
+                    item.style.borderColor = '#3b82f6';
+                    item.style.background = '#eff6ff';
+                } else {
+                    if (radio) radio.checked = false;  // ✅ 取消其他单选按钮
+                    item.style.borderColor = '#e5e7eb';
+                    item.style.background = 'white';
+                }
+            });
+
+            console.log('✅ 已选择版本:', version);
+        }
+
+        // 版本号比较函数
+        function compareVersion(v1, v2) {
+            const parts1 = v1.replace('v', '').split('.').map(Number);
+            const parts2 = v2.replace('v', '').split('.').map(Number);
+
+            for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+                const num1 = parts1[i] || 0;
+                const num2 = parts2[i] || 0;
+                if (num1 > num2) return 1;
+                if (num1 < num2) return -1;
+            }
+            return 0;
+        }
+
         // 显示EMS升级弹窗
         function showOTAUpgrade() {
             // 检查是否选择了设备
@@ -3497,7 +3683,10 @@
                 showNotification(getTranslation('devicesOTAWarning'), 'warning');
                 return;
             }
-            
+
+            // 重置云端版本选择,确保每次打开都默认选中最新版本
+            selectedCloudVersion = null;
+
             // 显示文件选择弹窗
             const modal = document.createElement('div');
             modal.className = 'modal show';
@@ -3511,8 +3700,8 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 32px; flex: 1; overflow-y: auto;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                    <div class="modal-body" style="padding: 32px; flex: 1; overflow: hidden;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; height: 100%;">
                             <!-- 左侧：升级方式选择 -->
                             <div>
                                 <!-- 升级方式选择 -->
@@ -3548,17 +3737,29 @@
                                 <div id="cloudUpgradeContent" style="display: block;">
                                     <div class="form-group" style="margin-bottom: 24px;">
                                         <label class="form-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 12px; font-size: 16px;">
-                                            ${getTranslation('devicesOTALatestVersion')}
+                                            <i class="fas fa-server" style="margin-right: 8px; color: #3b82f6;"></i>
+                                            选择云端版本
+                                            <span style="font-size: 13px; color: #64748b; font-weight: 400; margin-left: 8px;">(支持升级或回滚)</span>
                                         </label>
-                                        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 24px;">
-                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                <div>
-                                                    <p style="font-size: 24px; font-weight: 600; color: #1e293b; margin: 0;">v2.5.0</p>
-                                                    <p style="font-size: 14px; color: #64748b; margin: 4px 0 0 0;">${getTranslation('devicesOTAReleaseDate')}2024-01-15</p>
-                                                </div>
-                                                <div style="text-align: right;">
-                                                    <span style="background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500;">${getTranslation('devicesOTALatestBadge')}</span>
-                                                </div>
+                                        <!-- 大框框容器(固定) -->
+                                        <div style="
+                                            background: #f8fafc;
+                                            border: 2px solid #e5e7eb;
+                                            border-radius: 12px;
+                                            padding: 16px;
+                                            height: 310px;
+                                            display: flex;
+                                            flex-direction: column;
+                                        ">
+                                            <!-- 版本列表(内部滚动) -->
+                                            <div id="cloudVersionList" style="
+                                                flex: 1;
+                                                overflow-y: auto;
+                                                padding-right: 8px;
+                                                scrollbar-width: thin;
+                                                scrollbar-color: #cbd5e1 #f1f5f9;
+                                            ">
+                                                <!-- 版本列表将通过JS动态生成 -->
                                             </div>
                                         </div>
                                     </div>
@@ -3604,7 +3805,16 @@
                                     <label class="form-label" style="display: block; font-weight: 600; color: #374151; margin-bottom: 12px; font-size: 16px;">
                                         ${getTranslation('devicesOTASelectedDevices')} <span style="background: #e0e7ff; color: #3730a3; padding: 4px 12px; border-radius: 6px; font-size: 14px; margin-left: 8px;">${selectedDevices.length} ${currentLang === 'zh' ? '个' : ''}</span>
                                     </label>
-                                    <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                                    <div style="
+                                        background: #f9fafb;
+                                        border: 1px solid #e5e7eb;
+                                        border-radius: 12px;
+                                        padding: 16px;
+                                        height: 450px;
+                                        overflow-y: auto;
+                                        scrollbar-width: thin;
+                                        scrollbar-color: #cbd5e1 #f1f5f9;
+                                    ">
                                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
                                             ${selectedDevices.map(device => `
                                                 <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'" onmouseout="this.style.boxShadow='none'">
@@ -3632,8 +3842,11 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(modal);
+
+            // ✅ 渲染云端版本列表
+            renderCloudVersionList();
         }
 
         // 显示EMS确认弹窗
@@ -3736,9 +3949,18 @@
                 return;
             }
 
+            // 如果是云端升级,检查是否选择了版本
+            if (upgradeMode.value === 'cloud' && !selectedCloudVersion) {
+                showNotification('请先选择云端版本', 'warning');
+                return;
+            }
+
             // 获取目标版本
             let targetVersion = LATEST_VERSION;
-            if (upgradeMode.value === 'local' && selectedOTAFile) {
+            if (upgradeMode.value === 'cloud' && selectedCloudVersion) {
+                // 云端升级使用选中的云端版本
+                targetVersion = selectedCloudVersion;
+            } else if (upgradeMode.value === 'local' && selectedOTAFile) {
                 // 从本地文件名解析版本号（如果有的话）
                 const versionMatch = selectedOTAFile.name.match(/v?(\d+\.\d+\.\d+)/i);
                 if (versionMatch) {
@@ -3880,8 +4102,14 @@
             startUpgradeProcess();
         }
 
-        // 显示右下角进度小弹窗
+        // 显示右下角进度悬浮球
         function showOTAProgressToast() {
+            // 先移除旧的悬浮球(如果存在)
+            const oldToast = document.getElementById('otaProgressToast');
+            if (oldToast) {
+                oldToast.remove();
+            }
+
             const toast = document.createElement('div');
             toast.id = 'otaProgressToast';
             toast.style.cssText = `
@@ -3889,43 +4117,52 @@
                 bottom: 20px;
                 right: 20px;
                 background: white;
-                border-radius: 8px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-                padding: 16px;
-                width: 320px;
+                border-radius: 50px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                padding: 12px 20px;
                 z-index: 1000;
                 transition: all 0.3s ease;
+                cursor: pointer;
             `;
-            
+
             toast.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h4 style="font-size: 14px; font-weight: 600; color: #1e293b; margin: 0;" data-translate="otaProgressTitle">EMS升级进度</h4>
-                </div>
-                <div style="margin-bottom: 8px;">
-                    <p id="upgradePhase" style="font-size: 12px; color: #3b82f6; margin: 0 0 4px 0;">
-                        <i class="fas fa-cloud-download-alt" style="margin-right: 4px;"></i>
-                        <span data-translate="otaDownloadingFirmware">正在从云端下载固件...</span>
-                    </p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 12px; color: #6b7280;"><span data-translate="otaUpgradeProgress">升级进度</span> <span id="upgradingCount">0</span>/${selectedDevices.length} <span data-translate="otaDevices">个设备</span></span>
-                        <span id="progressPercent" style="font-size: 12px; color: #6b7280;">0%</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-sync-alt fa-spin" style="color: #3b82f6; font-size: 16px;"></i>
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 14px; font-weight: 600; color: #1e293b;">升级进度</span>
+                            <span id="upgradingCountMini" style="font-size: 12px; color: #64748b; font-weight: 500;">0/${selectedDevices.length}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; font-size: 11px; color: #64748b;">
+                            <span>成功: <span id="successCountMini" style="color: #10b981; font-weight: 600;">0</span></span>
+                            <span>失败: <span id="failCountMini" style="color: #ef4444; font-weight: 600;">0</span></span>
+                        </div>
                     </div>
-                    <div style="background: #f3f4f6; border-radius: 4px; height: 6px; overflow: hidden;">
-                        <div id="toastProgress" style="background: #10b981; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 8px; font-size: 12px; color: #6b7280;">
-                    <span><span data-translate="otaSuccess">成功</span>: <span id="successCount" style="color: #10b981; font-weight: 500;">0</span></span>
-                    <span><span data-translate="otaFailed">失败</span>: <span id="failCount" style="color: #ef4444; font-weight: 500;">0</span></span>
-                    <span><span data-translate="otaRemainingTime">剩余时间</span>: <span id="remainingTime" data-translate="otaCalculating">计算中...</span></span>
                 </div>
             `;
+
+            // 点击悬浮球打开升级详情弹窗
+            toast.onclick = function() {
+                showUpgradeProgress();
+            };
 
             document.body.appendChild(toast);
+        }
 
-            // 应用翻译到新添加的toast元素（如果翻译函数存在）
-            if (typeof applyTranslations === 'function') {
-                applyTranslations();
+        // 更新悬浮球显示的统计数据
+        function updateOTAToastStats() {
+            const successMini = document.getElementById('successCountMini');
+            const failMini = document.getElementById('failCountMini');
+            const upgradingMini = document.getElementById('upgradingCountMini');
+
+            if (successMini) {
+                const successCount = otaUpgradeDetails.filter(d => d.status === 'success').length;
+                const failCount = otaUpgradeDetails.filter(d => d.status === 'failed').length;
+                const completedCount = successCount + failCount; // 已完成数量(成功+失败)
+
+                successMini.textContent = successCount;
+                failMini.textContent = failCount;
+                upgradingMini.textContent = `${completedCount}/${selectedDevices.length}`;
             }
         }
 
@@ -4996,27 +5233,30 @@
             const successCount = otaUpgradeDetails.filter(d => d.status === 'success').length;
             const failCount = otaUpgradeDetails.filter(d => d.status === 'failed').length;
             const progressCount = otaUpgradeDetails.filter(d => d.status === 'upgrading').length;
-            
+
             // 更新进度弹窗中的统计
             const successElement = document.getElementById('successCount');
             const failElement = document.getElementById('failCount');
             const upgradingElement = document.getElementById('upgradingCount');
-            
+
             if (successElement) successElement.textContent = successCount;
             if (failElement) failElement.textContent = failCount;
             if (upgradingElement) upgradingElement.textContent = successCount + failCount;
-            
+
+            // 更新悬浮球中的统计
+            updateOTAToastStats();
+
             // 更新进度条
             const totalDevices = otaUpgradeDetails.length;
             const completedDevices = successCount + failCount;
             const progressPercent = totalDevices > 0 ? Math.floor((completedDevices / totalDevices) * 100) : 0;
-            
+
             const progressBar = document.getElementById('toastProgress');
             const percentText = document.getElementById('progressPercent');
-            
+
             if (progressBar) progressBar.style.width = progressPercent + '%';
             if (percentText) percentText.textContent = progressPercent + '%';
-            
+
             // 如果所有设备都完成了升级
             if (completedDevices === totalDevices && progressCount === 0) {
                 onUpgradeComplete();

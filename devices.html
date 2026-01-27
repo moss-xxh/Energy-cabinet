@@ -2216,10 +2216,10 @@
                     </select>
                     <select id="statusFilter" class="form-input" style="width: 120px; height: 40px; padding-left: 12px;">
                         <option value="" data-translate="devicesAllStatus">全部状态</option>
-                        <option value="charging" data-translate="devicesStatusCharging">充电</option>
-                        <option value="discharging" data-translate="devicesStatusDischarging">放电</option>
+                        <option value="fault" data-translate="devicesStatusFault">故障</option>
+                        <option value="warning" data-translate="devicesStatusWarning">告警</option>
                         <option value="offline" data-translate="devicesStatusOffline">离线</option>
-                        <option value="standby" data-translate="devicesStatusStandby">待机</option>
+                        <option value="normal" data-translate="devicesStatusNormal">正常</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 12px;">
@@ -2925,14 +2925,20 @@
 
         // 模拟设备数据，添加中英文名称支持
         let devices = [
-            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, maxPower: 250, status: 'charging', mode: 'auto-charge', fault: false, alarm: false },
-            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, maxPower: 250, status: 'discharging', mode: 'auto-discharge', fault: false, alarm: true },
-            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, maxPower: 200, status: 'standby', mode: 'standby', fault: true, alarm: false },
-            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, maxPower: 200, status: 'charging', mode: 'standby', fault: false, alarm: false },
-            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, maxPower: 300, status: 'standby', mode: 'standby', fault: false, alarm: false },
-            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, maxPower: 300, status: 'charging', mode: 'manual-charge', fault: false, alarm: true },
-            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, maxPower: 250, status: 'discharging', mode: 'manual-discharge', fault: true, alarm: true },
-            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, maxPower: 200, status: 'standby', mode: 'waiting', fault: false, alarm: false }
+            { id: 1, code: 'ESS001', name: { zh: '储能柜-A区-01', en: 'ESS Cabinet A1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 85, soh: 98, power: 125.5, maxPower: 250, statuses: ['normal'], mode: 'auto-charge', offline: false },
+            { id: 2, code: 'ESS002', name: { zh: '储能柜-A区-02', en: 'ESS Cabinet A2' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 92, soh: 97, power: -89.3, maxPower: 250, statuses: ['normal', 'warning'], mode: 'auto-discharge', offline: false },
+            { id: 3, code: 'ESS003', name: { zh: '储能柜-B区-01', en: 'ESS Cabinet B1' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 45, soh: 95, power: 0, maxPower: 200, statuses: ['fault'], mode: 'standby', offline: false },
+            { id: 4, code: 'ESS004', name: { zh: '储能柜-B区-02', en: 'ESS Cabinet B2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 78, soh: 96, power: 156.8, maxPower: 200, statuses: ['normal'], mode: 'standby', offline: false },
+            { id: 5, code: 'ESS005', name: { zh: '储能柜-C区-01', en: 'ESS Cabinet C1' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 25, soh: 94, power: 0, maxPower: 300, statuses: ['offline'], mode: 'standby', offline: true },
+            { id: 6, code: 'ESS006', name: { zh: '储能柜-C区-02', en: 'ESS Cabinet C2' }, site: 'site3', siteName: { zh: '商业中心站', en: 'Business Center Station' }, soc: 67, soh: 99, power: 98.7, maxPower: 300, statuses: ['normal', 'warning'], mode: 'manual-charge', offline: false },
+            { id: 7, code: 'ESS007', name: { zh: '储能柜-D区-01', en: 'ESS Cabinet D1' }, site: 'site1', siteName: { zh: '科技园区站', en: 'Tech Park Station' }, soc: 88, soh: 93, power: -112.4, maxPower: 250, statuses: ['fault', 'warning'], mode: 'manual-discharge', offline: false },
+            { id: 8, code: 'ESS008', name: { zh: '储能柜-D区-02', en: 'ESS Cabinet D2' }, site: 'site2', siteName: { zh: '工业园区站', en: 'Industrial Park Station' }, soc: 55, soh: 92, power: 0, maxPower: 200, statuses: ['normal'], mode: 'waiting', offline: false },
+            { id: 9, code: 'ESS009', name: { zh: '储能柜-E区-01', en: 'ESS Cabinet E1' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 72, soh: 96, power: 145.2, maxPower: 250, statuses: ['normal'], mode: 'auto-charge', offline: false },
+            { id: 10, code: 'ESS010', name: { zh: '储能柜-E区-02', en: 'ESS Cabinet E2' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 38, soh: 91, power: 0, maxPower: 250, statuses: ['fault'], mode: 'standby', offline: false },
+            { id: 11, code: 'ESS011', name: { zh: '储能柜-E区-03', en: 'ESS Cabinet E3' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 81, soh: 95, power: -95.6, maxPower: 250, statuses: ['normal'], mode: 'auto-discharge', offline: false },
+            { id: 12, code: 'ESS012', name: { zh: '储能柜-E区-04', en: 'ESS Cabinet E4' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 52, soh: 89, power: 0, maxPower: 250, statuses: ['fault'], mode: 'standby', offline: false },
+            { id: 13, code: 'ESS013', name: { zh: '储能柜-E区-05', en: 'ESS Cabinet E5' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 65, soh: 94, power: 78.3, maxPower: 250, statuses: ['normal', 'warning'], mode: 'manual-charge', offline: false },
+            { id: 14, code: 'ESS014', name: { zh: '储能柜-E区-06', en: 'ESS Cabinet E6' }, site: 'site4', siteName: { zh: '物流园区站', en: 'Logistics Park Station' }, soc: 89, soh: 97, power: 112.8, maxPower: 250, statuses: ['normal'], mode: 'auto-charge', offline: false }
         ];
 
         let currentPage = 1;
@@ -2991,7 +2997,7 @@
                         ${getModeBadge(device.mode)}
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                        ${getStatusBadge(device.status)}
+                        ${getStatusBadges(device.statuses)}
                     </td>
                     <td style="padding: 12px; text-align: center; white-space: nowrap;" onclick="event.stopPropagation()">
                         <div style="display: inline-flex; align-items: center; gap: 4px;">
@@ -3016,21 +3022,33 @@
             document.getElementById('totalPages').textContent = Math.ceil(filteredDevices.length / pageSize);
         }
 
-        // 获取状态徽章
-        function getStatusBadge(status) {
+        // 获取多个状态徽章
+        function getStatusBadges(statuses) {
+            if (!statuses || statuses.length === 0) {
+                return '<span style="color: var(--text-secondary); font-size: 13px;">-</span>';
+            }
+
             const statusMap = {
-                'standby': { key: 'devicesStatusStandby', color: '#6b7280' },
-                'charging': { key: 'devicesStatusCharging', color: '#3b82f6' },
-                'discharging': { key: 'devicesStatusDischarging', color: '#f59e0b' }
+                'fault': { text: '故障', color: '#ef4444' },
+                'warning': { text: '告警', color: '#f59e0b' },
+                'offline': { text: '离线', color: '#6b7280' },
+                'normal': { text: '正常', color: '#10b981' }
             };
-            const statusInfo = statusMap[status];
-            const text = getTranslation(statusInfo.key);
-            return `
-                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px;">
-                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${statusInfo.color};"></span>
-                    <span style="color: var(--text-secondary);">${text}</span>
-                </span>
-            `;
+
+            // 生成多个状态徽章
+            const badges = statuses.map(status => {
+                const statusInfo = statusMap[status];
+                if (!statusInfo) return '';
+
+                return `
+                    <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 2px 8px; border-radius: 12px; background: ${statusInfo.color}15; white-space: nowrap;">
+                        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${statusInfo.color};"></span>
+                        <span style="color: ${statusInfo.color}; font-weight: 500;">${statusInfo.text}</span>
+                    </span>
+                `;
+            }).filter(badge => badge).join('');
+
+            return `<div style="display: flex; align-items: center; gap: 6px; justify-content: center; flex-wrap: wrap;">${badges}</div>`;
         }
 
         // 获取模式徽章
@@ -3130,13 +3148,14 @@
             const siteFilter = document.getElementById('siteFilter').value;
 
             filteredDevices = devices.filter(device => {
-                const matchSearch = !searchText || 
-                    device.code.toLowerCase().includes(searchText) || 
+                const matchSearch = !searchText ||
+                    device.code.toLowerCase().includes(searchText) ||
                     device.name.toLowerCase().includes(searchText);
-                const matchStatus = !statusFilter || device.status === statusFilter;
+                // 修改为支持多状态筛选:如果设备的statuses数组包含筛选的状态,则匹配
+                const matchStatus = !statusFilter || (device.statuses && device.statuses.includes(statusFilter));
                 const matchMode = !modeFilter || device.mode === modeFilter;
                 const matchSite = !siteFilter || device.site === siteFilter;
-                
+
                 return matchSearch && matchStatus && matchMode && matchSite;
             });
 
@@ -4385,6 +4404,7 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     const siteParam = urlParams.get('site');
                     const siteNameParam = urlParams.get('siteName');
+                    const statusParam = urlParams.get('status');
 
                     if (siteParam) {
                         const unifiedSelect = document.getElementById('unifiedSiteSelect');
@@ -4397,6 +4417,24 @@
 
                             console.log(`从站点管理跳转，已选择站点: ${siteNameParam || siteParam}`);
                         }
+                    }
+
+                    // 处理状态筛选参数
+                    if (statusParam) {
+                        const statusFilter = document.getElementById('statusFilter');
+                        if (statusFilter) {
+                            statusFilter.value = statusParam;
+                            console.log(`已自动应用状态筛选: ${statusParam}`);
+                        }
+                    }
+
+                    // 如果有筛选参数,触发搜索以应用筛选
+                    if (siteParam || statusParam) {
+                        setTimeout(() => {
+                            if (typeof searchDevices === 'function') {
+                                searchDevices();
+                            }
+                        }, 100);
                     }
                 }
 
@@ -4456,6 +4494,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const siteParam = urlParams.get('site');
                 const siteNameParam = urlParams.get('siteName');
+                const statusParam = urlParams.get('status');
 
                 if (siteParam) {
                     const unifiedSelect = document.getElementById('unifiedSiteSelect');
@@ -4468,6 +4507,24 @@
 
                         console.log(`从站点管理跳转，已选择站点: ${siteNameParam || siteParam}`);
                     }
+                }
+
+                // 处理状态筛选参数
+                if (statusParam) {
+                    const statusFilter = document.getElementById('statusFilter');
+                    if (statusFilter) {
+                        statusFilter.value = statusParam;
+                        console.log(`已自动应用状态筛选: ${statusParam}`);
+                    }
+                }
+
+                // 如果有筛选参数,触发搜索以应用筛选
+                if (siteParam || statusParam) {
+                    setTimeout(() => {
+                        if (typeof searchDevices === 'function') {
+                            searchDevices();
+                        }
+                    }, 100);
                 }
             }
 

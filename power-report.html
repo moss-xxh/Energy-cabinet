@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         .main-content {
             height: calc(100vh - 64px);
@@ -1278,7 +1279,7 @@
                                         <th data-translate="tableHeaderDatePeriod">日期时段</th>
                                         <th data-translate="tableHeaderChargeAmount">充电量(kWh)</th>
                                         <th data-translate="tableHeaderDischargeAmount">放电量(kWh)</th>
-                                        <th data-translate="tableHeaderSOC">SOC(%)</th>
+                                        <th id="socHeader" data-translate="tableHeaderSOC">SOC(%)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="hourlyTableBody">
@@ -1897,32 +1898,27 @@
                         // 添加随机波动 ±5kWh
                         const charging = Math.floor(dailyCharge + (Math.random() * 10 - 5));
                         const discharging = Math.floor(dailyDischarge + (Math.random() * 10 - 5));
-                        const soc = Math.floor(Math.random() * 30 + 40); // 40-70%范围
 
                         totalCharge += charging;
                         totalDischarge += discharging;
-                        socSum += soc;
-                        socCount++;
 
                         if (rowIndex === 0) {
-                            // 第一行：显示设备名称并设置rowspan
+                            // 第一行：显示设备名称并设置rowspan (月报不显示SOC)
                             html += `
                                 <tr>
                                     <td rowspan="${rowsPerDevice}" class="col-device">${deviceName}</td>
                                     <td class="col-datetime">${date}</td>
                                     <td class="col-charge">${charging.toLocaleString()}</td>
                                     <td class="col-discharge">${discharging.toLocaleString()}</td>
-                                    <td class="col-soc">${soc}</td>
                                 </tr>
                             `;
                         } else {
-                            // 后续行：不显示设备名称
+                            // 后续行：不显示设备名称 (月报不显示SOC)
                             html += `
                                 <tr>
                                     <td class="col-datetime">${date}</td>
                                     <td class="col-charge">${charging.toLocaleString()}</td>
                                     <td class="col-discharge">${discharging.toLocaleString()}</td>
-                                    <td class="col-soc">${soc}</td>
                                 </tr>
                             `;
                         }
@@ -1946,32 +1942,27 @@
                         const monthFactor = daysInMonth / 30;
                         const charging = Math.floor((monthlyCharge * monthFactor) * (0.95 + Math.random() * 0.1));
                         const discharging = Math.floor((monthlyDischarge * monthFactor) * (0.95 + Math.random() * 0.1));
-                        const soc = Math.floor(Math.random() * 30 + 40); // 40-70%范围
 
                         totalCharge += charging;
                         totalDischarge += discharging;
-                        socSum += soc;
-                        socCount++;
 
                         if (rowIndex === 0) {
-                            // 第一行：显示设备名称并设置rowspan
+                            // 第一行：显示设备名称并设置rowspan (年报不显示SOC)
                             html += `
                                 <tr>
                                     <td rowspan="${rowsPerDevice}" class="col-device">${deviceName}</td>
                                     <td class="col-datetime">${date}</td>
                                     <td class="col-charge">${charging.toLocaleString()}</td>
                                     <td class="col-discharge">${discharging.toLocaleString()}</td>
-                                    <td class="col-soc">${soc}</td>
                                 </tr>
                             `;
                         } else {
-                            // 后续行：不显示设备名称
+                            // 后续行：不显示设备名称 (年报不显示SOC)
                             html += `
                                 <tr>
                                     <td class="col-datetime">${date}</td>
                                     <td class="col-charge">${charging.toLocaleString()}</td>
                                     <td class="col-discharge">${discharging.toLocaleString()}</td>
-                                    <td class="col-soc">${soc}</td>
                                 </tr>
                             `;
                         }
@@ -1981,6 +1972,16 @@
             }
 
             tbody.innerHTML = html;
+
+            // 控制SOC列的显示/隐藏 (月报和年报不显示SOC)
+            const socHeader = document.getElementById('socHeader');
+            if (granularity === 'day' || granularity === 'month') {
+                // 月报和年报隐藏SOC列
+                if (socHeader) socHeader.style.display = 'none';
+            } else {
+                // 日报显示SOC列
+                if (socHeader) socHeader.style.display = '';
+            }
 
             // 保存到全局变量供能量流动分析使用
             tableDataSummary.totalCharge = totalCharge;
@@ -2056,13 +2057,116 @@
             }, 500);
         }
 
-        // 导出数据
+        // 导出数据为Excel
         function exportData() {
-            const statisticTime = document.getElementById('statisticTime').value || '2024-01-01';
-            showNotification(`${getTranslation('notifyExportingData')} ${queryParams.selectedLabel}...`, 'info');
-            setTimeout(() => {
-                showNotification(getTranslation('notifyExportSuccess'), 'success');
-            }, 1500);
+            try {
+                // 检查SheetJS是否加载
+                if (typeof XLSX === 'undefined') {
+                    showNotification('Excel library not loaded', 'error');
+                    return;
+                }
+
+                showNotification('Exporting data...', 'info');
+
+                // 获取当前时间和报表类型
+                const statisticTime = document.getElementById('statisticTime')?.value ||
+                                     document.getElementById('statisticTimeSelectYear')?.value ||
+                                     '2024-01-01';
+
+                // 确定报表类型名称
+                const reportTypeNames = {
+                    'daily': 'Daily',
+                    'monthly': 'Monthly',
+                    'yearly': 'Yearly'
+                };
+                const reportTypeName = reportTypeNames[currentDimension] || 'Daily';
+
+                // 构建文件名 (英文)
+                const siteName = queryParams.selectedLabel.replace(/[^\w\s-]/g, '');
+                const fileName = `Energy_Report_${reportTypeName}_${siteName}_${statisticTime}.xlsx`;
+
+                // 准备Excel数据
+                const excelData = prepareExcelData();
+
+                // 创建工作簿
+                const wb = XLSX.utils.book_new();
+
+                // 添加数据工作表
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+                // 设置列宽
+                const colWidths = currentDimension === 'daily'
+                    ? [{ wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 12 }]
+                    : [{ wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }];
+                ws['!cols'] = colWidths;
+
+                // 添加工作表到工作簿
+                XLSX.utils.book_append_sheet(wb, ws, `${reportTypeName} Report`);
+
+                // 导出文件
+                XLSX.writeFile(wb, fileName);
+
+                setTimeout(() => {
+                    showNotification('Export successful!', 'success');
+                }, 500);
+
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Export failed: ' + error.message, 'error');
+            }
+        }
+
+        // 准备Excel数据
+        function prepareExcelData() {
+            const data = [];
+
+            // 标题行 - 根据维度确定列
+            const headers = currentDimension === 'daily'
+                ? ['Device', 'Date/Time', 'Charge (kWh)', 'Discharge (kWh)', 'SOC (%)']
+                : ['Device', 'Date/Period', 'Charge (kWh)', 'Discharge (kWh)'];
+
+            data.push(headers);
+
+            // 获取表格数据
+            const tbody = document.getElementById('hourlyTableBody');
+            if (!tbody) return data;
+
+            const rows = tbody.querySelectorAll('tr');
+            let currentDevice = '';
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [];
+
+                cells.forEach((cell, index) => {
+                    // 处理设备名称列(有rowspan)
+                    if (index === 0 && cell.classList.contains('col-device')) {
+                        currentDevice = cell.textContent.trim();
+                        rowData.push(currentDevice);
+                    } else if (index === 0 && !cell.classList.contains('col-device')) {
+                        // 如果第一列不是设备列,说明设备名被rowspan了,需要继承
+                        rowData.push(currentDevice);
+                        rowData.push(cell.textContent.trim());
+                    } else {
+                        rowData.push(cell.textContent.trim());
+                    }
+                });
+
+                data.push(rowData);
+            });
+
+            // 添加汇总行
+            const summaryCharge = document.getElementById('summaryTotalCharge')?.textContent || '0';
+            const summaryDischarge = document.getElementById('summaryTotalDischarge')?.textContent || '0';
+
+            const summaryRow = currentDimension === 'daily'
+                ? ['', 'Total', summaryCharge, summaryDischarge, '']
+                : ['', 'Total', summaryCharge, summaryDischarge];
+
+            data.push([]);  // 空行
+            data.push(summaryRow);
+
+            return data;
         }
 
         // 导出单个表格

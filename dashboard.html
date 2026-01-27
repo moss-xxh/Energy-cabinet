@@ -3254,10 +3254,10 @@
                 nameKey: 'dashboardStation1',
                 position: [116.397428, 39.90923], // 北京示例坐标
                 capacity: '1850kWh',
-                cabinets: 7,
+                cabinets: 3,
                 devicesOffline: 0,
                 devicesFault: 1,             // 未处理故障数
-                devicesAlarm: 1,             // 未处理告警数
+                devicesAlarm: 2,             // 未处理告警数
                 status: 'online',
                 dailyCharge: '98.2kWh',
                 dailyDischarge: '75.2kWh',
@@ -3270,10 +3270,10 @@
                 nameKey: 'dashboardStation2',
                 position: [116.320580, 39.98408],
                 capacity: '2650kWh',
-                cabinets: 11,
-                devicesOffline: 1,
-                devicesFault: 0,
-                devicesAlarm: 2,
+                cabinets: 3,
+                devicesOffline: 0,
+                devicesFault: 1,
+                devicesAlarm: 0,
                 status: 'online',
                 dailyCharge: '140.5kWh',
                 dailyDischarge: '107.6kWh',
@@ -3286,10 +3286,10 @@
                 nameKey: 'dashboardStation3',
                 position: [116.476053, 39.91736],
                 capacity: '1720kWh',
-                cabinets: 8,
-                devicesOffline: 0,
+                cabinets: 2,
+                devicesOffline: 1,
                 devicesFault: 0,
-                devicesAlarm: 0,
+                devicesAlarm: 1,
                 status: 'online',
                 dailyCharge: '91.0kWh',
                 dailyDischarge: '69.7kWh',
@@ -3573,7 +3573,10 @@
                     </div>
                     <div class="station-info-divider"></div>
                     <div class="station-info-section">
-                        <div class="station-info-section-title">${getText('dashboardDeviceStatus', '设备状态')}</div>
+                        <div class="station-info-section-title">
+                            ${getText('dashboardDeviceStatus', '设备状态')}
+                            <span style="font-size: 11px; color: #9ca3af; font-weight: 400; margin-left: 6px;">(一个设备可能有多个状态)</span>
+                        </div>
                         <div class="station-devices-grid" style="grid-template-columns: repeat(4, 1fr);">
                             <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'all')">
                                 <span class="device-stat-label">${getText('dashboardDeviceTotal', '总数')}</span>
@@ -3587,7 +3590,7 @@
                                 <span class="device-stat-label">${getText('dashboardDeviceFault', '故障')}</span>
                                 <span class="device-stat-value" style="color: #ef4444;">${station.devicesFault}</span>
                             </div>
-                            <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'alarm')">
+                            <div class="device-stat device-stat-clickable" onclick="navigateToDevices('${station.id}', '${encodedSiteName}', 'warning')">
                                 <span class="device-stat-label">${getText('dashboardDeviceAlarm', '告警')}</span>
                                 <span class="device-stat-value" style="color: #f59e0b;">${station.devicesAlarm}</span>
                             </div>
@@ -3604,9 +3607,13 @@
 
             // 根据filterType添加筛选参数
             if (filterType === 'offline') {
-                url += '&filter=offline';
-            } else if (filterType === 'alarm') {
-                url += '&filter=alarm';
+                url += '&status=offline';
+            } else if (filterType === 'warning') {
+                url += '&status=warning';
+            } else if (filterType === 'fault') {
+                url += '&status=fault';
+            } else if (filterType === 'all') {
+                url += '&status=';  // 全部状态,不添加筛选
             }
 
             // 跳转到设备页面
