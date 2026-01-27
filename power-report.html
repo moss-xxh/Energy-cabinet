@@ -2094,10 +2094,10 @@
                 // 添加数据工作表
                 const ws = XLSX.utils.aoa_to_sheet(excelData);
 
-                // 设置列宽
+                // 设置列宽 (Device, SN, Site, Date/Time, Charge, Discharge, SOC)
                 const colWidths = currentDimension === 'daily'
-                    ? [{ wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 12 }]
-                    : [{ wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }];
+                    ? [{ wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 12 }]
+                    : [{ wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 18 }];
                 ws['!cols'] = colWidths;
 
                 // 添加工作表到工作簿
@@ -2120,10 +2120,10 @@
         function prepareExcelData() {
             const data = [];
 
-            // 标题行 - 根据维度确定列
+            // 标题行 - 根据维度确定列,添加SN和站点字段
             const headers = currentDimension === 'daily'
-                ? ['Device', 'Date/Time', 'Charge (kWh)', 'Discharge (kWh)', 'SOC (%)']
-                : ['Device', 'Date/Period', 'Charge (kWh)', 'Discharge (kWh)'];
+                ? ['Device', 'SN', 'Site', 'Date/Time', 'Charge (kWh)', 'Discharge (kWh)', 'SOC (%)']
+                : ['Device', 'SN', 'Site', 'Date/Period', 'Charge (kWh)', 'Discharge (kWh)'];
 
             data.push(headers);
 
@@ -2133,6 +2133,20 @@
 
             const rows = tbody.querySelectorAll('tr');
             let currentDevice = '';
+            let currentSN = '';
+            // 获取当前选中的站点名称
+            const currentSite = queryParams.selectedLabel || '';
+
+            // 根据设备名称生成SN的辅助函数
+            const generateSN = (deviceName) => {
+                // 从设备名称中提取数字 (如 "储能柜1" -> "1", "Energy Cabinet 1" -> "1")
+                const match = deviceName.match(/\d+/);
+                if (match) {
+                    const num = match[0];
+                    return `ESS${num.padStart(3, '0')}`;
+                }
+                return 'ESS000';
+            };
 
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
@@ -2142,10 +2156,15 @@
                     // 处理设备名称列(有rowspan)
                     if (index === 0 && cell.classList.contains('col-device')) {
                         currentDevice = cell.textContent.trim();
+                        currentSN = generateSN(currentDevice);
                         rowData.push(currentDevice);
+                        rowData.push(currentSN); // 添加SN字段
+                        rowData.push(currentSite); // 添加站点字段
                     } else if (index === 0 && !cell.classList.contains('col-device')) {
                         // 如果第一列不是设备列,说明设备名被rowspan了,需要继承
                         rowData.push(currentDevice);
+                        rowData.push(currentSN); // 添加SN字段
+                        rowData.push(currentSite); // 添加站点字段
                         rowData.push(cell.textContent.trim());
                     } else {
                         rowData.push(cell.textContent.trim());
@@ -2160,8 +2179,8 @@
             const summaryDischarge = document.getElementById('summaryTotalDischarge')?.textContent || '0';
 
             const summaryRow = currentDimension === 'daily'
-                ? ['', 'Total', summaryCharge, summaryDischarge, '']
-                : ['', 'Total', summaryCharge, summaryDischarge];
+                ? ['', '', '', 'Total', summaryCharge, summaryDischarge, '']
+                : ['', '', '', 'Total', summaryCharge, summaryDischarge];
 
             data.push([]);  // 空行
             data.push(summaryRow);
